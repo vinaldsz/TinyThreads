@@ -31,7 +31,6 @@ What I added
 - `pages/*` — minimal Next pages.
 - `.eslintrc.json` — ESLint config using Next rules.
 
-Next steps I can help with
 
 - Add TypeScript support
 - Add API routes under `pages/api` or move to Express endpoints
