@@ -1,6 +1,7 @@
 "use client";
-import styles from './ItemCard.module.css'
-import { useState } from 'react';
+import styles from "./ItemCard.module.css";
+import { useState } from "react";
+import Image from "next/image";
 
 export default function ItemCard({ item }) {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -17,22 +18,33 @@ export default function ItemCard({ item }) {
 
   const getConditionClass = (condition) => {
     switch (condition) {
-      case 'New': return styles.conditionNew;
-      case 'Like New': return styles.conditionLikeNew;
-      case 'Good': return styles.conditionGood;
-      case 'Fair': return styles.conditionFair;
-      default: return styles.conditionDefault;
+      case "New":
+        return styles.conditionNew;
+      case "Like New":
+        return styles.conditionLikeNew;
+      case "Good":
+        return styles.conditionGood;
+      case "Fair":
+        return styles.conditionFair;
+      default:
+        return styles.conditionDefault;
     }
   };
 
   const getCategoryIcon = (category) => {
     switch (category) {
-      case 'Clothing': return '👕';
-      case 'Toys': return '🧸';
-      case 'Books': return '📚';
-      case 'Gear': return '🍼';
-      case 'Other': return '✨';
-      default: return '🛍️';
+      case "Clothing":
+        return "👕";
+      case "Toys":
+        return "🧸";
+      case "Books":
+        return "📚";
+      case "Gear":
+        return "🍼";
+      case "Other":
+        return "✨";
+      default:
+        return "🛍️";
     }
   };
 
@@ -45,29 +57,35 @@ export default function ItemCard({ item }) {
             <div className={styles.loadingSpinner}></div>
           </div>
         )}
-        
+
         {imageError ? (
           <div className={styles.noImageContainer}>
             <div className={styles.noImageContent}>
-              <div className={styles.categoryIcon}>{getCategoryIcon(item.category)}</div>
+              <div className={styles.categoryIcon}>
+                {getCategoryIcon(item.category)}
+              </div>
               <p className={styles.noImageText}>No Image</p>
             </div>
           </div>
         ) : (
-          <img
-            src={item.imageUrl}
-            alt={item.title}
-            className={`${styles.image} ${imageLoaded ? styles.imageLoaded : styles.imageLoading}`}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-          />
+          <div className={styles.imageWrapper}>
+            <Image
+              src={item.imageUrl}
+              alt={item.title}
+              className={`${styles.image} ${
+                imageLoaded ? styles.imageLoaded : styles.imageLoading
+              }`}
+              fill
+              sizes="(max-width: 600px) 100vw, 33vw"
+              onLoadingComplete={handleImageLoad}
+              onError={handleImageError}
+            />
+          </div>
         )}
 
         {/* Price Badge */}
         <div className={styles.priceBadge}>
-          <span className={styles.priceText}>
-            ${item.price}
-          </span>
+          <span className={styles.priceText}>${item.price}</span>
         </div>
 
         {/* Condition Badge */}
@@ -83,23 +101,19 @@ export default function ItemCard({ item }) {
         {/* Category & Age Range */}
         <div className={styles.metaRow}>
           <span className={styles.category}>
-            <span className={styles.categoryIconSmall}>{getCategoryIcon(item.category)}</span>
+            <span className={styles.categoryIconSmall}>
+              {getCategoryIcon(item.category)}
+            </span>
             {item.category}
           </span>
-          <span className={styles.ageRange}>
-            {item.ageRange}
-          </span>
+          <span className={styles.ageRange}>{item.ageRange}</span>
         </div>
 
         {/* Title */}
-        <h3 className={styles.title}>
-          {item.title}
-        </h3>
+        <h3 className={styles.title}>{item.title}</h3>
 
         {/* Description */}
-        <p className={styles.description}>
-          {item.description}
-        </p>
+        <p className={styles.description}>{item.description}</p>
 
         {/* Seller Info */}
         <div className={styles.sellerInfo}>
@@ -112,9 +126,7 @@ export default function ItemCard({ item }) {
         </div>
 
         {/* Action Button */}
-        <button className={styles.viewButton}>
-          View Details
-        </button>
+        <button className={styles.viewButton}>View Details</button>
       </div>
     </div>
   );

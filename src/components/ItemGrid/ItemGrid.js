@@ -1,17 +1,21 @@
-
 "use client";
 
 // components/ItemGrid/ItemGrid.js
-import styles from './ItemGrid.module.css'
-import { useState } from 'react';
-import ItemCard from '../ItemCard/ItemCard';
+import styles from "./ItemGrid.module.css";
+import { useState } from "react";
+import ItemCard from "../ItemCard/ItemCard";
 
-export default function ItemGrid({ items = [], loading = false, hasMore = true, onLoadMore }) {
+export default function ItemGrid({
+  items = [],
+  loading = false,
+  hasMore = true,
+  onLoadMore,
+}) {
   const [loadingMore, setLoadingMore] = useState(false);
 
   const handleLoadMore = async () => {
     if (loadingMore || !hasMore || !onLoadMore) return;
-    
+
     setLoadingMore(true);
     try {
       await onLoadMore();
@@ -61,16 +65,14 @@ export default function ItemGrid({ items = [], loading = false, hasMore = true, 
   return (
     <div className={styles.container}>
       {/* Items Count */}
-      <div className={styles.itemsCount}>
-        Showing {items.length} items
-      </div>
+      <div className={styles.itemsCount}>Showing {items.length} items</div>
 
       {/* Grid */}
       <div className={styles.grid}>
         {items.map((item) => (
           <ItemCard key={item.id} item={item} />
         ))}
-        
+
         {/* Loading skeletons while loading more */}
         {loadingMore && (
           <>
@@ -84,7 +86,7 @@ export default function ItemGrid({ items = [], loading = false, hasMore = true, 
       {/* Load More Button */}
       {hasMore && (
         <div className={styles.loadMore}>
-          <button 
+          <button
             className={styles.loadMoreButton}
             onClick={handleLoadMore}
             disabled={loadingMore}
@@ -95,7 +97,7 @@ export default function ItemGrid({ items = [], loading = false, hasMore = true, 
                 Loading more...
               </span>
             ) : (
-              'Load More Items'
+              "Load More Items"
             )}
           </button>
         </div>
@@ -104,7 +106,7 @@ export default function ItemGrid({ items = [], loading = false, hasMore = true, 
       {/* End message */}
       {!hasMore && items.length > 0 && (
         <div className={styles.endMessage}>
-          <p>You've reached the end! 🎉</p>
+          <p>You have reached the end! 🎉</p>
         </div>
       )}
     </div>
