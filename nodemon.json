@@ -1,0 +1,6 @@
+{
+  "watch": ["server"],
+  "ext": "js,mjs,json",
+  "ignore": ["node_modules", "public", "styles", "pages", ".next"],
+  "exec": "node --experimental-vm-modules server/index.js"
+}
