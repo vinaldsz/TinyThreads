@@ -9,14 +9,21 @@ const MOCK_ITEMS = [
     price: 18.99,
     size: "0-3 months",
     condition: "New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400",
-    description:
-      "Super soft organic cotton onesie in adorable pink. Perfect for newborns with sensitive skin.",
+    imageUrl: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400",
+    description: "Super soft organic cotton onesie in adorable pink. Perfect for newborns with sensitive skin. Machine washable, hypoallergenic fabric. From a smoke-free home.",
     sellerId: "seller1",
     sellerName: "Emma K.",
     category: "Clothing",
     ageRange: "0-3 months",
+    location: "Fremont, CA",
+    seller: {
+      name: "Emma K.",
+      email: "emma.k@email.com",
+      phone: "(510) 555-0123",
+      rating: 4.8,
+      joinDate: "2023-06-15"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -25,14 +32,21 @@ const MOCK_ITEMS = [
     price: 25.0,
     size: "One Size",
     condition: "Like New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
-    description:
-      "Set of 4 colorful board books. Great for developing early reading skills.",
+    imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
+    description: "Set of 4 colorful board books featuring animals, shapes, and first words. Great for developing early reading skills and motor coordination. Pages are thick and durable for little hands.",
     sellerId: "seller2",
     sellerName: "Sarah M.",
     category: "Books",
     ageRange: "6-12 months",
+    location: "San Jose, CA",
+    seller: {
+      name: "Sarah M.",
+      email: "sarah.martinez@email.com", 
+      phone: "(408) 555-0234",
+      rating: 4.9,
+      joinDate: "2023-04-22"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -42,12 +56,23 @@ const MOCK_ITEMS = [
     size: "One Size",
     condition: "Good",
     imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
-    description:
-      "Classic wooden stacking toy. Helps develop hand-eye coordination.",
+    description: "Classic wooden stacking toy with colorful rings. Helps develop hand-eye coordination and problem-solving skills. All rings included, natural wood finish with non-toxic paint.",
     sellerId: "seller3",
     sellerName: "Mike D.",
     category: "Toys",
     ageRange: "6-12 months",
+ Updated upstream:src/services/itemService.js
+=======
+    location: "Palo Alto, CA",
+    seller: {
+      name: "Mike D.",
+      email: "mike.davis@email.com",
+      phone: "(650) 555-0345",
+      rating: 4.6,
+      joinDate: "2023-08-10"
+    },
+    status: "available"
+>>>>>>> Stashed changes:frontend/src/services/itemService.js
   }),
 
   createItem({
@@ -55,15 +80,22 @@ const MOCK_ITEMS = [
     title: "Ergonomic Baby Carrier",
     price: 89.99,
     size: "Adjustable",
-    condition: "Like New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
-    description:
-      "Comfortable baby carrier with lumbar support. Used only a few times.",
+    condition: "Like New", 
+    imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
+    description: "Comfortable baby carrier with lumbar support and padded shoulder straps. Multiple carrying positions. Used only a few times before baby preferred the stroller. Includes instruction manual.",
     sellerId: "seller4",
     sellerName: "Jennifer L.",
     category: "Gear",
     ageRange: "0-3 months",
+    location: "Mountain View, CA",
+    seller: {
+      name: "Jennifer L.",
+      email: "jennifer.lopez@email.com",
+      phone: "(650) 555-0456", 
+      rating: 4.7,
+      joinDate: "2023-02-18"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -72,13 +104,21 @@ const MOCK_ITEMS = [
     price: 22.0,
     size: "6-12 months",
     condition: "Good",
-    imageUrl:
-      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
-    description: "Cute striped romper in blue and white. Perfect for summer.",
-    sellerId: "seller1",
+    imageUrl: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
+    description: "Cute striped romper in blue and white. Perfect for summer outings. 100% cotton, easy snap closures. Shows normal wear but no stains or holes.",
+    sellerId: "seller1", 
     sellerName: "Emma K.",
     category: "Clothing",
     ageRange: "6-12 months",
+    location: "Fremont, CA",
+    seller: {
+      name: "Emma K.",
+      email: "emma.k@email.com",
+      phone: "(510) 555-0123",
+      rating: 4.8,
+      joinDate: "2023-06-15"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -88,12 +128,20 @@ const MOCK_ITEMS = [
     size: "Medium",
     condition: "Good",
     imageUrl: "https://images.unsplash.com/photo-1551798507-629020c74c8e?w=400",
-    description:
-      "Cuddly brown teddy bear, well-loved but clean. Great bedtime companion.",
+    description: "Cuddly brown teddy bear, well-loved but clean. Great bedtime companion. Machine washable, hypoallergenic stuffing. Perfect for snuggling and comfort.",
     sellerId: "seller5",
     sellerName: "Amy T.",
-    category: "Toys",
+    category: "Toys", 
     ageRange: "0-3 months",
+    location: "Sunnyvale, CA",
+    seller: {
+      name: "Amy T.",
+      email: "amy.thompson@email.com",
+      phone: "(408) 555-0567",
+      rating: 4.5,
+      joinDate: "2023-07-03"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -102,14 +150,21 @@ const MOCK_ITEMS = [
     price: 8.5,
     size: "One Size",
     condition: "Fair",
-    imageUrl:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
-    description:
-      "Interactive book with simple words and pictures. Some page corners bent.",
+    imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
+    description: "Interactive book with simple words and bright pictures. Some page corners are bent from enthusiastic little readers, but all pages intact and readable.",
     sellerId: "seller2",
     sellerName: "Sarah M.",
     category: "Books",
     ageRange: "12-18 months",
+    location: "San Jose, CA",
+    seller: {
+      name: "Sarah M.",
+      email: "sarah.martinez@email.com",
+      phone: "(408) 555-0234",
+      rating: 4.9,
+      joinDate: "2023-04-22"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -118,14 +173,21 @@ const MOCK_ITEMS = [
     price: 125.0,
     size: "Standard",
     condition: "Good",
-    imageUrl:
-      "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400",
-    description:
-      "Grows with your child! Converts to toddler chair. Minor scratches.",
+    imageUrl: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400",
+    description: "Grows with your child! Converts from high chair to toddler chair and booster. Minor scratches on legs but fully functional. Tray and safety straps included.",
     sellerId: "seller6",
     sellerName: "David R.",
     category: "Gear",
     ageRange: "6-12 months",
+    location: "Newark, CA",
+    seller: {
+      name: "David R.",
+      email: "david.rodriguez@email.com",
+      phone: "(510) 555-0678",
+      rating: 4.4,
+      joinDate: "2023-05-11"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -134,14 +196,21 @@ const MOCK_ITEMS = [
     price: 16.75,
     size: "18-24 months",
     condition: "Like New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519689373023-dd07c7988bb4?w=400",
-    description:
-      "Adorable dinosaur print pajamas. Worn only twice, outgrown quickly.",
+    imageUrl: "https://images.unsplash.com/photo-1519689373023-dd07c7988bb4?w=400",
+    description: "Adorable dinosaur print pajamas in soft fleece. Worn only twice before being outgrown. Perfect for cold nights, flame-resistant fabric.",
     sellerId: "seller7",
     sellerName: "Lisa W.",
     category: "Clothing",
     ageRange: "18-24 months",
+    location: "Milpitas, CA",
+    seller: {
+      name: "Lisa W.",
+      email: "lisa.wong@email.com",
+      phone: "(408) 555-0789",
+      rating: 4.6,
+      joinDate: "2023-03-07"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -151,12 +220,20 @@ const MOCK_ITEMS = [
     size: "Large",
     condition: "Good",
     imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
-    description:
-      "Colorful play mat with hanging toys and music. Battery compartment works well.",
+    description: "Colorful play mat with hanging toys and music. Battery compartment works well, includes classical music and nature sounds. Folds flat for storage.",
     sellerId: "seller8",
     sellerName: "Rachel P.",
     category: "Toys",
     ageRange: "0-3 months",
+    location: "Union City, CA",
+    seller: {
+      name: "Rachel P.",
+      email: "rachel.patel@email.com",
+      phone: "(510) 555-0890",
+      rating: 4.8,
+      joinDate: "2023-01-25"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -165,14 +242,21 @@ const MOCK_ITEMS = [
     price: 11.25,
     size: "One Size",
     condition: "New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
-    description:
-      "Brand new flashcards for learning ABCs. Bright colors and fun illustrations.",
+    imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
+    description: "Brand new flashcards for learning ABCs. Bright colors and fun illustrations. Double-sided cards with letters and corresponding objects. Still in original packaging.",
     sellerId: "seller9",
     sellerName: "Kevin H.",
     category: "Books",
     ageRange: "2-3 years",
+    location: "Hayward, CA",
+    seller: {
+      name: "Kevin H.",
+      email: "kevin.harris@email.com",
+      phone: "(510) 555-0901",
+      rating: 4.3,
+      joinDate: "2023-09-12"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -181,14 +265,21 @@ const MOCK_ITEMS = [
     price: 24.5,
     size: "12-18 months",
     condition: "Like New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519689373023-dd07c7988bb4?w=400",
-    description:
-      "Trendy denim overall dress with flower embroidery. Perfect condition.",
+    imageUrl: "https://images.unsplash.com/photo-1519689373023-dd07c7988bb4?w=400",
+    description: "Trendy denim overall dress with delicate flower embroidery. Perfect condition with adjustable straps. Pairs great with any shirt underneath.",
     sellerId: "seller10",
     sellerName: "Maria S.",
-    category: "Clothing",
+    category: "Clothing", 
     ageRange: "12-18 months",
+    location: "San Leandro, CA",
+    seller: {
+      name: "Maria S.",
+      email: "maria.silva@email.com",
+      phone: "(510) 555-1012",
+      rating: 4.9,
+      joinDate: "2023-06-30"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -198,12 +289,20 @@ const MOCK_ITEMS = [
     size: "Standard",
     condition: "Good",
     imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
-    description:
-      "Compact fold stroller, great for travel. One wheel needs minor adjustment.",
+    description: "Compact fold stroller, great for travel and public transport. One wheel needs minor adjustment but doesn't affect functionality. Includes cup holder and storage basket.",
     sellerId: "seller4",
     sellerName: "Jennifer L.",
     category: "Gear",
     ageRange: "3-6 months",
+    location: "Mountain View, CA",
+    seller: {
+      name: "Jennifer L.",
+      email: "jennifer.lopez@email.com",
+      phone: "(650) 555-0456",
+      rating: 4.7,
+      joinDate: "2023-02-18"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -213,12 +312,20 @@ const MOCK_ITEMS = [
     size: "Medium",
     condition: "Like New",
     imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
-    description:
-      "Educational toy for learning shapes and colors. All pieces included.",
+    description: "Educational toy for learning shapes and colors. All 12 pieces included. Helps develop fine motor skills and problem-solving. Durable plastic construction.",
     sellerId: "seller11",
     sellerName: "Tom B.",
     category: "Toys",
     ageRange: "12-18 months",
+    location: "Castro Valley, CA",
+    seller: {
+      name: "Tom B.",
+      email: "tom.brown@email.com",
+      phone: "(510) 555-1123",
+      rating: 4.2,
+      joinDate: "2023-08-14"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -227,14 +334,21 @@ const MOCK_ITEMS = [
     price: 14.0,
     size: "One Size",
     condition: "Good",
-    imageUrl:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
-    description:
-      "Classic nursery rhymes with beautiful illustrations. Some normal wear.",
+    imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
+    description: "Classic nursery rhymes with beautiful watercolor illustrations. Some normal wear on cover but all pages in good condition. Perfect for bedtime reading.",
     sellerId: "seller12",
     sellerName: "Nancy C.",
     category: "Books",
     ageRange: "18-24 months",
+    location: "Dublin, CA",
+    seller: {
+      name: "Nancy C.",
+      email: "nancy.chen@email.com",
+      phone: "(925) 555-1234",
+      rating: 4.7,
+      joinDate: "2023-04-05"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -243,14 +357,21 @@ const MOCK_ITEMS = [
     price: 28.99,
     size: "One Size",
     condition: "New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400",
-    description:
-      "Set of 3 hooded towels with cute animal faces. Perfect baby shower gift.",
+    imageUrl: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400",
+    description: "Set of 3 hooded towels with cute animal faces - lion, elephant, and monkey. Perfect baby shower gift. Super absorbent and soft cotton material. Never used.",
     sellerId: "seller13",
     sellerName: "Carol F.",
     category: "Other",
     ageRange: "0-3 months",
+    location: "Pleasanton, CA",
+    seller: {
+      name: "Carol F.",
+      email: "carol.foster@email.com",
+      phone: "(925) 555-2345",
+      rating: 4.5,
+      joinDate: "2023-07-20"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -259,14 +380,21 @@ const MOCK_ITEMS = [
     price: 32.5,
     size: "2-3 years",
     condition: "Like New",
-    imageUrl:
-      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
-    description:
-      "Hand-knit yellow sweater with button front. Grandma-made with love.",
-    sellerId: "seller14",
+    imageUrl: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
+    description: "Hand-knit yellow sweater with button front closure. Made with love by grandma using soft acrylic yarn. Machine washable, perfect for fall and winter.",
+    sellerId: "seller14", 
     sellerName: "Betty M.",
     category: "Clothing",
     ageRange: "2-3 years",
+    location: "Livermore, CA",
+    seller: {
+      name: "Betty M.",
+      email: "betty.miller@email.com",
+      phone: "(925) 555-3456",
+      rating: 4.9,
+      joinDate: "2023-01-15"
+    },
+    status: "available"
   }),
 
   createItem({
@@ -276,13 +404,21 @@ const MOCK_ITEMS = [
     size: "Medium",
     condition: "Good",
     imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
-    description:
-      "Classic wooden duck on wheels. Encourages walking and coordination.",
+    description: "Classic wooden duck on wheels with pull string. Encourages walking and coordination. Natural wood finish with bright yellow paint. String is 18 inches long.",
     sellerId: "seller15",
     sellerName: "Paul G.",
     category: "Toys",
     ageRange: "12-18 months",
-  }),
+    location: "Alameda, CA",
+    seller: {
+      name: "Paul G.",
+      email: "paul.garcia@email.com",
+      phone: "(510) 555-4567",
+      rating: 4.4,
+      joinDate: "2023-05-28"
+    },
+    status: "available"
+  })
 ];
 
 // ===== SERVICE FUNCTIONS =====

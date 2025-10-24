@@ -2,8 +2,12 @@
 import styles from "./ItemCard.module.css";
 import { useState } from "react";
 import Image from "next/image";
+import styles from './ItemCard.module.css'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ItemCard({ item }) {
+  const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -48,8 +52,19 @@ export default function ItemCard({ item }) {
     }
   };
 
+  const handleItemClick = () => {
+    console.log('Navigating to:', `/items/${item.id}`); 
+    console.log('Item ID:', item.id); 
+    router.push(`/Items/${item.id}`);
+  };
+
   return (
-    <div className={styles.card}>
+    <div 
+    className={styles.card}
+    onClick={handleItemClick}
+    style={{ cursor: 'pointer' }}
+    >
+
       {/* Image Container */}
       <div className={styles.imageContainer}>
         {!imageLoaded && (
