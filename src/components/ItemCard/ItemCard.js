@@ -2,8 +2,6 @@
 import styles from "./ItemCard.module.css";
 import { useState } from "react";
 import Image from "next/image";
-import styles from './ItemCard.module.css'
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ItemCard({ item }) {

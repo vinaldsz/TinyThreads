@@ -61,8 +61,6 @@ const MOCK_ITEMS = [
     sellerName: "Mike D.",
     category: "Toys",
     ageRange: "6-12 months",
- Updated upstream:src/services/itemService.js
-=======
     location: "Palo Alto, CA",
     seller: {
       name: "Mike D.",
@@ -72,7 +70,6 @@ const MOCK_ITEMS = [
       joinDate: "2023-08-10"
     },
     status: "available"
->>>>>>> Stashed changes:frontend/src/services/itemService.js
   }),
 
   createItem({
