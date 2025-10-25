@@ -1,0 +1,112 @@
+/* src/app/page.module.css */
+.page {
+  min-height: 100vh;
+  background: var(--gray-50);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+/* ===== HEADER SECTION - Logo + Title ===== */
+.headerSection {
+  margin-bottom: var(--space-8);
+  text-align: center;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.logo {
+  font-size: var(--font-size-4xl);
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+/* ===== CONTROL SECTION - Search + Filter + Sort ===== */
+.controlSection {
+  background: var(--white);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-6);
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Prepare for sticky border effect */
+.controlSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gray-200);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.controlSection.sticky::before {
+  opacity: 1;
+}
+
+/* ===== design of child components will go here ===== */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--space-4);
+  }
+  
+  .headerSection {
+    margin-bottom: var(--space-6);
+  }
+  
+  .title {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .logo {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .controlSection {
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--space-3);
+  }
+  
+  .logoContainer {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .logo {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .controlSection {
+    border-radius: var(--radius-lg);
+  }
+}
