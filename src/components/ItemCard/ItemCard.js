@@ -132,7 +132,7 @@ export default function ItemCard({ item }) {
         <div className={styles.sellerInfo}>
           <div className={styles.seller}>
             <div className={styles.sellerAvatar}>
-              {item.sellerName.charAt(0)}
+              {item.sellerName}
             </div>
             <span>by {item.sellerName}</span>
           </div>

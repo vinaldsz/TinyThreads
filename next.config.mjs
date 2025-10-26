@@ -13,6 +13,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "tinythreads-s3-bucket.s3.us-east-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
     // Alternatively you can use `domains: ['images.unsplash.com']` if you prefer
   },
