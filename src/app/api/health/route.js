@@ -1,24 +1,19 @@
-// src/app/api/health/route.js
-import { NextResponse } from "next/server";
-// If you DON'T have "@/lib" path alias, use: import clientPromise from "../../lib/mongodb";
 import clientPromise from "@/lib/mongodb";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || "tinythreads");
-    // ping the DB
-    await db.command({ ping: 1 });
+    const db = client.db("tinythreads");
+    const collections = await db.listCollections().toArray();
 
-    return NextResponse.json(
-      { ok: true, db: db.databaseName },
-      { status: 200 }
-    );
-  } catch (err) {
-    console.error("Health check failed:", err);
-    return NextResponse.json(
-      { ok: false, error: err.message },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      success: true,
+      message: "Connected to MongoDB successfully!",
+      collections: collections.map(c => c.name),
+    });
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

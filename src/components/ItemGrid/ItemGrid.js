@@ -64,8 +64,11 @@ export default function ItemGrid({
 
   return (
     <div className={styles.container}>
-      {/* Items Count */}
-      <div className={styles.itemsCount}>Showing {items.length} items</div>
+      {/* Items Header */}
+      <div className={styles.itemsHeader}>
+        <div className={styles.itemsCount}>Showing {items.length} items</div>
+        <a href="/add-listing" className={styles.addListingBtn}>＋ Add listing</a>
+      </div>
 
       {/* Grid */}
       <div className={styles.grid}>
