@@ -19,29 +19,26 @@ export async function uploadListingAction(formData) {
   const status = "available";
   const description = formData.get("description");
 
-  const files = formData.getAll("images"); // File[] if multiple selected
-  const imageFiles = files.filter(f => typeof f !== "string" && f && f.arrayBuffer);
-  if (imageFiles.length === 0) {
-    throw new Error("At least one image is required");
+  const file = formData.get("image");
+  // Do not enforce size on the server; client will validate and block submit.
+  // If somehow no file arrives, just redirect back without error.
+  if (!file || typeof file === "string" || !file.arrayBuffer) {
+    redirect("/add-listing");
   }
 
-  const uploaded = [];
-  for (const f of imageFiles) {
-    const { imageUrl } = await uploadImageToS3(f, { folder: "items", filenamePrefix: "item" });
-    uploaded.push(imageUrl);
-  }
+  const { imageUrl } = await uploadImageToS3(file, { folder: "items", filenamePrefix: "item" });
 
   // Save listing to MongoDB with imageUrls
   const clientPromise = (await import("@/lib/mongodb")).default;
   const client = await clientPromise;
-  const db = client.db("tinythreads");
+  const db = client.db("TinyThreads");
 
   const doc = {
     title: String(title),
     price: Number(price),
     size: size ? String(size) : "",
     condition: String(condition),
-    imageUrls: uploaded,
+    imageUrls: [imageUrl],
     description: description ? String(description) : "",
     sellerId: String(sellerId),
     category: String(category),
@@ -51,13 +48,14 @@ export async function uploadListingAction(formData) {
     createdAt: new Date(),
   };
 
-  await db.collection("listings").insertOne(doc);
+  await db.collection("Listings").insertOne(doc);
 
   // Redirect back to home or a success page
   redirect("/");
 }
 
 export default function AddListingPage() {
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
@@ -71,7 +69,7 @@ export default function AddListingPage() {
 
         {/* Form Section */}
         <section className={styles.formSection}>
-          <form className={styles.listingForm} action={uploadListingAction}>
+          <form id="addListingForm" className={styles.listingForm} action={uploadListingAction}>
             <div className={styles.formGroup}>
               <label htmlFor="title">Title</label>
               <input id="title" name="title" type="text" placeholder="e.g. Organic Cotton Onesie - Pink" required />
@@ -123,9 +121,14 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="images">Upload Images</label>
-              <input id="images" name="images" type="file" accept="image/*" multiple required />
-              <small>You can select multiple images.</small>
+              <label htmlFor="image">Upload Image</label>
+              <input
+                id="image"
+                name="image"
+                type="file"
+                accept="image/*"
+                required
+              />
             </div>
 
             <div className={styles.formGroup}>
