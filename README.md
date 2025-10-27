@@ -214,7 +214,8 @@ If GitHub reports the branches have no common history, recreate a branch from `m
 - public/
   - Static assets (SVG icons)
 - docs/
-  - Documentation files
+  - `Sprint Planning Artifacts.pdf` — Effort Planning, MVP Planning, Daily Standup meeting notes
+  - `sprint-evidence.md` - Detailed sprint details.
 
 ## Contributing
 
