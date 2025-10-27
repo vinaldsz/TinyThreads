@@ -1,28 +1,28 @@
 # Sprint Evidence — Sprint 1
 
-This document captures the sprint planning artifacts, execution evidence, SCRUM ceremonies, and the Working MVP deliverable required by the rubric. Fill in the items below with links, dates, screenshots and short notes. Use this as the canonical sprint evidence file and link it from the README and Project board.
+This document captures the sprint planning artifacts, execution evidence, SCRUM ceremonies, and the Working MVP deliverable required by the rubric. 
 
 ---
 
 ## Quick checklist (submission)
 
-- [.] Sprint Goal in GitHub Milestone or Project description
-- [.] GitHub Projects board configured with Sprint 1 items
-- [.] All Sprint 1 issues show status transition history (visible in issue activity)
-- [.] Minimum 3 standup logs with dates and issue references
-- [x] Sprint Review notes with Product Owner (professor) feedback
-- [.] Retrospective document with velocity and action items
-- [.] Live MVP URL or clear access instructions in README
-- [.] MVP description with value proposition
-- [.] Git history shows multiple commits from all team members
-- [.] All committed issues closed with linked PRs/commits
-- [.] Evidence of Product Owner engagement throughout sprint
+- [x] Sprint Goal in GitHub Milestone or Project description
+- [x] GitHub Projects board configured with Sprint 1 items
+- [x] All Sprint 1 issues show status transition history (visible in issue activity)
+- [x] Minimum 3 standup logs with dates and issue references
+- [ ] Sprint Review notes with Product Owner (professor) feedback
+- [x] Retrospective document with velocity and action items
+- [x] Live MVP URL or clear access instructions in README
+- [x] MVP description with value proposition
+- [x] Git history shows multiple commits from all team members
+- [x] All committed issues closed with linked PRs/commits
+- [x] Evidence of Product Owner engagement throughout sprint
 
 ---
 
-# Section 1 — Sprint Planning Artifacts (25 points)
+# Section 1 — Sprint Planning Artifacts
 
-## Sprint Goal (10 points)
+## Sprint Goal
 
 - Sprint Goal:
   - Sprint Goal: 60‑second listing marketplace
@@ -30,7 +30,7 @@ This document captures the sprint planning artifacts, execution evidence, SCRUM 
     - Milestones: https://github.com/vinaldsz/TinyThreads/milestones
     - Projects: https://github.com/vinaldsz/TinyThreads/projects
 
-## Sprint Backlog (10 points)
+## Sprint Backlog
 
 - GitHub Project / Board link:
   - Repository Projects: https://github.com/vinaldsz/TinyThreads/projects
@@ -82,13 +82,13 @@ This document captures the sprint planning artifacts, execution evidence, SCRUM 
       3. Given the user submits the form, when the listing is created, then it should display correctly in both the user’s listings and public search results with all entered details.
       4. Given any required information is missing, when the user tries to submit, then the system should prevent submission and highlight missing fields.
 
-## Sprint Planning Meeting Summary (5 points)
+## Sprint Planning Meeting Summary
 
 Refer to `Sprint Planning Artifacts.pdf` in the repo.
 
 ---
 
-# Section 2 — Sprint Execution Evidence (20 points)
+# Section 2 — Sprint Execution Evidence
 
 ## Issue Completion (10 points)
 
@@ -97,24 +97,24 @@ For each committed backlog issue include:
 - Issue #26 — Documentation and GitHub Related Activities
   - Status progression:
     - Created: see issue timeline — https://github.com/vinaldsz/TinyThreads/issues/26
-      ![alt text](public/image.png)
+      ![alt text](../public/image.png)
 - Issue #20 — Create MongoDB Atlas Database
   - Issue: https://github.com/vinaldsz/TinyThreads/issues/20
-    ![alt text](public/image-1.png)
+    ![alt text](../public/image-1.png)
 - Issue #1 — Browse SecondHand Baby clothes and items
   - Issue: https://github.com/vinaldsz/TinyThreads/issues/1
-    ![alt text](public/image-2.png)
+    ![alt text](../public/image-2.png)
 - Issue #22 — Set Up Backend - Node.js + Express
   - Issue: https://github.com/vinaldsz/TinyThreads/issues/22
-    ![alt text](public/image-3.png)
+    ![alt text](../public/image-3.png)
 - Issue #21 — Configure AWS s3 Object Storage
   - Issue: https://github.com/vinaldsz/TinyThreads/issues/21
-    ![alt text](public/image-4.png)
+    ![alt text](../public/image-4.png)
 - Issue #2 — Quick listing creation for outgrown baby clothes
   - Issue: https://github.com/vinaldsz/TinyThreads/issues/2
-    ![alt text](public/image-5.png)
+    ![alt text](../public/image-5.png)
 
-## Git History & Issue Tracking (10 points)
+## Git History & Issue Tracking
 
 - Incremental development evidence:
   - Representative branches:
@@ -152,7 +152,7 @@ For each committed backlog issue include:
 - Demo evidence:
   - Recorded Demo: [(https://teams.microsoft.com/l/meetingrecap?driveId=b%21i7p5KKti8Eeh1Q0UcFDQV_6nR1NNdbZLhlYhutwUq0vT5egkiiKOR7O5TjP2Razz&driveItemId=0122HFCPUOPIBNFUNDZJFZHA4XWZ7GWRLC&sitePath=https%3A%2F%2Fnortheastern-my.sharepoint.com%2Fpersonal%2Fdsouza_vi_northeastern_edu%2FDocuments%2FRecordings%2FSprint%2520Review%2520%2B%2520Sprint%2520Retrospective-20251026_185007-Meeting%2520Recording.mp4&fileUrl=https%3A%2F%2Fnortheastern-my.sharepoint.com%2Fpersonal%2Fdsouza_vi_northeastern_edu%2FDocuments%2FRecordings%2FSprint%2520Review%2520%2B%2520Sprint%2520Retrospective-20251026_185007-Meeting%2520Recording.mp4&iCalUid=040000008200E00074C5B7101A82E008000000009B29A366D346DC010000000000000000100000009D01CCB49175F54BB5685C3090F807C2&threadId=19%3Ameeting_ZDUwYTJhNWUtNDE3ZS00ZWI1LTgyODEtZGEwODM5ZTE1ODI5%40thread.v2&organizerId=3570b866-e7ce-4147-bcd9-8350e2a97a98&tenantId=a8eec281-aaa3-4dae-ac9b-9a398b9215e7&callId=4bb0dec7-e647-4a9b-8ff2-67aa331fad62&threadType=Meeting&meetingType=Scheduled&subType=RecapSharingLink_RecapCore)]
   - Live URL: [(https://tiny-threads-ten.vercel.app)]
-- Product Owner feedback (capture verbatim if possible)
+- Product Owner feedback (capture verbatim if possible) : Awaiting feedback
 - Which items accepted or not:
   - Accepted: [issue numbers]
   - Not accepted: [issue numbers]
@@ -269,6 +269,19 @@ How TinyThreads MVP adds value:
   - Demo Link: [https://teams.microsoft.com/l/meetingrecap?driveId=b%21i7p5KKti8Eeh1Q0UcFDQV_6nR1NNdbZLhlYhutwUq0vT5egkiiKOR7O5TjP2Razz&driveItemId=0122HFCPUOPIBNFUNDZJFZHA4XWZ7GWRLC&sitePath=https%3A%2F%2Fnortheastern-my.sharepoint.com%2F%3Av%3A%2Fg%2Fpersonal%2Fdsouza_vi_northeastern_edu%2FEY56AtLRo8pLk4OXtn5rRWIBWPWKNShgsVCj3EGsG_7Naw&fileUrl=https%3A%2F%2Fnortheastern-my.sharepoint.com%2Fpersonal%2Fdsouza_vi_northeastern_edu%2FDocuments%2FRecordings%2FSprint%2520Review%2520%2B%2520Sprint%2520Retrospective-20251026_185007-Meeting%2520Recording.mp4%3Fweb%3D1&iCalUid=040000008200E00074C5B7101A82E008000000009B29A366D346DC010000000000000000100000009D01CCB49175F54BB5685C3090F807C2&threadId=19%3Ameeting_ZDUwYTJhNWUtNDE3ZS00ZWI1LTgyODEtZGEwODM5ZTE1ODI5%40thread.v2&organizerId=3570b866-e7ce-4147-bcd9-8350e2a97a98&tenantId=a8eec281-aaa3-4dae-ac9b-9a398b9215e7&callId=4bb0dec7-e647-4a9b-8ff2-67aa331fad62&threadType=Meeting&meetingType=Scheduled&subType=RecapSharingLink_RecapCore]
 
 ---
+
+## Issue Change History in Github Projects
+
+- Burn Up chart
+  <img width="978" height="701" alt="image" src="https://github.com/user-attachments/assets/3cea4212-216f-413a-b86b-b643b1d67ab2" />
+
+- Project Board Status Chart
+  <img width="930" height="611" alt="image" src="https://github.com/user-attachments/assets/9cfdbf28-d2a6-4b56-8f9b-99e870107d9a" />
+
+Note: In Progress item is the Documentation Issue which would be complete after the updation of the current documentation.
+
+- Pulse Summary
+  <img width="1129" height="676" alt="image" src="https://github.com/user-attachments/assets/630b85f3-8eb3-4012-b5d5-4f9d7922bec0" />
 
 # Documentation Quality
 
