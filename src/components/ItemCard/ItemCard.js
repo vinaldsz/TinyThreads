@@ -127,9 +127,8 @@ export default function ItemCard({ item }) {
 
         {/* Description */}
         <p className={styles.description}>{item.description}</p>
-
-        {/* Seller Info */}
-        <div className={styles.sellerInfo}>
+      {/* Seller Info */}
+        {/* <div className={styles.sellerInfo}>
           <div className={styles.seller}>
             <div className={styles.sellerAvatar}>
               {item.sellerName}
@@ -137,7 +136,7 @@ export default function ItemCard({ item }) {
             <span>by {item.sellerName}</span>
           </div>
         </div>
-
+        */}
         {/* Action Button */}
         <button className={styles.viewButton}>View Details</button>
       </div>
