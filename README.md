@@ -85,6 +85,9 @@ S3_PUBLIC_BASE=https://tinythreads-s3-bucket.s3.us-east-1.amazonaws.com
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID_HERE
 AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY_HERE
+
+MONGODB_URI=mongodb+srv://<db-username>:<db-password>@TinyThreads.houabd4.mongodb.net/tinythreads?retryWrites=true&w=majority&appName=TinyThreads
+NODE_ENV=development
 ```
 
 - If you do not plan to test S3 endpoints, you may omit the AWS variables; the app will throw if code paths that require AWS are executed.
