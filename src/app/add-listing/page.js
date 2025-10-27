@@ -82,6 +82,7 @@ export default function AddListingPage() {
                 <option value="clothing">Clothing</option>
                 <option value="toys">Toys</option>
                 <option value="books">Books</option>
+                <option value="gear">Baby Gear</option>
               </select>
             </div>
 
@@ -112,6 +113,7 @@ export default function AddListingPage() {
                 <option value="new">New</option>
                 <option value="like-new">Like New</option>
                 <option value="good">Good</option>
+                <option value="fair">Fair</option>
               </select>
             </div>
 
