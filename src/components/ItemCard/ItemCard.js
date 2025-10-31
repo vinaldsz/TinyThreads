@@ -2,7 +2,7 @@
 import styles from "./ItemCard.module.css";
 import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function ItemCard({ item }) {
   const router = useRouter();
@@ -51,18 +51,17 @@ export default function ItemCard({ item }) {
   };
 
   const handleItemClick = () => {
-    console.log('Navigating to:', `/items/${item.id}`); 
-    console.log('Item ID:', item.id); 
+    console.log("Navigating to:", `/items/${item.id}`);
+    console.log("Item ID:", item.id);
     router.push(`/Items/${item.id}`);
   };
 
   return (
-    <div 
-    className={styles.card}
-    onClick={handleItemClick}
-    style={{ cursor: 'pointer' }}
+    <div
+      className={styles.card}
+      onClick={handleItemClick}
+      style={{ cursor: "pointer" }}
     >
-
       {/* Image Container */}
       <div className={styles.imageContainer}>
         {!imageLoaded && (
@@ -127,7 +126,7 @@ export default function ItemCard({ item }) {
 
         {/* Description */}
         <p className={styles.description}>{item.description}</p>
-      {/* Seller Info */}
+        {/* Seller Info */}
         {/* <div className={styles.sellerInfo}>
           <div className={styles.seller}>
             <div className={styles.sellerAvatar}>
