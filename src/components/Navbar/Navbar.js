@@ -1,4 +1,5 @@
 import styles from "./Navbar.module.css";
+import Image from "next/image";
 
 export default function Navbar() {
   return (
@@ -10,10 +11,12 @@ export default function Navbar() {
       {/* brand sits outside the centered .inner so it can be flush to the viewport left */}
       <div className={styles.brandWrapper}>
         <div className={styles.brand}>
-          <img
+          <Image
             src="/TinyThreadsScribble.png"
             alt="TinyThreads"
             className={styles.brandLogo}
+            width={400}
+            height={400}
           />
         </div>
       </div>
