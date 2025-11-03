@@ -1,6 +1,7 @@
 // src/app/add-listing/page.js
 import Link from "next/link";
 import styles from "./page.module.css";
+import Navbar from "@/components/Navbar/Navbar";
 import { redirect } from "next/navigation";
 import { uploadImageToS3 } from "@/lib/awss3.js";
 
@@ -26,7 +27,10 @@ export async function uploadListingAction(formData) {
     redirect("/add-listing");
   }
 
-  const { imageUrl } = await uploadImageToS3(file, { folder: "items", filenamePrefix: "item" });
+  const { imageUrl } = await uploadImageToS3(file, {
+    folder: "items",
+    filenamePrefix: "item",
+  });
 
   // Save listing to MongoDB with imageUrls
   const clientPromise = (await import("@/lib/mongodb")).default;
@@ -55,24 +59,26 @@ export async function uploadListingAction(formData) {
 }
 
 export default function AddListingPage() {
-
   return (
     <div className={styles.page}>
+      <Navbar />
       <div className={styles.container}>
-        {/* Header */}
-        <section className={styles.headerSection}>
-          <div className={styles.logoContainer}>
-            <span className={styles.logo}>👶</span>
-            <h1 className={styles.title}>Add New Listing</h1>
-          </div>
-        </section>
-
         {/* Form Section */}
         <section className={styles.formSection}>
-          <form id="addListingForm" className={styles.listingForm} action={uploadListingAction}>
+          <form
+            id="addListingForm"
+            className={styles.listingForm}
+            action={uploadListingAction}
+          >
             <div className={styles.formGroup}>
               <label htmlFor="title">Title</label>
-              <input id="title" name="title" type="text" placeholder="e.g. Organic Cotton Onesie - Pink" required />
+              <input
+                id="title"
+                name="title"
+                type="text"
+                placeholder="e.g. Organic Cotton Onesie - Pink"
+                required
+              />
             </div>
 
             <div className={styles.formGroup}>
@@ -88,22 +94,42 @@ export default function AddListingPage() {
 
             <div className={styles.formGroup}>
               <label htmlFor="size">Size</label>
-              <input id="size" name="size" type="text" placeholder="e.g. 0-3 months" />
+              <input
+                id="size"
+                name="size"
+                type="text"
+                placeholder="e.g. 0-3 months"
+              />
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="ageRange">Age Range</label>
-              <input id="ageRange" name="ageRange" type="text" placeholder="e.g. 0-3 months" />
+              <input
+                id="ageRange"
+                name="ageRange"
+                type="text"
+                placeholder="e.g. 0-3 months"
+              />
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="location">Location</label>
-              <input id="location" name="location" type="text" placeholder="City, State (e.g., Fremont, CA)" />
+              <input
+                id="location"
+                name="location"
+                type="text"
+                placeholder="City, State (e.g., Fremont, CA)"
+              />
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="sellerId">Seller ID</label>
-              <input id="sellerId" name="sellerId" type="text" placeholder="seller1" />
+              <input
+                id="sellerId"
+                name="sellerId"
+                type="text"
+                placeholder="seller1"
+              />
             </div>
 
             <div className={styles.formGroup}>
@@ -119,7 +145,15 @@ export default function AddListingPage() {
 
             <div className={styles.formGroup}>
               <label htmlFor="price">Price ($)</label>
-              <input id="price" name="price" type="number" min="0" step="0.01" placeholder="e.g. 20.00" required />
+              <input
+                id="price"
+                name="price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 20.00"
+                required
+              />
             </div>
 
             <div className={styles.formGroup}>
@@ -135,12 +169,21 @@ export default function AddListingPage() {
 
             <div className={styles.formGroup}>
               <label htmlFor="description">Description</label>
-              <textarea id="description" name="description" placeholder="Add a short description of the item..." rows="4"></textarea>
+              <textarea
+                id="description"
+                name="description"
+                placeholder="Add a short description of the item..."
+                rows="4"
+              ></textarea>
             </div>
 
             <div className={styles.actions}>
-              <button type="submit" className={styles.submitBtn}>Add Listing</button>
-              <Link href="/" className={styles.cancelBtn}>Cancel</Link>
+              <button type="submit" className={styles.submitBtn}>
+                Add Listing
+              </button>
+              <Link href="/" className={styles.cancelBtn}>
+                Cancel
+              </Link>
             </div>
           </form>
         </section>
