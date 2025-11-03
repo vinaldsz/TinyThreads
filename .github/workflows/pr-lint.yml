@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-# single job that installs dependencies and runs lint
+# single job that installs dependencies & runs lint
 jobs:
   lint:
     name: Run ESLint (npm run lint)
