@@ -5,6 +5,7 @@ import styles from './page.module.css';
 import FilterBar from '@/components/FilterBar/FilterBar';
 import ItemGrid from '@/components/ItemGrid/ItemGrid';
 import { getItems, filterItems } from '@/services/itemService';
+import Link from 'next/link';
 
 export default function BrowsePage() {
   const [items, setItems] = useState([]);
@@ -66,6 +67,9 @@ export default function BrowsePage() {
             <span className={styles.logo}>👶</span>
             <h1 className={styles.title}>TinyThreads</h1>
           </div>
+          <nav className={styles.nav}>
+            <Link href="/about" className={styles.aboutLink}>About</Link>
+          </nav>
         </section>
         
         {/* Control Section - search + filter + sort */}

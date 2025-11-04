@@ -1,0 +1,28 @@
+.card {
+    text-align: center;
+    padding: 1.5rem;
+  }
+  
+  .avatar {
+    border-radius: 50%;
+    margin-bottom: 1rem;
+  }
+  
+  .name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .role {
+    color: #8B5CF6;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  
+  .description {
+    color: #666;
+    line-height: 1.5;
+    font-size: 0.9rem;
+  }
