@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import clientPromise, { getDb } from "@/lib/mongodb";
+import { getDb } from "@/lib/mongodb";
 
 function escapeRegex(str) {
   return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
