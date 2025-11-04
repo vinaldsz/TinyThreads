@@ -26,19 +26,19 @@ export default function FilterBar({
   // Filter Options
   const categories = [
     { value: "", label: "All Categories" },
-    { value: "Clothing", label: "Clothing" },
-    { value: "Toys", label: "Toys" },
-    { value: "Books", label: "Books" },
-    { value: "Gear", label: "Baby Gear" },
-    { value: "Other", label: "Other" },
+    { value: "clothing", label: "Clothing" },
+    { value: "toys", label: "Toys" },
+    { value: "books", label: "Books" },
+    { value: "gear", label: "Baby Gear" },
+    { value: "other", label: "Other" },
   ];
 
   const conditions = [
     { value: "", label: "Any Condition" },
-    { value: "New", label: "New" },
-    { value: "Like New", label: "Like New" },
-    { value: "Good", label: "Good" },
-    { value: "Fair", label: "Fair" },
+    { value: "new", label: "New" },
+    { value: "like-new", label: "Like New" },
+    { value: "good", label: "Good" },
+    { value: "fair", label: "Fair" },
   ];
 
   const sortOptions = [

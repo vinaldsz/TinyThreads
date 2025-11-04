@@ -20,16 +20,36 @@ export default function ItemCard({ item }) {
 
   const getConditionClass = (condition) => {
     switch (condition) {
-      case "New":
+      case "new":
         return styles.conditionNew;
-      case "Like New":
+      case "like-new":
         return styles.conditionLikeNew;
-      case "Good":
+      case "good":
         return styles.conditionGood;
-      case "Fair":
+      case "fair":
         return styles.conditionFair;
       default:
         return styles.conditionDefault;
+    }
+  };
+
+  const getConditionLabel = (condition) => {
+    switch (condition) {
+      case "like-new":
+        return "Like New";
+      case "good":
+        return "Good";
+      case "new":
+        return "New";
+      case "fair":
+        return "Fair";
+      default:
+        // Fallback: try to prettify by replacing hyphens with spaces and title-casing
+        if (!condition) return "";
+        return condition
+          .split("-")
+          .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+          .join(" ");
     }
   };
 
@@ -103,7 +123,7 @@ export default function ItemCard({ item }) {
         {/* Condition Badge */}
         <div className={styles.conditionBadge}>
           <span className={getConditionClass(item.condition)}>
-            {item.condition}
+            {getConditionLabel(item.condition)}
           </span>
         </div>
       </div>

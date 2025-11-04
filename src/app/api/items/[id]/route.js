@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import { getDb } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 export async function GET(_, ctx) {
   try {
     const { id } = await ctx.params; // params is a Promise in this Next.js version
-    const client = await clientPromise;
-    const db = client.db("TinyThreads"); // exact DB name
-    const collection = db.collection("Listings"); // exact collection name
+    // use getDb so environment controls which DB we connect to
+    const db = await getDb();
+    const collection = db.collection("Listings");
 
     const _id = ObjectId.isValid(id) ? new ObjectId(id) : id;
     const item = await collection.findOne({ _id });

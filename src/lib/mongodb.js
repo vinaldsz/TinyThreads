@@ -24,3 +24,9 @@ if (process.env.NODE_ENV === "development") {
 }
 
 export default clientPromise;
+
+export async function getDb(dbName) {
+  const client = await clientPromise;
+  const name = dbName || process.env.MONGODB_DB || undefined;
+  return client.db(name);
+}
