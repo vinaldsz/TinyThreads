@@ -33,9 +33,8 @@ export async function uploadListingAction(formData) {
   });
 
   // Save listing to MongoDB with imageUrls
-  const clientPromise = (await import("@/lib/mongodb")).default;
-  const client = await clientPromise;
-  const db = client.db("TinyThreads");
+  const { getDb } = await import("@/lib/mongodb");
+  const db = await getDb();
 
   const doc = {
     title: String(title),

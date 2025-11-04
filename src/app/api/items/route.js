@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import clientPromise, { getDb } from "@/lib/mongodb";
 
 function escapeRegex(str) {
   return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 export async function GET(req) {
-  const client = await clientPromise;
-  const db = client.db("TinyThreads");
+  // prefer explicit DB from env (MONGODB_DB) or fall back to connection string default
+  const db = await getDb();
   const collection = db.collection("Listings");
   const { searchParams } = new URL(req.url);
 
