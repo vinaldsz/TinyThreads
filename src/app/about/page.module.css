@@ -172,3 +172,22 @@
     padding: 5rem 4rem;
   }
 }
+
+.backButton {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  text-decoration: none;  /* Remove underline from link */
+  padding: 8px 0;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  color: #333;
+}

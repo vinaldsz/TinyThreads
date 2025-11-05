@@ -1,9 +1,11 @@
+import Link from 'next/link'
 import styles from './page.module.css'
 import BeliefCard from './components/BeliefCard/BeliefCard'
 import TeamCard from './components/TeamCard/TeamCard'
 import JourneySection from './components/JourneySection/JourneySection'
 
 export default function AboutPage() {
+
   const beliefs = [
     {
       icon: "💝",
@@ -53,6 +55,10 @@ export default function AboutPage() {
 
   return (
     <div className={styles.aboutContainer}>
+      <Link href="/" className={styles.backButton}>
+        ← Back to Home
+      </Link>
+
       <section className={styles.heroSection}>
         <h1>Welcome to Our Story</h1>
         <h2>About Tiny Threads</h2>
