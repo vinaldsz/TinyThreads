@@ -24,8 +24,7 @@ const s3 = new S3Client({
   },
 });
 
-const PUBLIC_BASE =
-  S3_PUBLIC_BASE || `https://${S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com`;
+const PUBLIC_BASE = S3_PUBLIC_BASE;
 
 export function getPublicUrl(key) {
   return `${PUBLIC_BASE}/${key}`;

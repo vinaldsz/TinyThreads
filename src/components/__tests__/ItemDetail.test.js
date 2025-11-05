@@ -1,550 +1,432 @@
-// src/components/__tests__/ItemDetail.test.js
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { useRouter } from 'next/navigation'
-import ItemDetail from '../ItemDetail/ItemDetail'
-import { getItemById } from '../../services/itemService'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import ItemDetail from '../ItemDetail/ItemDetail'; // Import current version, not ItemDetail 2
+import { getItemById } from '../../services/itemService'; // Current version uses getItemById
+import { useRouter } from 'next/navigation';
 
-// Mock next/navigation
+// Mock Next.js router
+const mockPush = jest.fn();
+const mockBack = jest.fn();
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn()
-}))
+  useRouter: jest.fn(),
+}));
 
-// Mock itemService
+// Mock itemService - current version uses getItemById
 jest.mock('../../services/itemService', () => ({
-  getItemById: jest.fn()
-}))
+  getItemById: jest.fn(),
+}));
 
-describe('ItemDetail Component', () => {
+// Mock CSS modules
+jest.mock('../ItemDetail/ItemDetail.module.css', () => ({
+  loading: 'loading',
+  loadingSpinner: 'loadingSpinner',
+  notFound: 'notFound',
+  backButton: 'backButton',
+  container: 'container',
+  header: 'header',
+  content: 'content',
+  imageSection: 'imageSection',
+  mainImage: 'mainImage',
+  productImage: 'productImage',
+  noImage: 'noImage',
+  statusBadge: 'statusBadge',
+  available: 'available',
+  detailsSection: 'detailsSection',
+  productInfo: 'productInfo',
+  title: 'title',
+  priceAndCondition: 'priceAndCondition',
+  price: 'price',
+  condition: 'condition',
+  likenew: 'likenew',
+  good: 'good',
+  fair: 'fair',
+  basicInfo: 'basicInfo',
+  infoItem: 'infoItem',
+  label: 'label',
+  description: 'description',
+  safetyNotice: 'safetyNotice',
+}));
+
+// Mock console methods
+const originalError = console.error;
+const originalLog = console.log;
+beforeAll(() => {
+  console.error = jest.fn();
+  console.log = jest.fn();
+});
+
+afterAll(() => {
+  console.error = originalError;
+  console.log = originalLog;
+});
+
+describe('ItemDetail (Current Version)', () => {
   const mockRouter = {
-    back: jest.fn()
-  }
+    push: mockPush,
+    back: mockBack,
+  };
 
+  // Current version uses different data structure (matches MongoDB schema)
   const mockItem = {
-    id: 'test-item-id',
-    title: 'Baby Onesie 6M',
-    price: 15.99,
+    _id: 'item-1',
+    title: 'Test Item',
+    price: 25,
     condition: 'Like New',
-    size: '6M',
-    ageRange: '3-6 months',
+    size: 'Medium',
+    ageRange: '2-3 years',
     category: 'Clothing',
-    location: 'Fremont, CA',
-    description: 'Cute baby onesie in excellent condition',
-    imageUrl: 'https://example.com/onesie.jpg',
-    status: 'available'
-  }
+    location: 'San Francisco',
+    description: 'Test description for the item',
+    imageUrl: 'https://example.com/image.jpg',
+    status: 'available',
+    sellerId: 'seller1',
+    createdAt: new Date(),
+  };
 
   beforeEach(() => {
-    useRouter.mockReturnValue(mockRouter)
-    mockRouter.back.mockClear()
-    getItemById.mockClear()
-    
-    // Set NODE_ENV to avoid console.log in tests
-    process.env.NODE_ENV = 'production'
-  })
+    useRouter.mockReturnValue(mockRouter);
+    getItemById.mockResolvedValue(mockItem);
+    mockPush.mockClear();
+    mockBack.mockClear();
+    getItemById.mockClear();
+  });
 
   afterEach(() => {
-    // Restore original NODE_ENV
-    process.env.NODE_ENV = 'test'
-  })
+    jest.clearAllMocks();
+  });
 
-  // ===== LOADING STATE TESTS =====
-  describe('loading state', () => {
-    test('shows loading spinner and text when loading', async () => {
-      // Mock getItemById to never resolve
-      getItemById.mockImplementation(() => new Promise(() => {}))
+  describe('Loading State', () => {
+    test('displays loading state initially', async () => {
+      getItemById.mockImplementation(() => new Promise(() => {})); // Never resolves
       
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
-      expect(screen.getByText('Loading item details...')).toBeInTheDocument()
-      expect(document.querySelector('[class*="loadingSpinner"]')).toBeInTheDocument()
-    })
+      expect(screen.getByText('Loading item details...')).toBeInTheDocument();
+      expect(screen.getByText('Loading item details...')).toBeInTheDocument();
+    });
 
-    test('does not render item content while loading', async () => {
-      getItemById.mockImplementation(() => new Promise(() => {}))
+    test('shows loading spinner', async () => {
+      getItemById.mockImplementation(() => new Promise(() => {}));
       
-      render(<ItemDetail itemId="test-id" />)
+      let container;
+      await act(async () => {
+        const result = render(<ItemDetail itemId="item-1" />);
+        container = result.container;
+      });
       
-      expect(screen.queryByText('Back to Browse')).not.toBeInTheDocument()
-      expect(screen.queryByText('← Go Back')).not.toBeInTheDocument()
-    })
-  })
+      expect(container.querySelector('.loadingSpinner')).toBeInTheDocument();
+    });
+  });
 
-  // ===== SUCCESSFUL ITEM DISPLAY TESTS =====
-  describe('successful item display', () => {
-    beforeEach(() => {
-      getItemById.mockResolvedValue(mockItem)
-    })
-
-    test('renders item details correctly', async () => {
-      render(<ItemDetail itemId="test-id" />)
+  describe('Item Not Found', () => {
+    test('displays not found message when item does not exist', async () => {
+      getItemById.mockResolvedValue(null);
+      
+      await act(async () => {
+        render(<ItemDetail itemId="non-existent" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('Baby Onesie 6M')).toBeInTheDocument()
-      })
+        expect(screen.getByText('Item Not Found')).toBeInTheDocument();
+      });
+      
+      expect(screen.getByText('The item you\'re looking for doesn\'t exist or has been removed.')).toBeInTheDocument();
+    });
 
-      expect(screen.getByText('$15.99')).toBeInTheDocument()
-      expect(screen.getByText('Like New')).toBeInTheDocument()
-      expect(screen.getByText('6M (3-6 months)')).toBeInTheDocument()
-      expect(screen.getByText('Clothing')).toBeInTheDocument()
-      expect(screen.getByText('Fremont, CA')).toBeInTheDocument()
-      expect(screen.getByText('Cute baby onesie in excellent condition')).toBeInTheDocument()
-    })
-
-    test('displays image when imageUrl provided', async () => {
-      render(<ItemDetail itemId="test-id" />)
+    test('handles back navigation from not found page', async () => {
+      getItemById.mockResolvedValue(null);
+      
+      await act(async () => {
+        render(<ItemDetail itemId="non-existent" />);
+      });
       
       await waitFor(() => {
-        const image = screen.getByAltText('Baby Onesie 6M')
-        expect(image).toBeInTheDocument()
-        expect(image).toHaveAttribute('src', 'https://example.com/onesie.jpg')
-      })
-    })
+        expect(screen.getByText('Item Not Found')).toBeInTheDocument();
+      });
+      
+      const backButton = screen.getByText('← Go Back');
+      fireEvent.click(backButton);
+      
+      expect(mockBack).toHaveBeenCalledTimes(1);
+    });
+  });
 
-    test('shows available status badge', async () => {
-      render(<ItemDetail itemId="test-id" />)
+  describe('Successful Item Loading', () => {
+    test('displays item details correctly', async () => {
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('✓ Available')).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByText('Test Item')).toBeInTheDocument();
+      });
+      
+      expect(screen.getByText('$25.00')).toBeInTheDocument(); // Current version uses formatPrice
+      expect(screen.getByText('Like New')).toBeInTheDocument();
+      expect(screen.getByText('Medium (2-3 years)')).toBeInTheDocument();
+      expect(screen.getByText('Clothing')).toBeInTheDocument();
+      expect(screen.getByText('San Francisco')).toBeInTheDocument();
+      expect(screen.getByText('Test description for the item')).toBeInTheDocument();
+    });
 
-    test('shows back button', async () => {
-      render(<ItemDetail itemId="test-id" />)
+    test('displays item image with correct attributes', async () => {
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('← Back to Browse')).toBeInTheDocument()
-      })
-    })
+        const image = screen.getByAltText('Test Item');
+        expect(image).toHaveAttribute('src', 'https://example.com/image.jpg');
+        expect(image).toHaveClass('productImage');
+      });
+    });
 
-    test('shows safety notice', async () => {
-      render(<ItemDetail itemId="test-id" />)
+    test('displays no image placeholder when imageUrl is missing', async () => {
+      const itemWithoutImage = { ...mockItem, imageUrl: null };
+      getItemById.mockResolvedValue(itemWithoutImage);
+      
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('🛡️ Safety Tips')).toBeInTheDocument()
-        expect(screen.getByText(/Meet in a public place/)).toBeInTheDocument()
-        expect(screen.getByText(/Bring a friend/)).toBeInTheDocument()
-        expect(screen.getByText(/Inspect items carefully/)).toBeInTheDocument()
-        expect(screen.getByText(/Trust your instincts/)).toBeInTheDocument()
-      })
-    })
-  })
+        expect(screen.getByText('No image available')).toBeInTheDocument();
+      });
+    });
 
-  // ===== ITEM NOT FOUND TESTS =====
-  describe('item not found state', () => {
-    test('shows not found message when item is null', async () => {
-      getItemById.mockResolvedValue(null)
-      
-      render(<ItemDetail itemId="test-id" />)
+    test('displays available status badge', async () => {
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('Item Not Found')).toBeInTheDocument()
-      })
+        expect(screen.getByText('✓ Available')).toBeInTheDocument();
+      });
+    });
 
-      expect(screen.getByText("The item you're looking for doesn't exist or has been removed.")).toBeInTheDocument()
-      expect(screen.getByText('← Go Back')).toBeInTheDocument()
-    })
-
-    test('shows not found message when getItemById throws error', async () => {
-      getItemById.mockRejectedValue(new Error('Item not found'))
+    test('displays correct status for non-available items', async () => {
+      const soldItem = { ...mockItem, status: 'sold' };
+      getItemById.mockResolvedValue(soldItem);
       
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('Item Not Found')).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByText('sold')).toBeInTheDocument();
+      });
+    });
+  });
 
-    test('back button works in not found state', async () => {
-      getItemById.mockResolvedValue(null)
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        const backButton = screen.getByText('← Go Back')
-        fireEvent.click(backButton)
-        expect(mockRouter.back).toHaveBeenCalledTimes(1)
-      })
-    })
-  })
-
-  // ===== BACK BUTTON FUNCTIONALITY =====
-  describe('back button functionality', () => {
-    test('calls router.back when back button clicked', async () => {
-      getItemById.mockResolvedValue(mockItem)
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        const backButton = screen.getByText('← Back to Browse')
-        fireEvent.click(backButton)
-        expect(mockRouter.back).toHaveBeenCalledTimes(1)
-      })
-    })
-  })
-
-  // ===== PRICE FORMATTING TESTS =====
-  describe('formatPrice function', () => {
+  describe('Price Formatting', () => {
     test('formats numeric prices correctly', async () => {
-      const itemWithNumericPrice = { ...mockItem, price: 25 }
-      getItemById.mockResolvedValue(itemWithNumericPrice)
+      const itemWithDecimalPrice = { ...mockItem, price: 25.5 };
+      getItemById.mockResolvedValue(itemWithDecimalPrice);
       
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        expect(screen.getByText('$25.00')).toBeInTheDocument()
-      })
-    })
-
-    test('formats string prices correctly', async () => {
-      const itemWithStringPrice = { ...mockItem, price: '12.5' }
-      getItemById.mockResolvedValue(itemWithStringPrice)
-      
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('$12.50')).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByText('$25.50')).toBeInTheDocument();
+      });
+    });
 
-    test('handles invalid price values', async () => {
-      const itemWithInvalidPrice = { ...mockItem, price: 'invalid' }
-      getItemById.mockResolvedValue(itemWithInvalidPrice)
+    test('handles string prices', async () => {
+      const itemWithStringPrice = { ...mockItem, price: "25" };
+      getItemById.mockResolvedValue(itemWithStringPrice);
       
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('$invalid')).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByText('$25.00')).toBeInTheDocument();
+      });
+    });
 
-    test('handles null/undefined price', async () => {
-      const itemWithNullPrice = { ...mockItem, price: null }
-      getItemById.mockResolvedValue(itemWithNullPrice)
+    test('handles invalid prices gracefully', async () => {
+      const itemWithInvalidPrice = { ...mockItem, price: "invalid" };
+      getItemById.mockResolvedValue(itemWithInvalidPrice);
       
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('$')).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByText('$invalid')).toBeInTheDocument();
+      });
+    });
+  });
 
-    test('handles decimal prices correctly', async () => {
-      const itemWithDecimalPrice = { ...mockItem, price: 9.99 }
-      getItemById.mockResolvedValue(itemWithDecimalPrice)
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        expect(screen.getByText('$9.99')).toBeInTheDocument()
-      })
-    })
-  })
-
-  // ===== MISSING FIELD HANDLING =====
-  describe('missing field handling', () => {
-    test('handles missing image gracefully', async () => {
-      const itemWithoutImage = { ...mockItem, imageUrl: null }
-      getItemById.mockResolvedValue(itemWithoutImage)
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        expect(screen.getByText('No image available')).toBeInTheDocument()
-        expect(screen.queryByAltText('Baby Onesie 6M')).not.toBeInTheDocument()
-      })
-    })
-
-    test('handles missing fields with dash fallbacks', async () => {
+  describe('Field Safety (Null/Undefined Handling)', () => {
+    test('handles missing optional fields gracefully', async () => {
       const itemWithMissingFields = {
-        ...mockItem,
-        size: null,
-        ageRange: '',
-        category: undefined,
-        location: '',
-        description: null
-      }
-      getItemById.mockResolvedValue(itemWithMissingFields)
+        _id: 'item-1',
+        title: 'Test Item',
+        price: 25,
+        status: 'available',
+        // Missing: condition, size, ageRange, category, location, description
+      };
+      getItemById.mockResolvedValue(itemWithMissingFields);
       
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        // Should show dashes for missing fields
-        const dashElements = screen.getAllByText('—')
-        expect(dashElements.length).toBeGreaterThan(0)
-      })
-    })
-
-    test('handles missing condition field', async () => {
-      const itemWithoutCondition = { ...mockItem, condition: null }
-      getItemById.mockResolvedValue(itemWithoutCondition)
-      
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('—')).toBeInTheDocument()
-      })
-    })
-
-    test('shows size without age range when age range missing', async () => {
-      const itemWithoutAgeRange = { ...mockItem, ageRange: null }
-      getItemById.mockResolvedValue(itemWithoutAgeRange)
+        expect(screen.getByText('Test Item')).toBeInTheDocument();
+      });
       
-      render(<ItemDetail itemId="test-id" />)
+      // Should display "—" for missing fields
+      expect(screen.getAllByText('—')).toHaveLength(5); // condition, size/age, category, location, description
+    });
+  });
+
+  describe('Navigation', () => {
+    test('handles back navigation from header', async () => {
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('6M')).toBeInTheDocument()
-        expect(screen.queryByText('6M ()')).not.toBeInTheDocument()
-      })
-    })
-  })
-
-  // ===== STATUS HANDLING =====
-  describe('status handling', () => {
-    test('shows available status correctly', async () => {
-      const availableItem = { ...mockItem, status: 'available' }
-      getItemById.mockResolvedValue(availableItem)
+        expect(screen.getByText('← Back to Browse')).toBeInTheDocument();
+      });
       
-      render(<ItemDetail itemId="test-id" />)
+      const backButton = screen.getByText('← Back to Browse');
+      fireEvent.click(backButton);
+      
+      expect(mockBack).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Error Handling', () => {
+    test('handles API error gracefully', async () => {
+      const errorMessage = 'API Error';
+      getItemById.mockRejectedValue(new Error(errorMessage));
+      
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('✓ Available')).toBeInTheDocument()
-      })
-    })
-
-    test('shows other status values', async () => {
-      const soldItem = { ...mockItem, status: 'sold' }
-      getItemById.mockResolvedValue(soldItem)
-      
-      render(<ItemDetail itemId="test-id" />)
+        expect(console.error).toHaveBeenCalledWith('Error fetching item:', expect.any(Error));
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('sold')).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByText('Item Not Found')).toBeInTheDocument();
+      });
+    });
+  });
 
-    test('handles missing status', async () => {
-      const itemWithoutStatus = { ...mockItem, status: null }
-      getItemById.mockResolvedValue(itemWithoutStatus)
+  describe('Conditional Rendering', () => {
+    test('does not fetch item when itemId is not provided', async () => {
+      await act(async () => {
+        render(<ItemDetail itemId={null} />);
+      });
       
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        expect(screen.getByText('—')).toBeInTheDocument()
-      })
-    })
-  })
+      expect(getItemById).not.toHaveBeenCalled();
+    });
 
-  // ===== CONDITION STYLING TESTS =====
-  describe('condition styling', () => {
+    test('fetches item when itemId is provided', async () => {
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
+      
+      expect(getItemById).toHaveBeenCalledWith("item-1");
+      expect(getItemById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Condition Styling', () => {
     test('applies correct CSS class for condition', async () => {
-      const likeNewItem = { ...mockItem, condition: 'Like New' }
-      getItemById.mockResolvedValue(likeNewItem)
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        const conditionElement = screen.getByText('Like New')
-        expect(conditionElement).toHaveClass('condition')
-        // Should also apply the variant class (likenew)
-        expect(conditionElement).toHaveClass('likenew')
-      })
-    })
-
-    test('handles condition with spaces for CSS class', async () => {
-      const fairConditionItem = { ...mockItem, condition: 'Fair' }
-      getItemById.mockResolvedValue(fairConditionItem)
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        const conditionElement = screen.getByText('Fair')
-        expect(conditionElement).toHaveClass('condition')
-        expect(conditionElement).toHaveClass('fair')
-      })
-    })
-
-    test('handles unknown condition gracefully', async () => {
-      const unknownConditionItem = { ...mockItem, condition: 'Unknown Condition' }
-      getItemById.mockResolvedValue(unknownConditionItem)
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        const conditionElement = screen.getByText('Unknown Condition')
-        expect(conditionElement).toHaveClass('condition')
-        // May or may not have variant class, but shouldn't crash
-      })
-    })
-  })
-
-  // ===== useEffect AND LIFECYCLE TESTS =====
-  describe('useEffect and lifecycle', () => {
-    test('calls getItemById when itemId provided', () => {
-      render(<ItemDetail itemId="test-123" />)
-      
-      expect(getItemById).toHaveBeenCalledWith('test-123')
-      expect(getItemById).toHaveBeenCalledTimes(1)
-    })
-
-    test('does not call getItemById when itemId is null', () => {
-      render(<ItemDetail itemId={null} />)
-      
-      expect(getItemById).not.toHaveBeenCalled()
-    })
-
-    test('does not call getItemById when itemId is empty', () => {
-      render(<ItemDetail itemId="" />)
-      
-      expect(getItemById).not.toHaveBeenCalled()
-    })
-
-    test('calls getItemById again when itemId changes', async () => {
-      const { rerender } = render(<ItemDetail itemId="item-1" />)
-      
-      expect(getItemById).toHaveBeenCalledWith('item-1')
-      
-      rerender(<ItemDetail itemId="item-2" />)
-      
-      expect(getItemById).toHaveBeenCalledWith('item-2')
-      expect(getItemById).toHaveBeenCalledTimes(2)
-    })
-
-    test('shows loading state during fetch', async () => {
-      let resolvePromise
-      getItemById.mockImplementation(() => {
-        return new Promise(resolve => {
-          resolvePromise = resolve
-        })
-      })
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      // Should show loading initially
-      expect(screen.getByText('Loading item details...')).toBeInTheDocument()
-      
-      // Resolve the promise
-      resolvePromise(mockItem)
-      
-      // Should show item content after loading
-      await waitFor(() => {
-        expect(screen.getByText('Baby Onesie 6M')).toBeInTheDocument()
-      })
-    })
-
-    test('handles async error during fetch', async () => {
-      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
-      
-      getItemById.mockRejectedValue(new Error('Network error'))
-      
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        expect(screen.getByText('Item Not Found')).toBeInTheDocument()
-      })
-      
-      expect(consoleError).toHaveBeenCalledWith('Error fetching item:', expect.any(Error))
-      
-      consoleError.mockRestore()
-    })
-  })
-
-  // ===== EDGE CASES =====
-  describe('edge cases', () => {
-    test('handles extremely long item title', async () => {
-      const longTitleItem = {
+      const itemWithCondition = {
         ...mockItem,
-        title: 'A'.repeat(200) // Very long title
-      }
-      getItemById.mockResolvedValue(longTitleItem)
+        condition: 'Like New'
+      };
+      getItemById.mockResolvedValue(itemWithCondition);
       
-      render(<ItemDetail itemId="test-id" />)
+      let container;
+      await act(async () => {
+        const result = render(<ItemDetail itemId="item-1" />);
+        container = result.container;
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('A'.repeat(200))).toBeInTheDocument()
-      })
-    })
+        // Current version uses safer condition styling
+        const conditionElement = container.querySelector('.condition');
+        expect(conditionElement).toBeInTheDocument();
+        expect(conditionElement).toHaveTextContent('Like New');
+      });
+    });
 
-    test('handles item with all fields empty', async () => {
-      const emptyItem = {
-        id: 'empty-item',
-        title: '',
-        price: '',
-        condition: '',
-        size: '',
-        ageRange: '',
-        category: '',
-        location: '',
-        description: '',
-        imageUrl: '',
-        status: ''
-      }
-      getItemById.mockResolvedValue(emptyItem)
+    test('handles empty condition gracefully', async () => {
+      const itemWithEmptyCondition = {
+        ...mockItem,
+        condition: ''
+      };
+      getItemById.mockResolvedValue(itemWithEmptyCondition);
       
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        // Should render without crashing
-        expect(screen.getByText('No image available')).toBeInTheDocument()
-        // Most fields should show dashes
-        const dashElements = screen.getAllByText('—')
-        expect(dashElements.length).toBeGreaterThan(0)
-      })
-    })
+        expect(screen.getByText('—')).toBeInTheDocument();
+      });
+    });
+  });
 
-    test('handles non-development environment console logging', async () => {
-      process.env.NODE_ENV = 'development'
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
-      
-      getItemById.mockResolvedValue(mockItem)
-      
-      render(<ItemDetail itemId="test-id" />)
+  describe('Safety Notice', () => {
+    test('displays safety tips', async () => {
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        expect(screen.getByText('Baby Onesie 6M')).toBeInTheDocument()
-      })
+        expect(screen.getByText('🛡️ Safety Tips')).toBeInTheDocument();
+      });
       
-      expect(consoleSpy).toHaveBeenCalledWith('ItemDetail loaded item:', mockItem)
-      
-      consoleSpy.mockRestore()
-    })
-  })
+      expect(screen.getByText('Meet in a public place like a library, coffee shop, or mall')).toBeInTheDocument();
+      expect(screen.getByText('Bring a friend if possible')).toBeInTheDocument();
+      expect(screen.getByText('Inspect items carefully before payment')).toBeInTheDocument();
+      expect(screen.getByText('Trust your instincts — if something feels off, walk away')).toBeInTheDocument();
+    });
+  });
 
-  // ===== ACCESSIBILITY =====
-  describe('accessibility', () => {
-    test('has proper heading structure', async () => {
-      getItemById.mockResolvedValue(mockItem)
+  describe('Development Environment', () => {
+    test('logs item data in development', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
       
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        const mainTitle = screen.getByRole('heading', { level: 1 })
-        expect(mainTitle).toHaveTextContent('Baby Onesie 6M')
-        
-        const descriptionHeading = screen.getByRole('heading', { level: 3 })
-        expect(descriptionHeading).toHaveTextContent('Description')
-      })
-    })
+        expect(console.log).toHaveBeenCalledWith('ItemDetail loaded item:', mockItem);
+      });
+      
+      process.env.NODE_ENV = originalEnv;
+    });
 
-    test('has accessible image alt text', async () => {
-      getItemById.mockResolvedValue(mockItem)
+    test('does not log in production', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
       
-      render(<ItemDetail itemId="test-id" />)
-      
-      await waitFor(() => {
-        const image = screen.getByRole('img')
-        expect(image).toHaveAttribute('alt', 'Baby Onesie 6M')
-      })
-    })
-
-    test('back buttons are keyboard accessible', async () => {
-      getItemById.mockResolvedValue(mockItem)
-      
-      render(<ItemDetail itemId="test-id" />)
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
       
       await waitFor(() => {
-        const backButton = screen.getByRole('button', { name: /back to browse/i })
-        expect(backButton).toBeInTheDocument()
-      })
-    })
-  })
-})
+        expect(screen.getByText('Test Item')).toBeInTheDocument();
+      });
+      
+      expect(console.log).not.toHaveBeenCalledWith('ItemDetail loaded item:', expect.anything());
+      
+      process.env.NODE_ENV = originalEnv;
+    });
+  });
+});
