@@ -18,7 +18,7 @@ const s3 = new S3Client({
   },
 });
 
-const PUBLIC_BASE = S3_PUBLIC_BASE || "https://tinythreads-s3-bucket.s3.us-east-1.amazonaws.com";
+const PUBLIC_BASE = S3_PUBLIC_BASE;
 
 export function getPublicUrl(key) {
   return `${PUBLIC_BASE}/${key}`;

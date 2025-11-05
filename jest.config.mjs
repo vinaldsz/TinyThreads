@@ -68,6 +68,10 @@ const customJestConfig = {
       statements: 70,
     },
   },
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    'ItemDetail 2.js',  // 忽略旧版本
+  ],
   
   // Transform configuration
   transform: {

@@ -109,15 +109,7 @@ describe('awss3', () => {
       expect(result).toBe('https://test-bucket.s3.amazonaws.com/items/item-123.jpg')
     })
 
-    test('uses default public base when S3_PUBLIC_BASE not set', async () => {
-      delete process.env.S3_PUBLIC_BASE
-      jest.resetModules()
-      
-      const awsModule = await import('../awss3.js')
-      const result = awsModule.getPublicUrl('test/file.jpg')
-      
-      expect(result).toBe('https://tinythreads-s3-bucket.s3.us-east-1.amazonaws.com/test/file.jpg')
-    })
+    
 
     test('handles keys with special characters', () => {
       const key = 'items/item with spaces & symbols!.jpg'
