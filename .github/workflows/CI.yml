@@ -5,8 +5,8 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  lint:
-    name: Lint
+  lint-and-test:
+    name: Lint, Test & Coverage
     runs-on: ubuntu-latest
 
     steps:
@@ -26,3 +26,29 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint -- --max-warnings=0
+
+      - name: Run tests with coverage
+        # produce json-summary so we can read percentage programmatically
+        run: npm test -- --coverage --coverageReporters=json-summary --coverageDirectory=coverage --runInBand
+        env:
+          CI: "true"
+
+      - name: Verify coverage threshold (70% lines)
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = 'coverage/coverage-summary.json';
+          if (!fs.existsSync(path)) {
+            console.error('coverage summary not found at', path);
+            process.exit(1);
+          }
+          const summary = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const pct = summary.total.lines.pct;
+          const min = 70;
+          console.log('Coverage (lines):', pct + '%');
+          if (pct < min) {
+            console.error(`Coverage ${pct}% is below required ${min}%`);
+            process.exit(1);
+          }
+          console.log('Coverage threshold met');
+          "
