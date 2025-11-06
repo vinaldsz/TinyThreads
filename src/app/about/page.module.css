@@ -1,0 +1,193 @@
+/* Mobile-first approach */
+.aboutContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Hero Section */
+.heroSection {
+  text-align: center;
+  margin-bottom: 4rem;
+  padding: 2rem 0;
+}
+
+.heroSection h1 {
+  color: #8B5CF6;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.heroSection h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.heroSection p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Journey Section */
+.journeySection {
+  margin-bottom: 4rem;
+  padding: 2rem 0;
+}
+
+.journeySection h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Beliefs Section */
+.beliefsSection {
+  margin-bottom: 4rem;
+  padding: 2rem 0;
+}
+
+.beliefsSection h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.beliefsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+/* CHANGE: Added Hello Section styles */
+.helloSection {
+  text-align: center;
+  margin-bottom: 4rem;
+  padding: 3rem 0;
+  background: #f8f9ff;
+  border-radius: 16px;
+}
+
+.helloText {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Team Section */
+.teamSection {
+  margin-bottom: 4rem;
+  padding: 2rem 0;
+}
+
+.teamSection h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+/* CHANGE: Added teamGrid to display team members in a row */
+.teamGrid {
+  display: flex;
+  flex-direction: row !important;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+/* Tablet breakpoint */
+@media (min-width: 768px) {
+  .aboutContainer {
+    padding: 3rem 2rem;
+  }
+  
+  .heroSection h1 {
+    font-size: 2rem;
+  }
+  
+  .heroSection h2 {
+    font-size: 3rem;
+  }
+  
+  .beliefsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+  }
+
+  /* CHANGE: Team grid stays in row on tablet */
+  .teamGrid {
+    gap: 2.5rem;
+  }
+}
+
+/* Desktop breakpoint */
+@media (min-width: 1024px) {
+  .aboutContainer {
+    padding: 4rem 3rem;
+  }
+  
+  .heroSection {
+    margin-bottom: 6rem;
+    padding: 3rem 0;
+  }
+  
+  .heroSection h2 {
+    font-size: 3.5rem;
+  }
+  
+  .beliefsGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3rem;
+  }
+  
+  .journeySection,
+  .beliefsSection,
+  .teamSection {
+    margin-bottom: 6rem;
+  }
+
+  /* CHANGE: Enhanced team grid layout for desktop */
+  .teamGrid {
+    gap: 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+    justify-content: space-between;
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1280px) {
+  .aboutContainer {
+    padding: 5rem 4rem;
+  }
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  text-decoration: none;  /* Remove underline from link */
+  padding: 8px 0;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  color: #333;
+}
