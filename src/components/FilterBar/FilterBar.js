@@ -2,6 +2,7 @@
 "use client";
 import styles from "./FilterBar.module.css";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function FilterBar({
   onFiltersChange,
@@ -227,6 +228,13 @@ export default function FilterBar({
           </div>
         </div>
       )}
+
+      {/* Persistent Add Listing CTA */}
+      <div className={styles.addListingRow}>
+        <Link href="/add-listing" className={styles.addListingBtn}>
+          ＋ Add listing
+        </Link>
+      </div>
     </div>
   );
 }
