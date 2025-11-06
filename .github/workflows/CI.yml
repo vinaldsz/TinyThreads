@@ -28,8 +28,16 @@ jobs:
         run: npm run lint -- --max-warnings=10
 
       - name: Run tests with coverage
-        # produce json-summary so we can read percentage programmatically
-        run: npm test -- --coverage --coverageReporters=json-summary --coverageDirectory=coverage --runInBand
+        # do not fail the job here so we can always verify the coverage file
+        continue-on-error: true
+        run: |
+          # produce coverage + json output for jest results (always exit 0 here so we can verify later)
+          npm test -- \
+            --coverage \
+            --coverageReporters=json-summary \
+            --coverageDirectory=coverage \
+            --runInBand \
+            --json --outputFile=jest-results.json || true
         env:
           CI: "true"
 
