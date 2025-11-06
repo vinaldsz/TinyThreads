@@ -25,7 +25,7 @@ export default function JourneySection() {
       
       <div className={styles.imageContainer}>
         <Image
-          src="/images/about/journey-child.jpg"
+          src="/images/about/journey-child.png"
           alt="Happy child playing with toys"
           width={400}
           height={300}
