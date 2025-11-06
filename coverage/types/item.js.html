@@ -160,10 +160,40 @@
 <a name='L95'></a><a href='#L95'>95</a>
 <a name='L96'></a><a href='#L96'>96</a>
 <a name='L97'></a><a href='#L97'>97</a>
-<a name='L98'></a><a href='#L98'>98</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -179,6 +209,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">44x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -232,6 +271,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -257,111 +300,134 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// types/item.js
 &nbsp;
 // ===== CENTRALIZED CONFIGURATION =====
 export const ITEM_CONFIG = {
-    // All possible values - easy to modify in one place
-    CONDITIONS: ['New', 'Like New', 'Good', 'Fair'],
-    CATEGORIES: ['Clothing', 'Toys', 'Books', 'Gear', 'Other'],
-    AGE_RANGES: ['0-3 months', '3-6 months', '6-12 months', '12-18 months', '18-24 months', '2-3 years', '3+ years'],
-    
-    // Default values
-    DEFAULTS: {
-      category: 'Clothing',
-      condition: 'Good',
-      createdAt: () =&gt; new Date().toISOString(),
-    }
+  // All possible values - easy to modify in one place
+  CONDITIONS: ["New", "Like New", "Good", "Fair"],
+  CATEGORIES: ["Clothing", "Toys", "Books", "Gear", "Other"],
+  AGE_RANGES: [
+    "0-3 months",
+    "3-6 months",
+    "6-12 months",
+    "12-18 months",
+    "18-24 months",
+    "2-3 years",
+    "3+ years",
+  ],
+&nbsp;
+  // Default values
+  DEFAULTS: {
+    category: "Clothing",
+    condition: "Good",
+    createdAt: () =&gt; new Date().toISOString(),
+  },
+};
+&nbsp;
+// ===== ITEM SCHEMA =====
+export const ITEM_SCHEMA = {
+  id: { required: true, type: "string" },
+  title: { required: true, type: "string" },
+  price: { required: true, type: "number" },
+  size: { required: true, type: "string" },
+  condition: { required: true, type: "string", values: ITEM_CONFIG.CONDITIONS },
+  imageUrl: { required: true, type: "string" },
+  description: { required: true, type: "string" },
+  sellerId: { required: true, type: "string" },
+  sellerName: { required: true, type: "string" },
+  category: {
+    required: false,
+    type: "string",
+    values: ITEM_CONFIG.CATEGORIES,
+    default: ITEM_CONFIG.DEFAULTS.category,
+  },
+  ageRange: { required: true, type: "string", values: ITEM_CONFIG.AGE_RANGES },
+  createdAt: {
+    required: false,
+    type: "string",
+    default: ITEM_CONFIG.DEFAULTS.createdAt,
+  },
+};
+&nbsp;
+// ===== HELPER FUNCTIONS =====
+&nbsp;
+// Create item with validation and defaults
+export function createItem(itemData) {
+  const item = {
+    ...itemData,
+    // Apply defaults for missing optional fields
+    category: itemData.category || ITEM_CONFIG.DEFAULTS.category,
+    createdAt: itemData.createdAt || ITEM_CONFIG.DEFAULTS.createdAt(),
   };
-  
-  // ===== ITEM SCHEMA =====
-  export const ITEM_SCHEMA = {
-    id: { required: true, type: 'string' },
-    title: { required: true, type: 'string' },
-    price: { required: true, type: 'number' },
-    size: { required: true, type: 'string' },
-    condition: { required: true, type: 'string', values: ITEM_CONFIG.CONDITIONS },
-    imageUrl: { required: true, type: 'string' },
-    description: { required: true, type: 'string' },
-    sellerId: { required: true, type: 'string' },
-    sellerName: { required: true, type: 'string' },
-    category: { required: false, type: 'string', values: ITEM_CONFIG.CATEGORIES, default: ITEM_CONFIG.DEFAULTS.category },
-    ageRange: { required: true, type: 'string', values: ITEM_CONFIG.AGE_RANGES },
-    createdAt: { required: false, type: 'string', default: ITEM_CONFIG.DEFAULTS.createdAt }
-  };
-  
-  // ===== HELPER FUNCTIONS =====
-  
-  // Create item with validation and defaults
-  export function createItem(itemData) {
-    const item = {
-      ...itemData,
-      // Apply defaults for missing optional fields
-      category: itemData.category || ITEM_CONFIG.DEFAULTS.category,
-      createdAt: itemData.createdAt || ITEM_CONFIG.DEFAULTS.createdAt()
-    };
-  
-    // Validate the item
-    const errors = validateItem(item);
-    if (errors.length &gt; 0) {
-      console.warn('Item validation warnings:', errors);
+&nbsp;
+  // Validate the item
+  const errors = validateItem(item);
+  if (errors.length &gt; 0) {
+    console.warn("Item validation warnings:", errors);
+  }
+&nbsp;
+  return item;
+}
+&nbsp;
+// Validate item structure
+export function validateItem(item) {
+  const errors = [];
+&nbsp;
+  Object.keys(ITEM_SCHEMA).forEach((field) =&gt; {
+    const rules = ITEM_SCHEMA[field];
+    const value = item[field];
+&nbsp;
+    // Check required fields
+    if (rules.required &amp;&amp; !value &amp;&amp; value !== 0) {
+      errors.push(`Missing required field: ${field}`);
     }
-  
-    return item;
-  }
-  
-  // Validate item structure
-  export function validateItem(item) {
-    const errors = [];
-    
-    Object.keys(ITEM_SCHEMA).forEach(field =&gt; {
-      const rules = ITEM_SCHEMA[field];
-      const value = item[field];
-  
-      // Check required fields
-      if (rules.required &amp;&amp; (!value &amp;&amp; value !== 0)) {
-        errors.push(`Missing required field: ${field}`);
-      }
-  
-      // Check valid values
-      if (value &amp;&amp; rules.values &amp;&amp; !rules.values.includes(value)) {
-        errors.push(`Invalid value for ${field}: ${value}. Must be one of: ${rules.values.join(', ')}`);
-      }
-    });
-  
-    return errors;
-  }
-  
-  // Get all filter options (useful for UI dropdowns)
-  export function getFilterOptions() {
-    return {
-      conditions: ITEM_CONFIG.CONDITIONS,
-      categories: ITEM_CONFIG.CATEGORIES,
-      ageRanges: ITEM_CONFIG.AGE_RANGES
-    };
-  }
-  
-  // ===== EXAMPLE ITEM (for reference) =====
-  export const exampleItem = createItem({
-    id: "example-1",
-    title: "Cotton Baby Onesie",
-    price: 15.99,
-    size: "6-12 months",
-    condition: "Like New",
-    imageUrl: "https://example.com/onesie.jpg",
-    description: "Soft organic cotton onesie, barely worn",
-    sellerId: "user123",
-    sellerName: "Sarah M.",
-    ageRange: "6-12 months"
-    // category and createdAt will use defaults
-  });</pre></td></tr></table></pre>
+&nbsp;
+    // Check valid values
+    if (value &amp;&amp; rules.values &amp;&amp; !rules.values.includes(value)) {
+      errors.push(
+        `Invalid value for ${field}: ${value}. Must be one of: ${rules.values.join(
+          ", "
+        )}`
+      );
+    }
+  });
+&nbsp;
+  return errors;
+}
+&nbsp;
+// Get all filter options (useful for UI dropdowns)
+export function getFilterOptions() {
+  return {
+    conditions: ITEM_CONFIG.CONDITIONS,
+    categories: ITEM_CONFIG.CATEGORIES,
+    ageRanges: ITEM_CONFIG.AGE_RANGES,
+  };
+}
+&nbsp;
+// ===== EXAMPLE ITEM (for reference) =====
+export const exampleItem = createItem({
+  id: "example-1",
+  title: "Cotton Baby Onesie",
+  price: 15.99,
+  size: "6-12 months",
+  condition: "Like New",
+  imageUrl: "https://example.com/onesie.jpg",
+  description: "Soft organic cotton onesie, barely worn",
+  sellerId: "user123",
+  sellerName: "Sarah M.",
+  ageRange: "6-12 months",
+  // category and createdAt will use defaults
+});
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-05T22:54:26.898Z
+                at 2025-11-06T01:10:14.247Z
             </div>
         <script src="../prettify.js"></script>
         <script>

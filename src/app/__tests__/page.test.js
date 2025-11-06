@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import BrowsePage from '../page';
 import { getItems, filterItems } from '@/services/itemService';
@@ -61,7 +61,7 @@ jest.mock('@/components/ItemGrid/ItemGrid', () => {
 });
 
 // Mock CSS modules
-jest.mock('../app/page.module.css', () => ({
+jest.mock('../page.module.css', () => ({
   page: 'page',
   container: 'container',
   headerSection: 'headerSection',
@@ -95,7 +95,9 @@ describe('BrowsePage', () => {
 
   describe('Component Rendering', () => {
     test('renders without crashing', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByText('TinyThreads')).toBeInTheDocument();
@@ -103,7 +105,9 @@ describe('BrowsePage', () => {
     });
 
     test('renders header section with logo and title', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByText('👶')).toBeInTheDocument();
@@ -112,7 +116,9 @@ describe('BrowsePage', () => {
     });
 
     test('renders navigation with about link', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         const aboutLink = screen.getByText('About');
@@ -122,7 +128,9 @@ describe('BrowsePage', () => {
     });
 
     test('renders FilterBar component', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('filter-bar')).toBeInTheDocument();
@@ -130,7 +138,9 @@ describe('BrowsePage', () => {
     });
 
     test('renders ItemGrid component', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('item-grid')).toBeInTheDocument();
@@ -140,7 +150,9 @@ describe('BrowsePage', () => {
 
   describe('Initial Data Loading', () => {
     test('loads items on component mount', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       expect(getItems).toHaveBeenCalledTimes(1);
       
@@ -155,7 +167,9 @@ describe('BrowsePage', () => {
         setTimeout(() => resolve(mockItemsResponse), 100)
       ));
       
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       // Should start with loading
       expect(screen.getByTestId('loading-state')).toHaveTextContent('loading');
@@ -167,7 +181,9 @@ describe('BrowsePage', () => {
     });
 
     test('displays correct item count in FilterBar', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('item-count')).toHaveTextContent('3');
@@ -182,7 +198,9 @@ describe('BrowsePage', () => {
       };
       filterItems.mockResolvedValue(filteredResponse);
       
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       // Wait for initial load
       await waitFor(() => {
@@ -190,8 +208,10 @@ describe('BrowsePage', () => {
       });
       
       // Trigger filter change
-      const filterButton = screen.getByTestId('trigger-filter-change');
-      fireEvent.click(filterButton);
+      await act(async () => {
+        const filterButton = screen.getByTestId('trigger-filter-change');
+        fireEvent.click(filterButton);
+      });
       
       // Should call filterItems
       await waitFor(() => {
@@ -209,15 +229,19 @@ describe('BrowsePage', () => {
         setTimeout(() => resolve({ items: [mockItems[0]] }), 100)
       ));
       
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('loading-state')).toHaveTextContent('loaded');
       });
       
       // Trigger filter change
-      const filterButton = screen.getByTestId('trigger-filter-change');
-      fireEvent.click(filterButton);
+      await act(async () => {
+        const filterButton = screen.getByTestId('trigger-filter-change');
+        fireEvent.click(filterButton);
+      });
       
       // Should show loading
       expect(screen.getByTestId('loading-state')).toHaveTextContent('loading');
@@ -229,7 +253,9 @@ describe('BrowsePage', () => {
     });
 
     test('clears all filters correctly', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       // Wait for initial load
       await waitFor(() => {
@@ -237,16 +263,20 @@ describe('BrowsePage', () => {
       });
       
       // First apply a filter
-      const filterButton = screen.getByTestId('trigger-filter-change');
-      fireEvent.click(filterButton);
+      await act(async () => {
+        const filterButton = screen.getByTestId('trigger-filter-change');
+        fireEvent.click(filterButton);
+      });
       
       await waitFor(() => {
         expect(filterItems).toHaveBeenCalled();
       });
       
       // Then clear filters
-      const clearButton = screen.getByTestId('clear-filters');
-      fireEvent.click(clearButton);
+      await act(async () => {
+        const clearButton = screen.getByTestId('clear-filters');
+        fireEvent.click(clearButton);
+      });
       
       // Should reset to original items
       await waitFor(() => {
@@ -257,40 +287,21 @@ describe('BrowsePage', () => {
 
   describe('Active Filters Count', () => {
     test('calculates active filters count correctly with no filters', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('active-filters-count')).toHaveTextContent('0');
       });
     });
 
-    test('calculates active filters count with valid filters', async () => {
-      render(<BrowsePage />);
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('active-filters-count')).toHaveTextContent('0');
+    test('shows zero active filters initially', async () => {
+      await act(async () => {
+        render(<BrowsePage />);
       });
       
-      // Mock FilterBar to send multiple filters
-      jest.clearAllMocks();
-      filterItems.mockResolvedValue({ items: [mockItems[0]] });
-      
-      // Re-render with mocked filter changes
-      const { rerender } = render(<BrowsePage />);
-      
-      // Wait for mount
       await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
-      });
-    });
-
-    test('ignores empty string and newest sort in active count', () => {
-      const { container } = render(<BrowsePage />);
-      const instance = container._reactInternalFiber || container._reactInternalInstance;
-      
-      // We'll test the logic indirectly through the component behavior
-      // The active filters count should be 0 with empty filters
-      waitFor(() => {
         expect(screen.getByTestId('active-filters-count')).toHaveTextContent('0');
       });
     });
@@ -298,28 +309,21 @@ describe('BrowsePage', () => {
 
   describe('Sort Labels', () => {
     test('displays default sort label', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('sort-label')).toHaveTextContent('Newest first');
-      });
-    });
-
-    test('displays correct sort labels for different sort types', () => {
-      // Since we can't easily test the internal getSortLabel function directly,
-      // we'll verify it works through component behavior
-      render(<BrowsePage />);
-      
-      // The mock component will display whatever getSortLabel returns
-      waitFor(() => {
-        expect(screen.getByTestId('sort-label')).toBeInTheDocument();
       });
     });
   });
 
   describe('Component Props', () => {
     test('passes correct props to ItemGrid', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('has-more')).toHaveTextContent('no-more');
@@ -329,7 +333,9 @@ describe('BrowsePage', () => {
     });
 
     test('passes initial empty filters to FilterBar', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('active-filters-count')).toHaveTextContent('0');
@@ -342,7 +348,9 @@ describe('BrowsePage', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       getItems.mockRejectedValue(new Error('API Error'));
       
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('loading-state')).toHaveTextContent('loaded');
@@ -355,27 +363,47 @@ describe('BrowsePage', () => {
     });
 
     test('handles filterItems error gracefully', async () => {
-      filterItems.mockRejectedValue(new Error('Filter Error'));
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
-      render(<BrowsePage />);
-      
+      // Wait for successful initial load
       await waitFor(() => {
         expect(screen.getByTestId('items-length')).toHaveTextContent('3');
       });
       
-      const filterButton = screen.getByTestId('trigger-filter-change');
-      fireEvent.click(filterButton);
+      // Set up error for subsequent filterItems calls
+      filterItems.mockRejectedValue(new Error('Filter Error'));
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       
-      // Should still function after error
-      await waitFor(() => {
-        expect(screen.getByText('TinyThreads')).toBeInTheDocument();
+      // Trigger the filter change that will cause the error
+      await act(async () => {
+        const filterButton = screen.getByTestId('trigger-filter-change');
+        fireEvent.click(filterButton);
+        
+        // Wait for the async operation to attempt
+        await waitFor(() => {
+          expect(filterItems).toHaveBeenCalled();
+        });
       });
+      
+      // Component should still be functional after error
+      expect(screen.getByText('TinyThreads')).toBeInTheDocument();
+      
+      // Loading should eventually be set to false
+      await waitFor(() => {
+        expect(screen.getByTestId('loading-state')).toHaveTextContent('loaded');
+      });
+      
+      consoleSpy.mockRestore();
     });
   });
 
   describe('State Management', () => {
     test('maintains separate items and filteredItems state', async () => {
-      render(<BrowsePage />);
+      await act(async () => {
+        render(<BrowsePage />);
+      });
       
       // Initial state - both should be the same
       await waitFor(() => {
@@ -385,19 +413,51 @@ describe('BrowsePage', () => {
       // After filtering, filteredItems changes but original items remain
       filterItems.mockResolvedValue({ items: [mockItems[0]] });
       
-      const filterButton = screen.getByTestId('trigger-filter-change');
-      fireEvent.click(filterButton);
+      await act(async () => {
+        const filterButton = screen.getByTestId('trigger-filter-change');
+        fireEvent.click(filterButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('items-length')).toHaveTextContent('1');
       });
       
       // Clear filters should restore to original items
-      const clearButton = screen.getByTestId('clear-filters');
-      fireEvent.click(clearButton);
+      await act(async () => {
+        const clearButton = screen.getByTestId('clear-filters');
+        fireEvent.click(clearButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('items-length')).toHaveTextContent('3');
+      });
+    });
+  });
+
+  describe('CSS Classes', () => {
+    test('applies correct CSS classes to main elements', async () => {
+      await act(async () => {
+        render(<BrowsePage />);
+      });
+      
+      const page = screen.getByText('TinyThreads').closest('.page');
+      const container = screen.getByText('TinyThreads').closest('.container');
+      
+      expect(page).toHaveClass('page');
+      expect(container).toHaveClass('container');
+    });
+  });
+
+  describe('Accessibility', () => {
+    test('about link is accessible', async () => {
+      await act(async () => {
+        render(<BrowsePage />);
+      });
+      
+      await waitFor(() => {
+        const aboutLink = screen.getByRole('link', { name: /about/i });
+        expect(aboutLink).toBeInTheDocument();
+        expect(aboutLink).toHaveAttribute('href', '/about');
       });
     });
   });
