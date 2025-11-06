@@ -27,19 +27,19 @@ export default function FilterBar({
   // Filter Options
   const categories = [
     { value: "", label: "All Categories" },
-    { value: "clothing", label: "Clothing" },
-    { value: "toys", label: "Toys" },
-    { value: "books", label: "Books" },
-    { value: "gear", label: "Baby Gear" },
-    { value: "other", label: "Other" },
+    { value: "Clothing", label: "Clothing" },
+    { value: "Toys", label: "Toys" },
+    { value: "Books", label: "Books" },
+    { value: "Gear", label: "Baby Gear" },
+    { value: "Other", label: "Other" },
   ];
 
   const conditions = [
     { value: "", label: "Any Condition" },
-    { value: "new", label: "New" },
-    { value: "like-new", label: "Like New" },
-    { value: "good", label: "Good" },
-    { value: "fair", label: "Fair" },
+    { value: "New", label: "New" },
+    { value: "Like-New", label: "Like New" },
+    { value: "Good", label: "Good" },
+    { value: "Fair", label: "Fair" },
   ];
 
   const sortOptions = [
@@ -67,20 +67,19 @@ export default function FilterBar({
     }
   };
 
-  // normalize filters before sending to API so server matching is case-insensitive
+  // normalize filters before sending to callbacks: trim whitespace but preserve casing
   const normalizeFilters = (raw) => {
     const f = { ...raw };
     if (f.category && typeof f.category === "string") {
-      f.category = f.category.toLowerCase();
+      f.category = f.category.trim();
     }
     if (f.condition && typeof f.condition === "string") {
-      f.condition = f.condition.toLowerCase();
+      f.condition = f.condition.trim();
     }
     if (f.ageRange && typeof f.ageRange === "string") {
-      f.ageRange = f.ageRange.toLowerCase();
+      f.ageRange = f.ageRange.trim();
     }
     if (f.searchTerm && typeof f.searchTerm === "string") {
-      // keep searchTerm as-is for user intent, but trim whitespace
       f.searchTerm = f.searchTerm.trim();
     }
     return f;
@@ -119,7 +118,7 @@ export default function FilterBar({
 
   //generate result description text
   const getResultsText = () => {
-    if (itemCount === 0) {
+    if (itemCount <= 0) {
       return "No results found";
     }
     if (itemCount === 1) {
@@ -195,8 +194,11 @@ export default function FilterBar({
         <div className={styles.filterOptions}>
           <div className={styles.filterGrid}>
             <div className={styles.filterGroup}>
-              <label className={styles.label}>Category</label>
+              <label className={styles.label} htmlFor="filter-category">
+                Category
+              </label>
               <select
+                id="filter-category"
                 className={styles.select}
                 value={filters.category}
                 onChange={(e) => handleFilterChange("category", e.target.value)}
@@ -210,8 +212,11 @@ export default function FilterBar({
             </div>
 
             <div className={styles.filterGroup}>
-              <label className={styles.label}>Condition</label>
+              <label className={styles.label} htmlFor="filter-condition">
+                Condition
+              </label>
               <select
+                id="filter-condition"
                 className={styles.select}
                 value={filters.condition}
                 onChange={(e) =>
