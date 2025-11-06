@@ -61,11 +61,6 @@ export default function AddListingPage() {
   return (
     <div className={styles.page}>
       <Navbar />
-      <div className={styles.backSection}>
-        <Link href="/" className={styles.backButton}>
-          ← Back to Browse
-        </Link>
-      </div>
       <div className={styles.container}>
         {/* Form Section */}
         <section className={styles.formSection}>
