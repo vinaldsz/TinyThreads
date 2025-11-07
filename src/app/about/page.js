@@ -44,20 +44,18 @@ export default function AboutPage() {
     {
       name: "Abhishek Tuteja",
       role: "Software Development Engineer",
-      description:
-        "Backend specialist working on database design, cloud integration, and building scalable marketplace infrastructure.",
-      image: "/images/about/team/member-2.jpeg",
-      altText: "Abhishek Tuteja, Software Development Engineer",
+      description: "Backend specialist working on database design, cloud integration, and building scalable marketplace infrastructure.",
+      image: "/images/about/team/member-2.png", 
+      altText: "Abhishek Tuteja, Software Development Engineer"
     },
     {
       name: "Xiaowei Qi",
       role: "Software Development Engineer",
-      description:
-        "Frontend engineer creating intuitive user interfaces and seamless user experiences for the TinyThreads platform.",
-      image: "/images/about/team/member-3.jpeg",
-      altText: "Xiaowei Qi, Software Development Engineer",
-    },
-  ];
+      description: "Frontend engineer creating intuitive user interfaces and seamless user experiences for the TinyThreads platform.",
+      image: "/images/about/team/member-3.png",
+      altText: "Xiaowei Qi, Software Development Engineer"
+    }
+  ]
 
   return (
     <div className={styles.aboutContainer}>
