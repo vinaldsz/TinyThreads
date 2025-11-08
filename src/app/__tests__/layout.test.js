@@ -10,12 +10,12 @@ jest.mock("next/font/google", () => ({
 // Mock CSS import
 jest.mock("../globals.css", () => ({}));
 
-import { render, screen } from "@testing-library/react";
 import RootLayout, { metadata } from "../layout";
+import { Geist, Geist_Mono } from "next/font/google";
 
 // Get the mocked functions
-const mockGeist = require("next/font/google").Geist;
-const mockGeistMono = require("next/font/google").Geist_Mono;
+const mockGeist = Geist;
+const mockGeistMono = Geist_Mono;
 
 describe("RootLayout", () => {
   // RootLayout renders html/body elements which cannot be tested directly
