@@ -25,6 +25,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "example.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
     // Alternatively you can use `domains: ['images.unsplash.com']` if you prefer
   },
