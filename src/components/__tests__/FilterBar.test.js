@@ -1,5 +1,5 @@
 // src/components/__tests__/FilterBar.test.js
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, } from '@testing-library/react'
 import FilterBar from '../FilterBar/FilterBar'
 
 describe('FilterBar Component', () => {

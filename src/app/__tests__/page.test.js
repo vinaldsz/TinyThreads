@@ -20,7 +20,7 @@ jest.mock('@/services/itemService', () => ({
 
 // Mock FilterBar component
 jest.mock('@/components/FilterBar/FilterBar', () => {
-  const MockFilterBar = function({ onFiltersChange, onClearFilters, initialFilters, itemCount, activeFiltersCount, sortLabel }) {
+  const MockFilterBar = function({ onFiltersChange, onClearFilters, itemCount, activeFiltersCount, sortLabel }) {
     return (
       <div data-testid="filter-bar">
         <div data-testid="item-count">{itemCount}</div>

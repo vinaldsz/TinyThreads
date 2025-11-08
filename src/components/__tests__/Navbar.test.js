@@ -6,6 +6,7 @@ import Navbar from '../Navbar/Navbar';
 jest.mock('next/image', () => {
   return function MockImage({ src, alt, width, height, className }) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
         alt={alt}
@@ -90,7 +91,8 @@ describe('Navbar', () => {
 
     test('about link is accessible', () => {
       const aboutLink = screen.getByRole('link', { name: /about/i });
-      expect(aboutLink).toBeAccessible;
+      expect(aboutLink).toBeInTheDocument();
+      expect(aboutLink).toHaveAttribute('href');
     });
   });
 
