@@ -7,6 +7,7 @@ import ItemCard from '../ItemCard/ItemCard'
 jest.mock('next/image', () => {
   return function MockImage({ src, alt, fill, onLoadingComplete, onError, ...props }) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
         alt={alt}

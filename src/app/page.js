@@ -16,10 +16,15 @@ export default function BrowsePage() {
   useEffect(() => {
     const loadItems = async () => {
       setLoading(true);
-      const data = await getItems();
-      setItems(data.items);
-      setFilteredItems(data.items);
-      setLoading(false);
+      try {
+        const data = await getItems();
+        setItems(data.items);
+        setFilteredItems(data.items);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to load items:", error);
+        setLoading(false);
+      }
     };
     loadItems();
   }, []);
@@ -28,9 +33,14 @@ export default function BrowsePage() {
     setFilters(newFilters);
     setLoading(true);
 
-    const filtered = await filterItems(newFilters);
-    setFilteredItems(filtered.items);
-    setLoading(false);
+    try {
+      const filtered = await filterItems(newFilters);
+      setFilteredItems(filtered.items);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to filter items:", error);
+      setLoading(false);
+    }
   };
 
   const clearAllFilters = () => {

@@ -19,6 +19,9 @@ export default function ItemGrid({
     setLoadingMore(true);
     try {
       await onLoadMore();
+    } catch (error) {
+      // Error is handled by the caller, just ensure loading state is reset
+      console.error("Load more failed:", error);
     } finally {
       setLoadingMore(false);
     }
