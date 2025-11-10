@@ -131,18 +131,30 @@ export default function AddListingPage() {
                 type="text"
                 placeholder="e.g. Organic Cotton Onesie - Pink"
                 required
+                onBlur={handleTitleBlur}
+                onChange={handleTitleChange}
               />
+              {titleErr && (
+                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
+                  {titleErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="category">Category</label>
-              <select id="category" name="category" required>
+              <select id="category" name="category" required onChange={handleCategoryChange}>
                 <option value="">Select category</option>
                 <option value="clothing">Clothing</option>
                 <option value="toys">Toys</option>
                 <option value="books">Books</option>
                 <option value="gear">Baby Gear</option>
               </select>
+              {categoryErr && (
+                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
+                  {categoryErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -176,24 +188,37 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="sellerId">Seller ID</label>
+              <label htmlFor="sellerName">Seller Name</label>
               <input
-                id="sellerId"
-                name="sellerId"
+                id="sellerName"
+                name="sellerName"
                 type="text"
-                placeholder="seller1"
+                placeholder="e.g., Alice Johnson"
+                onBlur={handleSellerNameBlur}
+                onChange={handleSellerNameChange}
+                required
               />
+              {sellerNameErr && (
+                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
+                  {sellerNameErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="condition">Condition</label>
-              <select id="condition" name="condition" required>
+              <select id="condition" name="condition" required onChange={handleConditionChange}>
                 <option value="">Select condition</option>
                 <option value="new">New</option>
                 <option value="like-new">Like New</option>
                 <option value="good">Good</option>
                 <option value="fair">Fair</option>
               </select>
+              {conditionErr && (
+                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
+                  {conditionErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -206,7 +231,14 @@ export default function AddListingPage() {
                 step="0.01"
                 placeholder="e.g. 20.00"
                 required
+                onBlur={handlePriceBlur}
+                onChange={handlePriceChange}
               />
+              {priceErr && (
+                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
+                  {priceErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -217,7 +249,14 @@ export default function AddListingPage() {
                 type="file"
                 accept="image/*"
                 required
+                onChange={handleFileChange}
+                aria-describedby="imageError"
               />
+              {fileErr && (
+                <p id="imageError" role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
+                  {fileErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -231,7 +270,7 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.actions}>
-              <button type="submit" className={styles.submitBtn}>
+              <button type="submit" className={styles.submitBtn} disabled={isFormInvalid()}>
                 Add Listing
               </button>
               <Link href="/" className={styles.cancelBtn}>
