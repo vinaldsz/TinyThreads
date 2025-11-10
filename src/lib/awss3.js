@@ -1,7 +1,13 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
 
-const { AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_PUBLIC_BASE, S3_BUCKET_NAME } = process.env;
+const {
+  AWS_REGION,
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
+  S3_PUBLIC_BASE,
+  S3_BUCKET_NAME,
+} = process.env;
 
 if (!AWS_REGION || !AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
   throw new Error("Missing AWS credentials or region in environment variables");
@@ -18,13 +24,16 @@ const s3 = new S3Client({
   },
 });
 
-const PUBLIC_BASE = S3_PUBLIC_BASE || "https://tinythreads-s3-bucket.s3.us-east-1.amazonaws.com";
+const PUBLIC_BASE = S3_PUBLIC_BASE;
 
 export function getPublicUrl(key) {
   return `${PUBLIC_BASE}/${key}`;
 }
 
-export async function uploadImageToS3(file, { folder = "items", filenamePrefix = "item" } = {}) {
+export async function uploadImageToS3(
+  file,
+  { folder = "items", filenamePrefix = "item" } = {}
+) {
   if (!file || typeof file === "string") {
     throw new Error("uploadImageToS3: file is required");
   }
@@ -34,7 +43,9 @@ export async function uploadImageToS3(file, { folder = "items", filenamePrefix =
   }
 
   const originalName = file.name || "upload.jpg";
-  const ext = (originalName.includes(".") ? originalName.split(".").pop() : "jpg").toLowerCase();
+  const ext = (
+    originalName.includes(".") ? originalName.split(".").pop() : "jpg"
+  ).toLowerCase();
   const key = `${folder}/${filenamePrefix}-${randomUUID()}.${ext}`;
 
   const arrayBuffer = await file.arrayBuffer();

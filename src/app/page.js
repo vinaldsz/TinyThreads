@@ -1,10 +1,11 @@
 // src/app/page.js
 "use client";
-import { useState, useEffect } from 'react';
-import styles from './page.module.css';
-import FilterBar from '@/components/FilterBar/FilterBar';
-import ItemGrid from '@/components/ItemGrid/ItemGrid';
-import { getItems, filterItems } from '@/services/itemService';
+import { useState, useEffect } from "react";
+import styles from "./page.module.css";
+import Navbar from "@/components/Navbar/Navbar";
+import FilterBar from "@/components/FilterBar/FilterBar";
+import ItemGrid from "@/components/ItemGrid/ItemGrid";
+import { getItems, filterItems } from "@/services/itemService";
 
 export default function BrowsePage() {
   const [items, setItems] = useState([]);
@@ -15,10 +16,15 @@ export default function BrowsePage() {
   useEffect(() => {
     const loadItems = async () => {
       setLoading(true);
-      const data = await getItems();
-      setItems(data.items);
-      setFilteredItems(data.items);
-      setLoading(false);
+      try {
+        const data = await getItems();
+        setItems(data.items);
+        setFilteredItems(data.items);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to load items:", error);
+        setLoading(false);
+      }
     };
     loadItems();
   }, []);
@@ -26,10 +32,15 @@ export default function BrowsePage() {
   const handleFiltersChange = async (newFilters) => {
     setFilters(newFilters);
     setLoading(true);
-    
-    const filtered = await filterItems(newFilters);
-    setFilteredItems(filtered.items);
-    setLoading(false);
+
+    try {
+      const filtered = await filterItems(newFilters);
+      setFilteredItems(filtered.items);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to filter items:", error);
+      setLoading(false);
+    }
   };
 
   const clearAllFilters = () => {
@@ -40,37 +51,29 @@ export default function BrowsePage() {
 
   // calculate active filters count
   const getActiveFiltersCount = () => {
-    return Object.values(filters).filter(value => 
-      value && value !== '' && value !== 'newest'
+    return Object.values(filters).filter(
+      (value) => value && value !== "" && value !== "newest"
     ).length;
   };
 
   // get sort label
   const getSortLabel = () => {
     const sortLabels = {
-      'newest': 'Newest first',
-      'oldest': 'Oldest first', 
-      'price-low': 'Price: Low to High',
-      'price-high': 'Price: High to Low'
+      newest: "Newest first",
+      oldest: "Oldest first",
+      "price-low": "Price: Low to High",
+      "price-high": "Price: High to Low",
     };
-    return sortLabels[filters.sortBy] || 'Newest first';
+    return sortLabels[filters.sortBy] || "Newest first";
   };
 
   return (
     <div className={styles.page}>
+      <Navbar />
       <div className={styles.container}>
-        
-        {/* Header Section - Logo + title */}
-        <section className={styles.headerSection}>
-          <div className={styles.logoContainer}>
-            <span className={styles.logo}>👶</span>
-            <h1 className={styles.title}>TinyThreads</h1>
-          </div>
-        </section>
-        
         {/* Control Section - search + filter + sort */}
         <section className={styles.controlSection}>
-          <FilterBar 
+          <FilterBar
             onFiltersChange={handleFiltersChange}
             onClearFilters={clearAllFilters}
             initialFilters={filters}
@@ -81,11 +84,7 @@ export default function BrowsePage() {
         </section>
 
         {/* Content Section */}
-        <ItemGrid 
-          items={filteredItems}
-          loading={loading}
-          hasMore={false}
-        />
+        <ItemGrid items={filteredItems} loading={loading} hasMore={false} />
       </div>
     </div>
   );

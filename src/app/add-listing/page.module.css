@@ -115,3 +115,31 @@
 .cancelBtn:hover {
   background: var(--gray-100);
 }
+
+/* Back Button */
+.backSection {
+  display: flex;
+  justify-content: flex-start;
+  max-width: 800px;
+  margin: var(--space-5) auto 0 auto; /* centers within page width */
+  padding: 0 var(--space-5); /* aligns with form padding */
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--gray-700);
+  text-decoration: none;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: var(--white);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.backButton:hover {
+  background: var(--gray-100);
+  color: var(--gray-900);
+}

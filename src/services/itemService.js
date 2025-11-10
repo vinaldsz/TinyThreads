@@ -24,23 +24,25 @@ async function apiFetch(path, options = {}) {
 function normalizeItem(i) {
   if (!i) return i;
   const rawId = i._id ?? i.id;
-  const idStr = typeof rawId === 'string' ? rawId : (rawId ? String(rawId) : undefined);
+  const idStr =
+    typeof rawId === "string" ? rawId : rawId ? String(rawId) : undefined;
 
   return {
     id: idStr,
     _id: idStr,
-    title: i.title ?? '',
-    price: typeof i.price === 'number' ? i.price : Number(i.price ?? 0),
-    size: i.size ?? '',
-    condition: i.condition ?? '',
-    imageUrl: Array.isArray(i.imageUrls) && i.imageUrls.length
-      ? i.imageUrls[0]
-      : (i.imageUrl ?? null),
-    description: i.description ?? '',
-    category: i.category ?? '',
-    ageRange: i.ageRange ?? '',
-    location: i.location ?? '',
-    status: i.status ?? 'available',
+    title: i.title ?? "",
+    price: typeof i.price === "number" ? i.price : Number(i.price ?? 0),
+    size: i.size ?? "",
+    condition: i.condition ?? "",
+    imageUrl:
+      Array.isArray(i.imageUrls) && i.imageUrls.length
+        ? i.imageUrls[0]
+        : i.imageUrl ?? null,
+    description: i.description ?? "",
+    category: i.category ?? "",
+    ageRange: i.ageRange ?? "",
+    location: i.location ?? "",
+    status: i.status ?? "available",
     // --- Commented out for current sprint ---
     // sellerId: i.sellerId ?? '',
     // sellerName: i.sellerName ?? '',
@@ -51,7 +53,10 @@ function normalizeItem(i) {
 
 // Get all items (with optional pagination)
 export async function getItems(page = 1, limit = 12, extra = {}) {
-  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
   Object.entries(extra).forEach(([k, v]) => {
     if (v !== undefined && v !== null && v !== "") params.set(k, String(v));
   });
@@ -62,7 +67,7 @@ export async function getItems(page = 1, limit = 12, extra = {}) {
     total: Number(data.total ?? items.length),
     page: Number(data.page ?? page),
     limit: Number(data.limit ?? limit),
-    hasMore: Boolean(data.hasMore ?? (items.length === limit)),
+    hasMore: Boolean(data.hasMore ?? items.length === limit),
   };
 }
 
@@ -72,7 +77,7 @@ export async function getItemById(id) {
   const data = await apiFetch(`/api/items/${id}`);
   // Allow either { item } or direct object
   const item = data.item || data;
-  if (!item) throw new Error(`Item with id ${id} not found`);
+  if (!item || data.error) throw new Error(`Item with id ${id} not found`);
   return normalizeItem(item);
 }
 
@@ -80,7 +85,8 @@ export async function getItemById(id) {
 export async function filterItems(filters = {}) {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== "" && v !== "All") params.set(k, String(v));
+    if (v !== undefined && v !== null && v !== "" && v !== "All")
+      params.set(k, String(v));
   });
   const data = await apiFetch(`/api/items?${params.toString()}`);
   const items = Array.isArray(data.items) ? data.items.map(normalizeItem) : [];
@@ -99,7 +105,11 @@ export async function searchItems(query) {
 // Get items by seller
 export async function getItemsBySeller(sellerId, page = 1, limit = 24) {
   if (!sellerId) throw new Error("Missing sellerId");
-  const params = new URLSearchParams({ sellerId, page: String(page), limit: String(limit) });
+  const params = new URLSearchParams({
+    sellerId,
+    page: String(page),
+    limit: String(limit),
+  });
   const data = await apiFetch(`/api/items?${params.toString()}`);
   const items = Array.isArray(data.items) ? data.items.map(normalizeItem) : [];
   return {
@@ -115,7 +125,10 @@ export function getAvailableFilters() {
 
 // Get featured/recommended items
 export async function getFeaturedItems(limit = 6) {
-  const params = new URLSearchParams({ limit: String(limit), featured: "true" });
+  const params = new URLSearchParams({
+    limit: String(limit),
+    featured: "true",
+  });
   const data = await apiFetch(`/api/items?${params.toString()}`);
   const items = Array.isArray(data.items) ? data.items.map(normalizeItem) : [];
   return {

@@ -1,9 +1,10 @@
 "use client";
 // src/components/ItemDetail/ItemDetail.js
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { getItemById } from '../../services/itemService';
-import styles from './ItemDetail.module.css';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getItemById } from "../../services/itemService";
+import styles from "./ItemDetail.module.css";
+import Image from "next/image";
 
 export default function ItemDetail({ itemId }) {
   const [item, setItem] = useState(null);
@@ -15,9 +16,11 @@ export default function ItemDetail({ itemId }) {
       try {
         const data = await getItemById(itemId); // calls /api/items/:id
         setItem(data);
-        if (process.env.NODE_ENV !== 'production') console.log('ItemDetail loaded item:', data);
+        if (process.env.NODE_ENV !== "production") {
+          console.log("ItemDetail loaded item:", data);
+        }
       } catch (err) {
-        console.error('Error fetching item:', err);
+        console.error("Error fetching item:", err);
       } finally {
         setLoading(false);
       }
@@ -28,8 +31,8 @@ export default function ItemDetail({ itemId }) {
   const handleBack = () => router.back();
 
   const formatPrice = (p) => {
-    const n = typeof p === 'number' ? p : Number(p);
-    return Number.isFinite(n) ? n.toFixed(2) : String(p ?? '');
+    const n = typeof p === "number" ? p : Number(p);
+    return Number.isFinite(n) ? n.toFixed(2) : String(p ?? "");
   };
 
   if (loading) {
@@ -44,8 +47,10 @@ export default function ItemDetail({ itemId }) {
     return (
       <div className={styles.notFound}>
         <h2>Item Not Found</h2>
-        <p>The item you're looking for doesn't exist or has been removed.</p>
-        <button onClick={handleBack} className={styles.backButton}>← Go Back</button>
+        <p>The item you are looking for does not exist or has been removed.</p>
+        <button onClick={handleBack} className={styles.backButton}>
+          ← Go Back
+        </button>
       </div>
     );
   }
@@ -53,7 +58,9 @@ export default function ItemDetail({ itemId }) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <button onClick={handleBack} className={styles.backButton}>← Back to Browse</button>
+        <button onClick={handleBack} className={styles.backButton}>
+          ← Back to Browse
+        </button>
       </div>
 
       <div className={styles.content}>
@@ -61,13 +68,23 @@ export default function ItemDetail({ itemId }) {
         <div className={styles.imageSection}>
           <div className={styles.mainImage}>
             {item.imageUrl ? (
-              <img src={item.imageUrl} alt={item.title} className={styles.productImage} />
+              <Image
+                src={item.imageUrl}
+                alt={item.title}
+                className={styles.productImage}
+                width={400}
+                height={400}
+              />
             ) : (
               <div className={styles.noImage}>No image available</div>
             )}
           </div>
-          <div className={`${styles.statusBadge} ${styles[(item.status || '').toLowerCase()]}`}>
-            {item.status === 'available' ? '✓ Available' : (item.status || '—')}
+          <div
+            className={`${styles.statusBadge} ${
+              styles[(item.status || "").toLowerCase()]
+            }`}
+          >
+            {item.status === "available" ? "✓ Available" : item.status || "—"}
           </div>
         </div>
 
@@ -79,12 +96,16 @@ export default function ItemDetail({ itemId }) {
             <div className={styles.priceAndCondition}>
               <span className={styles.price}>${formatPrice(item.price)}</span>
               {(() => {
-                const raw = (item.condition ?? '').toString().trim();
-                const key = raw.toLowerCase().replace(/\s+/g, '');
+                const raw = (item.condition ?? "").toString().trim();
+                const key = raw.toLowerCase().replace(/\s+/g, "");
                 const hasVariantClass = key && styles[key];
                 return (
-                  <span className={`${styles.condition} ${hasVariantClass ? styles[key] : ''}`}>
-                    {raw || '—'}
+                  <span
+                    className={`${styles.condition} ${
+                      hasVariantClass ? styles[key] : ""
+                    }`}
+                  >
+                    {raw || "—"}
                   </span>
                 );
               })()}
@@ -94,22 +115,22 @@ export default function ItemDetail({ itemId }) {
               <div className={styles.infoItem}>
                 <span className={styles.label}>Size/Age:</span>
                 <span>
-                  {item.size || '—'} {item.ageRange ? `(${item.ageRange})` : ''}
+                  {item.size || "—"} {item.ageRange ? `(${item.ageRange})` : ""}
                 </span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Category:</span>
-                <span>{item.category || '—'}</span>
+                <span>{item.category || "—"}</span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Location:</span>
-                <span>{item.location || '—'}</span>
+                <span>{item.location || "—"}</span>
               </div>
             </div>
 
             <div className={styles.description}>
               <h3>Description</h3>
-              <p>{item.description || '—'}</p>
+              <p>{item.description || "—"}</p>
             </div>
           </div>
 
@@ -142,7 +163,9 @@ export default function ItemDetail({ itemId }) {
           <div className={styles.safetyNotice}>
             <h4>🛡️ Safety Tips</h4>
             <ul>
-              <li>Meet in a public place like a library, coffee shop, or mall</li>
+              <li>
+                Meet in a public place like a library, coffee shop, or mall
+              </li>
               <li>Bring a friend if possible</li>
               <li>Inspect items carefully before payment</li>
               <li>Trust your instincts — if something feels off, walk away</li>

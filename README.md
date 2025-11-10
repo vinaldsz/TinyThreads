@@ -1,4 +1,4 @@
-# TinyThreads
+# TinyThreads - Baby Clothes Marketplace
 
 TinyThreads is a small marketplace prototype built with Next.js (App Router) focused on fast client-side image preview and S3-based storage for listings. This repository contains the application code, test pages, and small server endpoints used during development.
 
@@ -88,6 +88,7 @@ AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY_HERE
 
 MONGODB_URI=mongodb+srv://<db-username>:<db-password>@TinyThreads.houabd4.mongodb.net/tinythreads?retryWrites=true&w=majority&appName=TinyThreads
 NODE_ENV=development
+MongoDB_DB=database_name
 ```
 
 - If you do not plan to test S3 endpoints, you may omit the AWS variables; the app will throw if code paths that require AWS are executed.

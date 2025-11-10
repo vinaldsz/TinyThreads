@@ -2,7 +2,7 @@
 import styles from "./ItemCard.module.css";
 import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function ItemCard({ item }) {
   const router = useRouter();
@@ -20,16 +20,36 @@ export default function ItemCard({ item }) {
 
   const getConditionClass = (condition) => {
     switch (condition) {
-      case "New":
+      case "new":
         return styles.conditionNew;
-      case "Like New":
+      case "like-new":
         return styles.conditionLikeNew;
-      case "Good":
+      case "good":
         return styles.conditionGood;
-      case "Fair":
+      case "fair":
         return styles.conditionFair;
       default:
         return styles.conditionDefault;
+    }
+  };
+
+  const getConditionLabel = (condition) => {
+    switch (condition) {
+      case "like-new":
+        return "Like New";
+      case "good":
+        return "Good";
+      case "new":
+        return "New";
+      case "fair":
+        return "Fair";
+      default:
+        // Fallback: try to prettify by replacing hyphens with spaces and title-casing
+        if (!condition) return "";
+        return condition
+          .split("-")
+          .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+          .join(" ");
     }
   };
 
@@ -51,18 +71,17 @@ export default function ItemCard({ item }) {
   };
 
   const handleItemClick = () => {
-    console.log('Navigating to:', `/items/${item.id}`); 
-    console.log('Item ID:', item.id); 
+    console.log("Navigating to:", `/items/${item.id}`);
+    console.log("Item ID:", item.id);
     router.push(`/Items/${item.id}`);
   };
 
   return (
-    <div 
-    className={styles.card}
-    onClick={handleItemClick}
-    style={{ cursor: 'pointer' }}
+    <div
+      className={styles.card}
+      onClick={handleItemClick}
+      style={{ cursor: "pointer" }}
     >
-
       {/* Image Container */}
       <div className={styles.imageContainer}>
         {!imageLoaded && (
@@ -104,7 +123,7 @@ export default function ItemCard({ item }) {
         {/* Condition Badge */}
         <div className={styles.conditionBadge}>
           <span className={getConditionClass(item.condition)}>
-            {item.condition}
+            {getConditionLabel(item.condition)}
           </span>
         </div>
       </div>
@@ -127,7 +146,7 @@ export default function ItemCard({ item }) {
 
         {/* Description */}
         <p className={styles.description}>{item.description}</p>
-      {/* Seller Info */}
+        {/* Seller Info */}
         {/* <div className={styles.sellerInfo}>
           <div className={styles.seller}>
             <div className={styles.sellerAvatar}>
