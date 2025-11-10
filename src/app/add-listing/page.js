@@ -2,62 +2,111 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 import Navbar from "@/components/Navbar/Navbar";
-import { redirect } from "next/navigation";
-import { uploadImageToS3 } from "@/lib/awss3.js";
+import { useState } from "react";
+import { uploadListingAction } from "./actions";
 
-// Server Action: handles the form submit and uploads the image to S3
-export async function uploadListingAction(formData) {
-  "use server";
+/**
+ * AddListingPage — page for submitting a new listing.
+ * Handles all client-side validation and UX for instant feedback before submit.
+ * (Validation logic mirrors server-side rules in ./actions.js.)
+ */
+export default function AddListingPage() {
+  const [fileErr, setFileErr] = useState("");
+  const [titleErr, setTitleErr] = useState("");
+  const [sellerNameErr, setSellerNameErr] = useState("");
+  const [priceErr, setPriceErr] = useState("");
+  const [categoryErr, setCategoryErr] = useState("");
+  const [conditionErr, setConditionErr] = useState("");
 
-  const title = formData.get("title");
-  const category = formData.get("category");
-  const condition = formData.get("condition");
-  const price = formData.get("price");
-  const size = formData.get("size");
-  const ageRange = formData.get("ageRange");
-  const location = formData.get("location");
-  const sellerId = formData.get("sellerId") || "seller1"; // default for now
-  const status = "available";
-  const description = formData.get("description");
-
-  const file = formData.get("image");
-  // Do not enforce size on the server; client will validate and block submit.
-  // If somehow no file arrives, just redirect back without error.
-  if (!file || typeof file === "string" || !file.arrayBuffer) {
-    redirect("/add-listing");
+  // Client-side validation logic (mirrors server rules for instant feedback)
+  function validateTitle(value) {
+    const v = (value || "").trim();
+    if (v.length < 3 || v.length > 150) return "Title must be 3–150 characters.";
+    return "";
+  }
+  function validateSellerName(value) {
+    const v = (value || "").trim();
+    if (v.length < 2 || v.length > 100) return "Seller name must be 2–100 characters.";
+    return "";
+  }
+  function validatePrice(value) {
+    const v = String(value ?? "").trim();
+    if (!v) return "Enter a valid price (e.g., 12.99).";
+    const num = Number(v);
+    if (!Number.isFinite(num) || num < 0) return "Enter a valid price (e.g., 12.99).";
+    // allow up to 2 decimals
+    if (!/^\d+(?:\.\d{1,2})?$/.test(v)) return "Use up to 2 decimal places.";
+    return "";
+  }
+  function validateRequiredSelect(value, label) {
+    if (!value) return `Please select a ${label}.`;
+    return "";
   }
 
-  const { imageUrl } = await uploadImageToS3(file, {
-    folder: "items",
-    filenamePrefix: "item",
-  });
+  // Field event handlers (validate on blur/change)
+  function handleTitleBlur(e) {
+    setTitleErr(validateTitle(e.target.value));
+  }
+  function handleTitleChange(e) {
+    if (titleErr) setTitleErr(validateTitle(e.target.value));
+  }
 
-  // Save listing to MongoDB with imageUrls
-  const { getDb } = await import("@/lib/mongodb");
-  const db = await getDb();
+  function handleSellerNameBlur(e) {
+    setSellerNameErr(validateSellerName(e.target.value));
+  }
+  function handleSellerNameChange(e) {
+    if (sellerNameErr) setSellerNameErr(validateSellerName(e.target.value));
+  }
 
-  const doc = {
-    title: String(title),
-    price: Number(price),
-    size: size ? String(size) : "",
-    condition: String(condition),
-    imageUrls: [imageUrl],
-    description: description ? String(description) : "",
-    sellerId: String(sellerId),
-    category: String(category),
-    ageRange: ageRange ? String(ageRange) : "",
-    location: location ? String(location) : "",
-    status: status,
-    createdAt: new Date(),
-  };
+  function handlePriceBlur(e) {
+    setPriceErr(validatePrice(e.target.value));
+  }
+  function handlePriceChange(e) {
+    if (priceErr) setPriceErr(validatePrice(e.target.value));
+  }
 
-  await db.collection("Listings").insertOne(doc);
+  function handleCategoryChange(e) {
+    setCategoryErr(validateRequiredSelect(e.target.value, "category"));
+  }
+  function handleConditionChange(e) {
+    setConditionErr(validateRequiredSelect(e.target.value, "condition"));
+  }
 
-  // Redirect back to home or a success page
-  redirect("/");
-}
+  // Global form validation state — disables Submit when any required field fails validation
+  function isFormInvalid() {
+    // Read current DOM values to avoid storing duplicates in state
+    const form = typeof document !== "undefined" && document.getElementById("addListingForm");
+    const titleVal = form?.title?.value ?? "";
+    const sellerNameVal = form?.sellerName?.value ?? "";
+    const priceVal = form?.price?.value ?? "";
+    const categoryVal = form?.category?.value ?? "";
+    const conditionVal = form?.condition?.value ?? "";
 
-export default function AddListingPage() {
+    return Boolean(
+      fileErr ||
+      validateTitle(titleVal) ||
+      validateSellerName(sellerNameVal) ||
+      validatePrice(priceVal) ||
+      validateRequiredSelect(categoryVal, "category") ||
+      validateRequiredSelect(conditionVal, "condition")
+    );
+  }
+
+  // File upload validation: enforce 5 MB limit client-side for UX (server revalidates)
+  const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+  function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setFileErr("");
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      setFileErr("File above 5 MB, please try again.");
+    } else {
+      setFileErr("");
+    }
+  }
+
   return (
     <div className={styles.page}>
       <Navbar />
