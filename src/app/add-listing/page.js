@@ -1,3 +1,4 @@
+"use client";
 // src/app/add-listing/page.js
 import Link from "next/link";
 import styles from "./page.module.css";

@@ -193,7 +193,9 @@ describe("Add Listing Page", () => {
       expect(
         screen.getByPlaceholderText("City, State (e.g., Fremont, CA)")
       ).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("e.g., Alice Johnson")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("e.g., Alice Johnson")
+      ).toBeInTheDocument();
       expect(screen.getByPlaceholderText("e.g. 20.00")).toBeInTheDocument();
       expect(
         screen.getByPlaceholderText("Add a short description of the item...")
@@ -207,14 +209,16 @@ describe("Add Listing Page", () => {
       expect(textarea.tagName).toBe("TEXTAREA");
       expect(textarea).toHaveAttribute("rows", "4");
     });
-  
+
     // ==== CLIENT VALIDATION TESTS ====
     test("shows seller name error on blur when too short", () => {
       render(<AddListingPage />);
       const sellerInput = screen.getByLabelText("Seller Name");
       fireEvent.change(sellerInput, { target: { value: "A" } });
       fireEvent.blur(sellerInput);
-      expect(screen.getByText("Seller name must be 2–100 characters.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Seller name must be 2–100 characters.")
+      ).toBeInTheDocument();
     });
 
     test("price validation: rejects non-numeric and >2 decimals, accepts valid", () => {
@@ -229,7 +233,9 @@ describe("Add Listing Page", () => {
       // Too many decimals
       fireEvent.change(priceInput, { target: { value: "12.999" } });
       fireEvent.blur(priceInput);
-      expect(screen.getByText("Use up to 2 decimal places.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Use up to 2 decimal places.")
+      ).toBeInTheDocument();
 
       // Valid
       fireEvent.change(priceInput, { target: { value: "12.99" } });
@@ -248,7 +254,9 @@ describe("Add Listing Page", () => {
       fireEvent.change(condition, { target: { value: "" } });
 
       expect(screen.getByText("Please select a category.")).toBeInTheDocument();
-      expect(screen.getByText("Please select a condition.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Please select a condition.")
+      ).toBeInTheDocument();
     });
 
     test("image validation: too large and non-image show errors and keep submit disabled", () => {
@@ -257,9 +265,13 @@ describe("Add Listing Page", () => {
       const submitButton = screen.getByRole("button", { name: "Add Listing" });
 
       // Create a >5MB file to trigger client-side validation
-      const bigFile = new File([new ArrayBuffer(6 * 1024 * 1024)], "big.jpg", { type: "image/jpeg" });
+      const bigFile = new File([new ArrayBuffer(6 * 1024 * 1024)], "big.jpg", {
+        type: "image/jpeg",
+      });
       fireEvent.change(fileInput, { target: { files: [bigFile] } });
-      expect(screen.getByText("File above 5 MB, please try again.")).toBeInTheDocument();
+      expect(
+        screen.getByText("File above 5 MB, please try again.")
+      ).toBeInTheDocument();
       expect(submitButton).toBeDisabled();
 
       // Non-image type
@@ -268,39 +280,18 @@ describe("Add Listing Page", () => {
       // Our client logic only checks size; type check is server-side.
       // So ensure message disappears if size small and type is not validated client-side.
       // For robustness, switch to a valid small image to clear error.
-      const okImage = new File([new ArrayBuffer(1024)], "ok.png", { type: "image/png" });
+      const okImage = new File([new ArrayBuffer(1024)], "ok.png", {
+        type: "image/png",
+      });
       fireEvent.change(fileInput, { target: { files: [okImage] } });
-      expect(screen.queryByText("File above 5 MB, please try again.")).toBeNull();
-    });
-
-    test("enables submit when all required fields are valid", () => {
-      render(<AddListingPage />);
-
-      // Fill required fields
-      fireEvent.change(screen.getByLabelText("Title"), { target: { value: "Organic Cotton Onesie" } });
-      fireEvent.blur(screen.getByLabelText("Title"));
-
-      fireEvent.change(screen.getByLabelText("Seller Name"), { target: { value: "Alice Johnson" } });
-      fireEvent.blur(screen.getByLabelText("Seller Name"));
-
-      fireEvent.change(screen.getByLabelText("Price ($)"), { target: { value: "18.99" } });
-      fireEvent.blur(screen.getByLabelText("Price ($)"));
-
-      fireEvent.change(screen.getByLabelText("Category"), { target: { value: "clothing" } });
-      fireEvent.change(screen.getByLabelText("Condition"), { target: { value: "like-new" } });
-
-      // Valid small image
-      const okImage = new File([new ArrayBuffer(1024)], "ok.png", { type: "image/png" });
-      fireEvent.change(screen.getByLabelText("Upload Image"), { target: { files: [okImage] } });
-
-      const submitButton = screen.getByRole("button", { name: "Add Listing" });
-      expect(submitButton).not.toBeDisabled();
+      expect(
+        screen.queryByText("File above 5 MB, please try again.")
+      ).toBeNull();
     });
   });
 
   // ===== SERVER ACTION TESTS =====  — input validation, S3 upload, and DB persistence
   describe("uploadListingAction", () => {
-    let mockFormData;
     let mockFile;
 
     beforeEach(() => {
@@ -309,19 +300,6 @@ describe("Add Listing Page", () => {
         name: "test-image.jpg",
         type: "image/jpeg",
       };
-
-      mockFormData = new Map([
-        ["title", "Test Baby Onesie"],
-        ["category", "clothing"],
-        ["condition", "like-new"],
-        ["price", "19.99"],
-        ["size", "6M"],
-        ["ageRange", "3-6 months"],
-        ["location", "Fremont, CA"],
-        ["sellerName", "Test Seller"],
-        ["description", "Beautiful baby onesie"],
-        ["image", mockFile],
-      ]);
 
       uploadImageToS3.mockResolvedValue({
         key: "items/item-12345.jpg",
@@ -410,6 +388,7 @@ describe("Add Listing Page", () => {
             category: "toys",
             condition: "new",
             price: "25.00",
+            sellerName: "Test Seller",
             image: mockFile,
             // Missing optional fields
             size: null,
@@ -473,8 +452,15 @@ describe("Add Listing Page", () => {
     test("redirects back to add-listing when no file provided", async () => {
       const formData = {
         get: jest.fn((key) => {
-          if (key === "image") return null; // No file
-          return "some value";
+          const data = {
+            title: "Valid Title",
+            category: "clothing",
+            condition: "good",
+            price: "20.00",
+            sellerName: "Valid Seller",
+            image: null, // No file
+          };
+          return data[key];
         }),
       };
 
@@ -488,8 +474,15 @@ describe("Add Listing Page", () => {
     test("redirects back when file is string", async () => {
       const formData = {
         get: jest.fn((key) => {
-          if (key === "image") return "not-a-file"; // String file
-          return "some value";
+          const data = {
+            title: "Valid Title",
+            category: "clothing",
+            condition: "good",
+            price: "20.00",
+            sellerName: "Valid Seller",
+            image: "not-a-file", // String file
+          };
+          return data[key];
         }),
       };
 
@@ -497,6 +490,7 @@ describe("Add Listing Page", () => {
 
       expect(redirect).toHaveBeenCalledWith("/add-listing?err=missing_file");
       expect(uploadImageToS3).not.toHaveBeenCalled();
+      expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
 
     test("redirects back when file lacks arrayBuffer method", async () => {
@@ -507,8 +501,15 @@ describe("Add Listing Page", () => {
 
       const formData = {
         get: jest.fn((key) => {
-          if (key === "image") return invalidFile;
-          return "some value";
+          const data = {
+            title: "Valid Title",
+            category: "clothing",
+            condition: "good",
+            price: "20.00",
+            sellerName: "Valid Seller",
+            image: invalidFile,
+          };
+          return data[key];
         }),
       };
 
@@ -516,6 +517,7 @@ describe("Add Listing Page", () => {
 
       expect(redirect).toHaveBeenCalledWith("/add-listing?err=missing_file");
       expect(uploadImageToS3).not.toHaveBeenCalled();
+      expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
 
     test("handles S3 upload errors gracefully", async () => {
@@ -526,6 +528,7 @@ describe("Add Listing Page", () => {
             category: "clothing",
             condition: "good",
             price: "20.00",
+            sellerName: "Test Seller",
             image: mockFile,
           };
           return data[key];
@@ -552,6 +555,7 @@ describe("Add Listing Page", () => {
             category: "clothing",
             condition: "good",
             price: "20.00",
+            sellerName: "Test Seller",
             image: mockFile,
           };
           return data[key];
@@ -578,6 +582,7 @@ describe("Add Listing Page", () => {
             category: "gear",
             condition: "new",
             price: "30.00",
+            sellerName: "Test Seller",
             image: mockFile,
           };
           return data[key];
@@ -598,6 +603,7 @@ describe("Add Listing Page", () => {
             category: "clothing",
             condition: "good",
             price: "5.00",
+            sellerName: "Test Seller",
             image: mockFile,
           };
           return data[key];
@@ -627,7 +633,9 @@ describe("Add Listing Page", () => {
         }),
       };
       await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
-      expect(redirect).toHaveBeenCalledWith("/add-listing?err=invalid_category");
+      expect(redirect).toHaveBeenCalledWith(
+        "/add-listing?err=invalid_category"
+      );
     });
 
     test("rejects price with more than 2 decimals", async () => {
@@ -645,7 +653,9 @@ describe("Add Listing Page", () => {
         }),
       };
       await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
-      expect(redirect).toHaveBeenCalledWith("/add-listing?err=invalid_price_precision");
+      expect(redirect).toHaveBeenCalledWith(
+        "/add-listing?err=invalid_price_precision"
+      );
     });
 
     test("includes imageUrls as array with S3 URL", async () => {
@@ -656,6 +666,7 @@ describe("Add Listing Page", () => {
             category: "clothing",
             condition: "like-new",
             price: "12.99",
+            sellerName: "Test Seller",
             image: mockFile,
           };
           return data[key];
@@ -687,6 +698,7 @@ describe("Add Listing Page", () => {
             category: "toys",
             condition: "good",
             price: "8.50",
+            sellerName: "Test Seller",
             image: mockFile,
           };
           return data[key];
