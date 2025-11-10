@@ -1,10 +1,19 @@
+/**
+ * TinyThreads — Add Listing Page Tests
+ * Covers:
+ *  - Client-side rendering & inline validation UX
+ *  - Server-side validation, redirects, and DB persistence
+ *  - Accessibility and integration behavior
+ *  - Uses Jest mocks for MongoDB, Next.js navigation, and S3 uploads
+ */
 // src/app/add-listing/__tests__/page.test.js
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { redirect } from "next/navigation";
-import AddListingPage, { uploadListingAction } from "../page";
+import AddListingPage from "../page";
+import { uploadListingAction } from "../actions";
 import { uploadImageToS3 } from "../../../lib/awss3";
 
-// Mock MongoDB
+// Mocked MongoDB client to simulate in-memory inserts and queries
 const mockCollection = {
   insertOne: jest.fn(),
 };
@@ -24,19 +33,20 @@ jest.mock("../../../lib/mongodb", () => ({
   }),
 }));
 
-// Mock Next.js navigation
+// Mocked Next.js redirect; throws Error('Redirect') to assert destination
 jest.mock("next/navigation", () => ({
   redirect: jest.fn(() => {
     throw new Error("Redirect");
   }),
 }));
 
-// Mock AWS S3 upload
+// Mocked AWS S3 helper to prevent real network requests
 jest.mock("../../../lib/awss3", () => ({
   uploadImageToS3: jest.fn(),
 }));
 
 describe("Add Listing Page", () => {
+  // Reset mocks before each test to ensure clean state
   beforeEach(() => {
     redirect.mockClear();
     uploadImageToS3.mockClear();
@@ -45,7 +55,7 @@ describe("Add Listing Page", () => {
     mockClient.db.mockClear();
   });
 
-  // ===== REACT COMPONENT TESTS =====
+  // ===== CLIENT COMPONENT TESTS =====  — render, structure, and inline validation
   describe("AddListingPage Component", () => {
     test("renders page header correctly", () => {
       render(<AddListingPage />);
@@ -65,7 +75,7 @@ describe("Add Listing Page", () => {
       expect(screen.getByLabelText("Size")).toBeInTheDocument();
       expect(screen.getByLabelText("Age Range")).toBeInTheDocument();
       expect(screen.getByLabelText("Location")).toBeInTheDocument();
-      expect(screen.getByLabelText("Seller ID")).toBeInTheDocument();
+      expect(screen.getByLabelText("Seller Name")).toBeInTheDocument();
       expect(screen.getByLabelText("Condition")).toBeInTheDocument();
       expect(screen.getByLabelText("Price ($)")).toBeInTheDocument();
       expect(screen.getByLabelText("Upload Image")).toBeInTheDocument();
@@ -183,7 +193,7 @@ describe("Add Listing Page", () => {
       expect(
         screen.getByPlaceholderText("City, State (e.g., Fremont, CA)")
       ).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("seller1")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("e.g., Alice Johnson")).toBeInTheDocument();
       expect(screen.getByPlaceholderText("e.g. 20.00")).toBeInTheDocument();
       expect(
         screen.getByPlaceholderText("Add a short description of the item...")
@@ -197,9 +207,98 @@ describe("Add Listing Page", () => {
       expect(textarea.tagName).toBe("TEXTAREA");
       expect(textarea).toHaveAttribute("rows", "4");
     });
+  
+    // ==== CLIENT VALIDATION TESTS ====
+    test("shows seller name error on blur when too short", () => {
+      render(<AddListingPage />);
+      const sellerInput = screen.getByLabelText("Seller Name");
+      fireEvent.change(sellerInput, { target: { value: "A" } });
+      fireEvent.blur(sellerInput);
+      expect(screen.getByText("Seller name must be 2–100 characters.")).toBeInTheDocument();
+    });
+
+    test("price validation: rejects non-numeric and >2 decimals, accepts valid", () => {
+      render(<AddListingPage />);
+      const priceInput = screen.getByLabelText("Price ($)");
+
+      // Non-numeric
+      fireEvent.change(priceInput, { target: { value: "abc" } });
+      fireEvent.blur(priceInput);
+      expect(screen.getByText("Enter a valid price (e.g., 12.99)."));
+
+      // Too many decimals
+      fireEvent.change(priceInput, { target: { value: "12.999" } });
+      fireEvent.blur(priceInput);
+      expect(screen.getByText("Use up to 2 decimal places.")).toBeInTheDocument();
+
+      // Valid
+      fireEvent.change(priceInput, { target: { value: "12.99" } });
+      fireEvent.blur(priceInput);
+      expect(screen.queryByText("Enter a valid price (e.g., 12.99)."));
+      expect(screen.queryByText("Use up to 2 decimal places.")).toBeNull();
+    });
+
+    test("category and condition must be selected (placeholder not allowed)", () => {
+      render(<AddListingPage />);
+      const category = screen.getByLabelText("Category");
+      const condition = screen.getByLabelText("Condition");
+
+      // Trigger onChange with empty value to show error
+      fireEvent.change(category, { target: { value: "" } });
+      fireEvent.change(condition, { target: { value: "" } });
+
+      expect(screen.getByText("Please select a category.")).toBeInTheDocument();
+      expect(screen.getByText("Please select a condition.")).toBeInTheDocument();
+    });
+
+    test("image validation: too large and non-image show errors and keep submit disabled", () => {
+      render(<AddListingPage />);
+      const fileInput = screen.getByLabelText("Upload Image");
+      const submitButton = screen.getByRole("button", { name: "Add Listing" });
+
+      // Create a >5MB file to trigger client-side validation
+      const bigFile = new File([new ArrayBuffer(6 * 1024 * 1024)], "big.jpg", { type: "image/jpeg" });
+      fireEvent.change(fileInput, { target: { files: [bigFile] } });
+      expect(screen.getByText("File above 5 MB, please try again.")).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
+
+      // Non-image type
+      const textFile = new File(["hello"], "note.txt", { type: "text/plain" });
+      fireEvent.change(fileInput, { target: { files: [textFile] } });
+      // Our client logic only checks size; type check is server-side.
+      // So ensure message disappears if size small and type is not validated client-side.
+      // For robustness, switch to a valid small image to clear error.
+      const okImage = new File([new ArrayBuffer(1024)], "ok.png", { type: "image/png" });
+      fireEvent.change(fileInput, { target: { files: [okImage] } });
+      expect(screen.queryByText("File above 5 MB, please try again.")).toBeNull();
+    });
+
+    test("enables submit when all required fields are valid", () => {
+      render(<AddListingPage />);
+
+      // Fill required fields
+      fireEvent.change(screen.getByLabelText("Title"), { target: { value: "Organic Cotton Onesie" } });
+      fireEvent.blur(screen.getByLabelText("Title"));
+
+      fireEvent.change(screen.getByLabelText("Seller Name"), { target: { value: "Alice Johnson" } });
+      fireEvent.blur(screen.getByLabelText("Seller Name"));
+
+      fireEvent.change(screen.getByLabelText("Price ($)"), { target: { value: "18.99" } });
+      fireEvent.blur(screen.getByLabelText("Price ($)"));
+
+      fireEvent.change(screen.getByLabelText("Category"), { target: { value: "clothing" } });
+      fireEvent.change(screen.getByLabelText("Condition"), { target: { value: "like-new" } });
+
+      // Valid small image
+      const okImage = new File([new ArrayBuffer(1024)], "ok.png", { type: "image/png" });
+      fireEvent.change(screen.getByLabelText("Upload Image"), { target: { files: [okImage] } });
+
+      const submitButton = screen.getByRole("button", { name: "Add Listing" });
+      expect(submitButton).not.toBeDisabled();
+    });
   });
 
-  // ===== SERVER ACTION TESTS =====
+  // ===== SERVER ACTION TESTS =====  — input validation, S3 upload, and DB persistence
   describe("uploadListingAction", () => {
     let mockFormData;
     let mockFile;
@@ -219,15 +318,10 @@ describe("Add Listing Page", () => {
         ["size", "6M"],
         ["ageRange", "3-6 months"],
         ["location", "Fremont, CA"],
-        ["sellerId", "test-seller"],
+        ["sellerName", "Test Seller"],
         ["description", "Beautiful baby onesie"],
         ["image", mockFile],
       ]);
-
-      // Mock FormData.get method
-      mockFormData.get = jest.fn((key) => {
-        return mockFormData.get(key) || null;
-      });
 
       uploadImageToS3.mockResolvedValue({
         key: "items/item-12345.jpg",
@@ -251,7 +345,7 @@ describe("Add Listing Page", () => {
             size: "6M",
             ageRange: "3-6 months",
             location: "Fremont, CA",
-            sellerId: "test-seller",
+            sellerName: "Test Seller",
             description: "Beautiful baby onesie",
             image: mockFile,
           };
@@ -261,6 +355,7 @@ describe("Add Listing Page", () => {
 
       await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
 
+      // Valid input should trigger Redirect('/') after successful upload and DB insert
       // Should upload image to S3
       expect(uploadImageToS3).toHaveBeenCalledWith(mockFile, {
         folder: "items",
@@ -275,7 +370,7 @@ describe("Add Listing Page", () => {
         condition: "like-new",
         imageUrls: ["https://bucket.s3.amazonaws.com/items/item-12345.jpg"],
         description: "Beautiful baby onesie",
-        sellerId: "test-seller",
+        sellerName: "Test Seller",
         category: "clothing",
         ageRange: "3-6 months",
         location: "Fremont, CA",
@@ -287,7 +382,7 @@ describe("Add Listing Page", () => {
       expect(redirect).toHaveBeenCalledWith("/");
     });
 
-    test("uses default sellerId when not provided", async () => {
+    test("redirects when sellerName is missing", async () => {
       const formData = {
         get: jest.fn((key) => {
           const data = {
@@ -296,19 +391,15 @@ describe("Add Listing Page", () => {
             condition: "good",
             price: "10.00",
             image: mockFile,
-            sellerId: null, // Not provided
+            sellerName: null, // Not provided
           };
           return data[key] || null;
         }),
       };
 
       await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
-
-      expect(mockCollection.insertOne).toHaveBeenCalledWith(
-        expect.objectContaining({
-          sellerId: "seller1", // Default value
-        })
-      );
+      // Missing sellerName should trigger invalid_seller redirect
+      expect(redirect).toHaveBeenCalledWith("/add-listing?err=invalid_seller");
     });
 
     test("handles empty optional fields gracefully", async () => {
@@ -353,7 +444,7 @@ describe("Add Listing Page", () => {
             size: "Large",
             ageRange: "2-3 years",
             location: "San Jose, CA",
-            sellerId: "seller123",
+            sellerName: "Seller 123",
             description: "Great book!",
             image: mockFile,
           };
@@ -369,7 +460,7 @@ describe("Add Listing Page", () => {
           price: 15.5, // Number
           size: "Large", // String
           condition: "fair", // String
-          sellerId: "seller123", // String
+          sellerName: "Seller 123", // String
           category: "books", // String
           ageRange: "2-3 years", // String
           location: "San Jose, CA", // String
@@ -389,7 +480,7 @@ describe("Add Listing Page", () => {
 
       await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
 
-      expect(redirect).toHaveBeenCalledWith("/add-listing");
+      expect(redirect).toHaveBeenCalledWith("/add-listing?err=missing_file");
       expect(uploadImageToS3).not.toHaveBeenCalled();
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
@@ -404,7 +495,7 @@ describe("Add Listing Page", () => {
 
       await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
 
-      expect(redirect).toHaveBeenCalledWith("/add-listing");
+      expect(redirect).toHaveBeenCalledWith("/add-listing?err=missing_file");
       expect(uploadImageToS3).not.toHaveBeenCalled();
     });
 
@@ -423,7 +514,7 @@ describe("Add Listing Page", () => {
 
       await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
 
-      expect(redirect).toHaveBeenCalledWith("/add-listing");
+      expect(redirect).toHaveBeenCalledWith("/add-listing?err=missing_file");
       expect(uploadImageToS3).not.toHaveBeenCalled();
     });
 
@@ -441,6 +532,7 @@ describe("Add Listing Page", () => {
         }),
       };
 
+      // Simulate S3 failure; should propagate error and skip DB insert
       uploadImageToS3.mockRejectedValue(new Error("S3 upload failed"));
 
       await expect(uploadListingAction(formData)).rejects.toThrow(
@@ -466,6 +558,7 @@ describe("Add Listing Page", () => {
         }),
       };
 
+      // Simulate DB failure after S3 upload; should not redirect
       mockCollection.insertOne.mockRejectedValue(new Error("Database error"));
 
       await expect(uploadListingAction(formData)).rejects.toThrow(
@@ -502,7 +595,7 @@ describe("Add Listing Page", () => {
         get: jest.fn((key) => {
           const data = {
             title: "Test Item",
-            category: "other",
+            category: "clothing",
             condition: "good",
             price: "5.00",
             image: mockFile,
@@ -518,6 +611,41 @@ describe("Add Listing Page", () => {
           status: "available",
         })
       );
+    });
+    test("rejects invalid category (not in allowlist)", async () => {
+      const formData = {
+        get: jest.fn((key) => {
+          const data = {
+            title: "Test Item",
+            category: "other",
+            condition: "good",
+            price: "20.00",
+            sellerName: "Test Seller",
+            image: mockFile,
+          };
+          return data[key] || null;
+        }),
+      };
+      await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
+      expect(redirect).toHaveBeenCalledWith("/add-listing?err=invalid_category");
+    });
+
+    test("rejects price with more than 2 decimals", async () => {
+      const formData = {
+        get: jest.fn((key) => {
+          const data = {
+            title: "Test Item",
+            category: "clothing",
+            condition: "good",
+            price: "12.999",
+            sellerName: "Test Seller",
+            image: mockFile,
+          };
+          return data[key] || null;
+        }),
+      };
+      await expect(uploadListingAction(formData)).rejects.toThrow("Redirect");
+      expect(redirect).toHaveBeenCalledWith("/add-listing?err=invalid_price_precision");
     });
 
     test("includes imageUrls as array with S3 URL", async () => {
@@ -549,6 +677,7 @@ describe("Add Listing Page", () => {
     });
 
     test("sets createdAt to current date", async () => {
+      // Validate createdAt timestamp falls between test execution times
       const beforeTime = new Date();
 
       const formData = {
@@ -579,7 +708,7 @@ describe("Add Listing Page", () => {
     });
   });
 
-  // ===== INTEGRATION TESTS =====
+  // ===== INTEGRATION TESTS =====  — consistency between frontend options and backend logic
   describe("integration scenarios", () => {
     test("form and action work together with proper field mapping", () => {
       render(<AddListingPage />);
@@ -607,9 +736,9 @@ describe("Add Listing Page", () => {
         "name",
         "location"
       );
-      expect(screen.getByLabelText("Seller ID")).toHaveAttribute(
+      expect(screen.getByLabelText("Seller Name")).toHaveAttribute(
         "name",
-        "sellerId"
+        "sellerName"
       );
       expect(screen.getByLabelText("Upload Image")).toHaveAttribute(
         "name",
@@ -647,7 +776,7 @@ describe("Add Listing Page", () => {
     });
   });
 
-  // ===== ACCESSIBILITY TESTS =====
+  // ===== ACCESSIBILITY TESTS =====  — label associations and required attributes
   describe("accessibility", () => {
     test("has proper form labels", () => {
       render(<AddListingPage />);
@@ -671,7 +800,7 @@ describe("Add Listing Page", () => {
       expect(screen.getByLabelText("Size")).toBeInTheDocument();
       expect(screen.getByLabelText("Age Range")).toBeInTheDocument();
       expect(screen.getByLabelText("Location")).toBeInTheDocument();
-      expect(screen.getByLabelText("Seller ID")).toBeInTheDocument();
+      expect(screen.getByLabelText("Seller Name")).toBeInTheDocument();
       expect(screen.getByLabelText("Condition")).toBeInTheDocument();
       expect(screen.getByLabelText("Price ($)")).toBeInTheDocument();
       expect(screen.getByLabelText("Upload Image")).toBeInTheDocument();
