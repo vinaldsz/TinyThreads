@@ -300,7 +300,6 @@ describe("Add Listing Page", () => {
 
   // ===== SERVER ACTION TESTS =====  — input validation, S3 upload, and DB persistence
   describe("uploadListingAction", () => {
-    let mockFormData;
     let mockFile;
 
     beforeEach(() => {
@@ -309,19 +308,6 @@ describe("Add Listing Page", () => {
         name: "test-image.jpg",
         type: "image/jpeg",
       };
-
-      mockFormData = new Map([
-        ["title", "Test Baby Onesie"],
-        ["category", "clothing"],
-        ["condition", "like-new"],
-        ["price", "19.99"],
-        ["size", "6M"],
-        ["ageRange", "3-6 months"],
-        ["location", "Fremont, CA"],
-        ["sellerName", "Test Seller"],
-        ["description", "Beautiful baby onesie"],
-        ["image", mockFile],
-      ]);
 
       uploadImageToS3.mockResolvedValue({
         key: "items/item-12345.jpg",
