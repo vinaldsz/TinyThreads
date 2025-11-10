@@ -1,107 +1,63 @@
-"use client";
 // src/app/add-listing/page.js
 import Link from "next/link";
 import styles from "./page.module.css";
 import Navbar from "@/components/Navbar/Navbar";
-import { useState } from "react";
-import { uploadListingAction } from "./actions";
+import { redirect } from "next/navigation";
+import { uploadImageToS3 } from "@/lib/awss3.js";
+
+// Server Action: handles the form submit and uploads the image to S3
+export async function uploadListingAction(formData) {
+  "use server";
+
+  const title = formData.get("title");
+  const category = formData.get("category");
+  const condition = formData.get("condition");
+  const price = formData.get("price");
+  const size = formData.get("size");
+  const ageRange = formData.get("ageRange");
+  const location = formData.get("location");
+  const sellerId = formData.get("sellerId") || "seller1"; // default for now
+  const status = "available";
+  const description = formData.get("description");
+
+  const file = formData.get("image");
+  // Do not enforce size on the server; client will validate and block submit.
+  // If somehow no file arrives, just redirect back without error.
+  if (!file || typeof file === "string" || !file.arrayBuffer) {
+    redirect("/add-listing");
+  }
+
+  const { imageUrl } = await uploadImageToS3(file, {
+    folder: "items",
+    filenamePrefix: "item",
+  });
+
+  // Save listing to MongoDB with imageUrls
+  const { getDb } = await import("@/lib/mongodb");
+  const db = await getDb();
+
+  const doc = {
+    title: String(title),
+    price: Number(price),
+    size: size ? String(size) : "",
+    condition: String(condition),
+    imageUrls: [imageUrl],
+    description: description ? String(description) : "",
+    sellerId: String(sellerId),
+    category: String(category),
+    ageRange: ageRange ? String(ageRange) : "",
+    location: location ? String(location) : "",
+    status: status,
+    createdAt: new Date(),
+  };
+
+  await db.collection("Listings").insertOne(doc);
+
+  // Redirect back to home or a success page
+  redirect("/");
+}
 
 export default function AddListingPage() {
-  const [fileErr, setFileErr] = useState("");
-  const [titleErr, setTitleErr] = useState("");
-  const [sellerNameErr, setSellerNameErr] = useState("");
-  const [priceErr, setPriceErr] = useState("");
-  const [categoryErr, setCategoryErr] = useState("");
-  const [conditionErr, setConditionErr] = useState("");
-
-  // Simple validators
-  function validateTitle(value) {
-    const v = (value || "").trim();
-    if (v.length < 3 || v.length > 150) return "Title must be 3–150 characters.";
-    return "";
-  }
-  function validateSellerName(value) {
-    const v = (value || "").trim();
-    if (v.length < 2 || v.length > 100) return "Seller name must be 2–100 characters.";
-    return "";
-  }
-  function validatePrice(value) {
-    const v = String(value ?? "").trim();
-    if (!v) return "Enter a valid price (e.g., 12.99).";
-    const num = Number(v);
-    if (!Number.isFinite(num) || num < 0) return "Enter a valid price (e.g., 12.99).";
-    // allow up to 2 decimals
-    if (!/^\d+(?:\.\d{1,2})?$/.test(v)) return "Use up to 2 decimal places.";
-    return "";
-  }
-  function validateRequiredSelect(value, label) {
-    if (!value) return `Please select a ${label}.`;
-    return "";
-  }
-
-  // Handlers
-  function handleTitleBlur(e) {
-    setTitleErr(validateTitle(e.target.value));
-  }
-  function handleTitleChange(e) {
-    if (titleErr) setTitleErr(validateTitle(e.target.value));
-  }
-
-  function handleSellerNameBlur(e) {
-    setSellerNameErr(validateSellerName(e.target.value));
-  }
-  function handleSellerNameChange(e) {
-    if (sellerNameErr) setSellerNameErr(validateSellerName(e.target.value));
-  }
-
-  function handlePriceBlur(e) {
-    setPriceErr(validatePrice(e.target.value));
-  }
-  function handlePriceChange(e) {
-    if (priceErr) setPriceErr(validatePrice(e.target.value));
-  }
-
-  function handleCategoryChange(e) {
-    setCategoryErr(validateRequiredSelect(e.target.value, "category"));
-  }
-  function handleConditionChange(e) {
-    setConditionErr(validateRequiredSelect(e.target.value, "condition"));
-  }
-
-  // Global form invalid flag (disables submit)
-  function isFormInvalid() {
-    // Read current DOM values to avoid storing duplicates in state
-    const form = typeof document !== "undefined" && document.getElementById("addListingForm");
-    const titleVal = form?.title?.value ?? "";
-    const sellerNameVal = form?.sellerName?.value ?? "";
-    const priceVal = form?.price?.value ?? "";
-    const categoryVal = form?.category?.value ?? "";
-    const conditionVal = form?.condition?.value ?? "";
-
-    return Boolean(
-      fileErr ||
-      validateTitle(titleVal) ||
-      validateSellerName(sellerNameVal) ||
-      validatePrice(priceVal) ||
-      validateRequiredSelect(categoryVal, "category") ||
-      validateRequiredSelect(conditionVal, "condition")
-    );
-  }
-
-  const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
-  function handleFileChange(e) {
-    const file = e.target.files?.[0];
-    if (!file) {
-      setFileErr("");
-      return;
-    }
-    if (file.size > MAX_SIZE) {
-      setFileErr("File above 5 MB, please try again.");
-    } else {
-      setFileErr("");
-    }
-  }
-
   return (
     <div className={styles.page}>
       <Navbar />
@@ -126,30 +82,18 @@ export default function AddListingPage() {
                 type="text"
                 placeholder="e.g. Organic Cotton Onesie - Pink"
                 required
-                onBlur={handleTitleBlur}
-                onChange={handleTitleChange}
               />
-              {titleErr && (
-                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
-                  {titleErr}
-                </p>
-              )}
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="category">Category</label>
-              <select id="category" name="category" required onChange={handleCategoryChange}>
+              <select id="category" name="category" required>
                 <option value="">Select category</option>
                 <option value="clothing">Clothing</option>
                 <option value="toys">Toys</option>
                 <option value="books">Books</option>
                 <option value="gear">Baby Gear</option>
               </select>
-              {categoryErr && (
-                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
-                  {categoryErr}
-                </p>
-              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -183,37 +127,24 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="sellerName">Seller Name</label>
+              <label htmlFor="sellerId">Seller ID</label>
               <input
-                id="sellerName"
-                name="sellerName"
+                id="sellerId"
+                name="sellerId"
                 type="text"
-                placeholder="e.g., Alice Johnson"
-                onBlur={handleSellerNameBlur}
-                onChange={handleSellerNameChange}
-                required
+                placeholder="seller1"
               />
-              {sellerNameErr && (
-                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
-                  {sellerNameErr}
-                </p>
-              )}
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="condition">Condition</label>
-              <select id="condition" name="condition" required onChange={handleConditionChange}>
+              <select id="condition" name="condition" required>
                 <option value="">Select condition</option>
                 <option value="new">New</option>
                 <option value="like-new">Like New</option>
                 <option value="good">Good</option>
                 <option value="fair">Fair</option>
               </select>
-              {conditionErr && (
-                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
-                  {conditionErr}
-                </p>
-              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -226,14 +157,7 @@ export default function AddListingPage() {
                 step="0.01"
                 placeholder="e.g. 20.00"
                 required
-                onBlur={handlePriceBlur}
-                onChange={handlePriceChange}
               />
-              {priceErr && (
-                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
-                  {priceErr}
-                </p>
-              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -244,13 +168,7 @@ export default function AddListingPage() {
                 type="file"
                 accept="image/*"
                 required
-                onChange={handleFileChange}
               />
-              {fileErr && (
-                <p role="alert" style={{ color: "#c62828", marginTop: "6px", fontSize: "0.9rem" }}>
-                  {fileErr}
-                </p>
-              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -264,7 +182,7 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.actions}>
-              <button type="submit" className={styles.submitBtn} disabled={isFormInvalid()}>
+              <button type="submit" className={styles.submitBtn}>
                 Add Listing
               </button>
               <Link href="/" className={styles.cancelBtn}>
