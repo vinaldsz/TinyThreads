@@ -1,4 +1,4 @@
-# TinyThreads
+# TinyThreads - Baby Clothes Marketplace
 
 TinyThreads is a small marketplace prototype built with Next.js (App Router) focused on fast client-side image preview and S3-based storage for listings. This repository contains the application code, test pages, and small server endpoints used during development.
 
