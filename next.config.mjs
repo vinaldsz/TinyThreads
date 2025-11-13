@@ -8,28 +8,28 @@ const nextConfig = {
     // Allow images from Unsplash used in mock data
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        port: "",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
       },
       {
-        protocol: "https",
-        hostname: "tinythreads-s3-bucket.s3.us-east-1.amazonaws.com",
-        port: "",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'tinythreads-s3-bucket.s3.us-east-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
       },
       {
-        protocol: "https",
+        protocol: 'https',
         hostname: `${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com`,
-        port: "",
-        pathname: "/**",
+        port: '',
+        pathname: '/**',
       },
       {
-        protocol: "https",
-        hostname: "example.com",
-        port: "",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'example.com',
+        port: '',
+        pathname: '/**',
       },
     ],
     // Alternatively you can use `domains: ['images.unsplash.com']` if you prefer

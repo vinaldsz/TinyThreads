@@ -13,7 +13,7 @@
 }
 
 .heroSection h1 {
-  color: #8B5CF6;
+  color: #8b5cf6;
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -111,15 +111,15 @@
   .aboutContainer {
     padding: 3rem 2rem;
   }
-  
+
   .heroSection h1 {
     font-size: 2rem;
   }
-  
+
   .heroSection h2 {
     font-size: 3rem;
   }
-  
+
   .beliefsGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 2.5rem;
@@ -136,21 +136,21 @@
   .aboutContainer {
     padding: 4rem 3rem;
   }
-  
+
   .heroSection {
     margin-bottom: 6rem;
     padding: 3rem 0;
   }
-  
+
   .heroSection h2 {
     font-size: 3.5rem;
   }
-  
+
   .beliefsGrid {
     grid-template-columns: repeat(4, 1fr);
     gap: 3rem;
   }
-  
+
   .journeySection,
   .beliefsSection,
   .teamSection {
@@ -178,7 +178,7 @@
   border: none;
   color: #666;
   font-size: 16px;
-  text-decoration: none;  /* Remove underline from link */
+  text-decoration: none; /* Remove underline from link */
   padding: 8px 0;
   margin-bottom: 20px;
   display: flex;

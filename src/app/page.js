@@ -1,11 +1,11 @@
 // src/app/page.js
-"use client";
-import { useState, useEffect } from "react";
-import styles from "./page.module.css";
-import Navbar from "@/components/Navbar/Navbar";
-import FilterBar from "@/components/FilterBar/FilterBar";
-import ItemGrid from "@/components/ItemGrid/ItemGrid";
-import { getItems, filterItems } from "@/services/itemService";
+'use client';
+import { useState, useEffect } from 'react';
+import styles from './page.module.css';
+import Navbar from '@/components/Navbar/Navbar';
+import FilterBar from '@/components/FilterBar/FilterBar';
+import ItemGrid from '@/components/ItemGrid/ItemGrid';
+import { getItems, filterItems } from '@/services/itemService';
 
 export default function BrowsePage() {
   const [items, setItems] = useState([]);
@@ -22,7 +22,7 @@ export default function BrowsePage() {
         setFilteredItems(data.items);
         setLoading(false);
       } catch (error) {
-        console.error("Failed to load items:", error);
+        console.error('Failed to load items:', error);
         setLoading(false);
       }
     };
@@ -38,7 +38,7 @@ export default function BrowsePage() {
       setFilteredItems(filtered.items);
       setLoading(false);
     } catch (error) {
-      console.error("Failed to filter items:", error);
+      console.error('Failed to filter items:', error);
       setLoading(false);
     }
   };
@@ -52,19 +52,19 @@ export default function BrowsePage() {
   // calculate active filters count
   const getActiveFiltersCount = () => {
     return Object.values(filters).filter(
-      (value) => value && value !== "" && value !== "newest"
+      (value) => value && value !== '' && value !== 'newest',
     ).length;
   };
 
   // get sort label
   const getSortLabel = () => {
     const sortLabels = {
-      newest: "Newest first",
-      oldest: "Oldest first",
-      "price-low": "Price: Low to High",
-      "price-high": "Price: High to Low",
+      newest: 'Newest first',
+      oldest: 'Oldest first',
+      'price-low': 'Price: Low to High',
+      'price-high': 'Price: High to Low',
     };
-    return sortLabels[filters.sortBy] || "Newest first";
+    return sortLabels[filters.sortBy] || 'Newest first';
   };
 
   return (

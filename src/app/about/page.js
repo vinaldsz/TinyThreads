@@ -1,32 +1,32 @@
-import Link from "next/link";
-import styles from "./page.module.css";
-import BeliefCard from "./components/BeliefCard/BeliefCard";
-import TeamCard from "./components/TeamCard/TeamCard";
-import JourneySection from "./components/JourneySection/JourneySection";
+import Link from 'next/link';
+import styles from './page.module.css';
+import BeliefCard from './components/BeliefCard/BeliefCard';
+import TeamCard from './components/TeamCard/TeamCard';
+import JourneySection from './components/JourneySection/JourneySection';
 
 export default function AboutPage() {
   const beliefs = [
     {
-      icon: "💝",
-      title: "Family First",
+      icon: '💝',
+      title: 'Family First',
       description:
-        "Our community always supports parents, sharing resources and kindness.",
+        'Our community always supports parents, sharing resources and kindness.',
     },
     {
-      icon: "🌱",
-      title: "Love for Earth",
+      icon: '🌱',
+      title: 'Love for Earth',
       description:
-        "Every item gets a small gift of care for the planet our children will inherit.",
+        'Every item gets a small gift of care for the planet our children will inherit.',
     },
     {
-      icon: "🛡️",
-      title: "Safe & Gentle",
+      icon: '🛡️',
+      title: 'Safe & Gentle',
       description:
-        "We ensure safe home safety standards so you can shop with peace of mind.",
+        'We ensure safe home safety standards so you can shop with peace of mind.',
     },
     {
-      icon: "💰",
-      title: "Budget Friendly",
+      icon: '💰',
+      title: 'Budget Friendly',
       description:
         "Quality baby items shouldn't cost a fortune. We help families save while giving items new life.",
     },
@@ -34,28 +34,30 @@ export default function AboutPage() {
 
   const teamMembers = [
     {
-      name: "Vinal Dalcy Dsouza",
-      role: "Software Development Engineer",
+      name: 'Vinal Dalcy Dsouza',
+      role: 'Software Development Engineer',
       description:
-        "Full-stack engineer focused on backend infrastructure, API development, and system architecture for TinyThreads.",
-      image: "/images/about/team/member-1.png",
-      altText: "Vinal Dalcy Dsouza, Software Development Engineer",
+        'Full-stack engineer focused on backend infrastructure, API development, and system architecture for TinyThreads.',
+      image: '/images/about/team/member-1.png',
+      altText: 'Vinal Dalcy Dsouza, Software Development Engineer',
     },
     {
-      name: "Abhishek Tuteja",
-      role: "Software Development Engineer",
-      description: "Backend specialist working on database design, cloud integration, and building scalable marketplace infrastructure.",
-      image: "/images/about/team/member-2.png", 
-      altText: "Abhishek Tuteja, Software Development Engineer"
+      name: 'Abhishek Tuteja',
+      role: 'Software Development Engineer',
+      description:
+        'Backend specialist working on database design, cloud integration, and building scalable marketplace infrastructure.',
+      image: '/images/about/team/member-2.png',
+      altText: 'Abhishek Tuteja, Software Development Engineer',
     },
     {
-      name: "Xiaowei Qi",
-      role: "Software Development Engineer",
-      description: "Frontend engineer creating intuitive user interfaces and seamless user experiences for the TinyThreads platform.",
-      image: "/images/about/team/member-3.png",
-      altText: "Xiaowei Qi, Software Development Engineer"
-    }
-  ]
+      name: 'Xiaowei Qi',
+      role: 'Software Development Engineer',
+      description:
+        'Frontend engineer creating intuitive user interfaces and seamless user experiences for the TinyThreads platform.',
+      image: '/images/about/team/member-3.png',
+      altText: 'Xiaowei Qi, Software Development Engineer',
+    },
+  ];
 
   return (
     <div className={styles.aboutContainer}>

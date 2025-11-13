@@ -1,4 +1,4 @@
-@import "../page.module.css";
+@import '../page.module.css';
 
 .page {
   min-height: 100vh;
@@ -136,7 +136,9 @@
   border-radius: 8px;
   padding: 8px 14px;
   background: var(--white);
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .backButton:hover {
