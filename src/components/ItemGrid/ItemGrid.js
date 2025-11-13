@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
 // components/ItemGrid/ItemGrid.js
-import styles from "./ItemGrid.module.css";
-import { useState } from "react";
-import ItemCard from "../ItemCard/ItemCard";
+import styles from './ItemGrid.module.css';
+import { useState } from 'react';
+import ItemCard from '../ItemCard/ItemCard';
 
 export default function ItemGrid({
   items = [],
@@ -21,7 +21,7 @@ export default function ItemGrid({
       await onLoadMore();
     } catch (error) {
       // Error is handled by the caller, just ensure loading state is reset
-      console.error("Load more failed:", error);
+      console.error('Load more failed:', error);
     } finally {
       setLoadingMore(false);
     }
@@ -102,7 +102,7 @@ export default function ItemGrid({
                 Loading more...
               </span>
             ) : (
-              "Load More Items"
+              'Load More Items'
             )}
           </button>
         </div>

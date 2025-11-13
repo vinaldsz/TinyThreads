@@ -1,10 +1,10 @@
-"use client";
+'use client';
 // src/components/ItemDetail/ItemDetail.js
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { getItemById } from "../../services/itemService";
-import styles from "./ItemDetail.module.css";
-import Image from "next/image";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { getItemById } from '../../services/itemService';
+import styles from './ItemDetail.module.css';
+import Image from 'next/image';
 
 export default function ItemDetail({ itemId }) {
   const [item, setItem] = useState(null);
@@ -16,11 +16,11 @@ export default function ItemDetail({ itemId }) {
       try {
         const data = await getItemById(itemId); // calls /api/items/:id
         setItem(data);
-        if (process.env.NODE_ENV !== "production") {
-          console.log("ItemDetail loaded item:", data);
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('ItemDetail loaded item:', data);
         }
       } catch (err) {
-        console.error("Error fetching item:", err);
+        console.error('Error fetching item:', err);
       } finally {
         setLoading(false);
       }
@@ -31,8 +31,8 @@ export default function ItemDetail({ itemId }) {
   const handleBack = () => router.back();
 
   const formatPrice = (p) => {
-    const n = typeof p === "number" ? p : Number(p);
-    return Number.isFinite(n) ? n.toFixed(2) : String(p ?? "");
+    const n = typeof p === 'number' ? p : Number(p);
+    return Number.isFinite(n) ? n.toFixed(2) : String(p ?? '');
   };
 
   if (loading) {
@@ -81,10 +81,10 @@ export default function ItemDetail({ itemId }) {
           </div>
           <div
             className={`${styles.statusBadge} ${
-              styles[(item.status || "").toLowerCase()]
+              styles[(item.status || '').toLowerCase()]
             }`}
           >
-            {item.status === "available" ? "✓ Available" : item.status || "—"}
+            {item.status === 'available' ? '✓ Available' : item.status || '—'}
           </div>
         </div>
 
@@ -96,16 +96,16 @@ export default function ItemDetail({ itemId }) {
             <div className={styles.priceAndCondition}>
               <span className={styles.price}>${formatPrice(item.price)}</span>
               {(() => {
-                const raw = (item.condition ?? "").toString().trim();
-                const key = raw.toLowerCase().replace(/\s+/g, "");
+                const raw = (item.condition ?? '').toString().trim();
+                const key = raw.toLowerCase().replace(/\s+/g, '');
                 const hasVariantClass = key && styles[key];
                 return (
                   <span
                     className={`${styles.condition} ${
-                      hasVariantClass ? styles[key] : ""
+                      hasVariantClass ? styles[key] : ''
                     }`}
                   >
-                    {raw || "—"}
+                    {raw || '—'}
                   </span>
                 );
               })()}
@@ -115,22 +115,22 @@ export default function ItemDetail({ itemId }) {
               <div className={styles.infoItem}>
                 <span className={styles.label}>Size/Age:</span>
                 <span>
-                  {item.size || "—"} {item.ageRange ? `(${item.ageRange})` : ""}
+                  {item.size || '—'} {item.ageRange ? `(${item.ageRange})` : ''}
                 </span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Category:</span>
-                <span>{item.category || "—"}</span>
+                <span>{item.category || '—'}</span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Location:</span>
-                <span>{item.location || "—"}</span>
+                <span>{item.location || '—'}</span>
               </div>
             </div>
 
             <div className={styles.description}>
               <h3>Description</h3>
-              <p>{item.description || "—"}</p>
+              <p>{item.description || '—'}</p>
             </div>
           </div>
 

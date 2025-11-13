@@ -6,11 +6,11 @@ import {
   fireEvent,
   waitFor,
   act,
-} from "@testing-library/react";
-import ItemGrid from "../ItemGrid/ItemGrid";
+} from '@testing-library/react';
+import ItemGrid from '../ItemGrid/ItemGrid';
 
 // Mock ItemCard component
-jest.mock("../ItemCard/ItemCard", () => {
+jest.mock('../ItemCard/ItemCard', () => {
   return function MockItemCard({ item }) {
     return (
       <div data-testid={`item-card-${item.id}`}>
@@ -21,29 +21,29 @@ jest.mock("../ItemCard/ItemCard", () => {
   };
 });
 
-describe("ItemGrid Component", () => {
+describe('ItemGrid Component', () => {
   // Mock items data
   const mockItems = [
     {
-      id: "1",
-      title: "Baby Onesie",
+      id: '1',
+      title: 'Baby Onesie',
       price: 10.99,
-      category: "Clothing",
-      condition: "Like New",
+      category: 'Clothing',
+      condition: 'Like New',
     },
     {
-      id: "2",
-      title: "Toy Car",
+      id: '2',
+      title: 'Toy Car',
       price: 5.99,
-      category: "Toys",
-      condition: "Good",
+      category: 'Toys',
+      condition: 'Good',
     },
     {
-      id: "3",
-      title: "Picture Book",
+      id: '3',
+      title: 'Picture Book',
       price: 3.5,
-      category: "Books",
-      condition: "New",
+      category: 'Books',
+      condition: 'New',
     },
   ];
 
@@ -54,8 +54,8 @@ describe("ItemGrid Component", () => {
   });
 
   // ===== LOADING STATES =====
-  describe("loading states", () => {
-    test("shows loading skeletons when initially loading with no items", () => {
+  describe('loading states', () => {
+    test('shows loading skeletons when initially loading with no items', () => {
       render(<ItemGrid items={[]} loading={true} />);
 
       // Should show 8 skeleton cards
@@ -63,11 +63,11 @@ describe("ItemGrid Component", () => {
       expect(skeletons).toHaveLength(8);
 
       // Should not show empty state or items
-      expect(screen.queryByText("No items found")).not.toBeInTheDocument();
-      expect(screen.queryByText("Showing 0 items")).not.toBeInTheDocument();
+      expect(screen.queryByText('No items found')).not.toBeInTheDocument();
+      expect(screen.queryByText('Showing 0 items')).not.toBeInTheDocument();
     });
 
-    test("shows loading skeletons with correct structure", () => {
+    test('shows loading skeletons with correct structure', () => {
       render(<ItemGrid items={[]} loading={true} />);
 
       // Check skeleton structure
@@ -77,13 +77,13 @@ describe("ItemGrid Component", () => {
       // Check for skeleton image and content
       const skeletonImage = document.querySelector('[class*="skeletonImage"]');
       const skeletonContent = document.querySelector(
-        '[class*="skeletonContent"]'
+        '[class*="skeletonContent"]',
       );
       expect(skeletonImage).toBeInTheDocument();
       expect(skeletonContent).toBeInTheDocument();
     });
 
-    test("does not show loading skeletons when not loading", () => {
+    test('does not show loading skeletons when not loading', () => {
       render(<ItemGrid items={mockItems} loading={false} />);
 
       const skeletons = document.querySelectorAll('[class*="skeletonCard"]');
@@ -92,120 +92,120 @@ describe("ItemGrid Component", () => {
   });
 
   // ===== EMPTY STATE =====
-  describe("empty state", () => {
-    test("shows empty state when not loading and no items", () => {
+  describe('empty state', () => {
+    test('shows empty state when not loading and no items', () => {
       render(<ItemGrid items={[]} loading={false} />);
 
-      expect(screen.getByText("No items found")).toBeInTheDocument();
-      expect(screen.getByText("🔍")).toBeInTheDocument();
+      expect(screen.getByText('No items found')).toBeInTheDocument();
+      expect(screen.getByText('🔍')).toBeInTheDocument();
       expect(
-        screen.getByText(/Try adjusting your filters/)
+        screen.getByText(/Try adjusting your filters/),
       ).toBeInTheDocument();
     });
 
-    test("does not show empty state when loading", () => {
+    test('does not show empty state when loading', () => {
       render(<ItemGrid items={[]} loading={true} />);
 
-      expect(screen.queryByText("No items found")).not.toBeInTheDocument();
+      expect(screen.queryByText('No items found')).not.toBeInTheDocument();
     });
 
-    test("does not show empty state when items exist", () => {
+    test('does not show empty state when items exist', () => {
       render(<ItemGrid items={mockItems} loading={false} />);
 
-      expect(screen.queryByText("No items found")).not.toBeInTheDocument();
+      expect(screen.queryByText('No items found')).not.toBeInTheDocument();
     });
   });
 
   // ===== ITEMS DISPLAY =====
-  describe("items display", () => {
-    test("renders items when provided", () => {
+  describe('items display', () => {
+    test('renders items when provided', () => {
       render(<ItemGrid items={mockItems} loading={false} />);
 
       // Should render ItemCard for each item
-      expect(screen.getByTestId("item-card-1")).toBeInTheDocument();
-      expect(screen.getByTestId("item-card-2")).toBeInTheDocument();
-      expect(screen.getByTestId("item-card-3")).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-1')).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-2')).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-3')).toBeInTheDocument();
 
       // Should show item details
-      expect(screen.getByText("Baby Onesie")).toBeInTheDocument();
-      expect(screen.getByText("Toy Car")).toBeInTheDocument();
-      expect(screen.getByText("Picture Book")).toBeInTheDocument();
+      expect(screen.getByText('Baby Onesie')).toBeInTheDocument();
+      expect(screen.getByText('Toy Car')).toBeInTheDocument();
+      expect(screen.getByText('Picture Book')).toBeInTheDocument();
     });
 
-    test("shows correct items count", () => {
+    test('shows correct items count', () => {
       render(<ItemGrid items={mockItems} loading={false} />);
 
-      expect(screen.getByText("Showing 3 items")).toBeInTheDocument();
+      expect(screen.getByText('Showing 3 items')).toBeInTheDocument();
     });
 
-    test("handles empty items array gracefully", () => {
+    test('handles empty items array gracefully', () => {
       render(<ItemGrid items={[]} loading={false} />);
 
       expect(screen.queryByTestId(/item-card/)).not.toBeInTheDocument();
-      expect(screen.getByText("No items found")).toBeInTheDocument();
+      expect(screen.getByText('No items found')).toBeInTheDocument();
     });
   });
 
   // ===== DEFAULT PROPS =====
-  describe("default props", () => {
-    test("works with minimal props", () => {
+  describe('default props', () => {
+    test('works with minimal props', () => {
       render(<ItemGrid />);
 
       // Should show empty state with default props
-      expect(screen.getByText("No items found")).toBeInTheDocument();
+      expect(screen.getByText('No items found')).toBeInTheDocument();
     });
 
-    test("uses default prop values", () => {
+    test('uses default prop values', () => {
       render(<ItemGrid />);
 
       // items=[], loading=false, hasMore=true by default
-      expect(screen.getByText("No items found")).toBeInTheDocument();
-      expect(screen.queryByText("Load More Items")).not.toBeInTheDocument(); // No onLoadMore provided
+      expect(screen.getByText('No items found')).toBeInTheDocument();
+      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument(); // No onLoadMore provided
     });
   });
 
   // ===== LOAD MORE FUNCTIONALITY =====
-  describe("load more functionality", () => {
-    test("shows load more button when hasMore is true and onLoadMore provided", () => {
+  describe('load more functionality', () => {
+    test('shows load more button when hasMore is true and onLoadMore provided', () => {
       render(
         <ItemGrid
           items={mockItems}
           hasMore={true}
           onLoadMore={mockOnLoadMore}
-        />
+        />,
       );
 
-      expect(screen.getByText("Load More Items")).toBeInTheDocument();
+      expect(screen.getByText('Load More Items')).toBeInTheDocument();
     });
 
-    test("does not show load more button when hasMore is false", () => {
+    test('does not show load more button when hasMore is false', () => {
       render(
         <ItemGrid
           items={mockItems}
           hasMore={false}
           onLoadMore={mockOnLoadMore}
-        />
+        />,
       );
 
-      expect(screen.queryByText("Load More Items")).not.toBeInTheDocument();
+      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
     });
 
-    test("does not show load more button when onLoadMore not provided", () => {
+    test('does not show load more button when onLoadMore not provided', () => {
       render(<ItemGrid items={mockItems} hasMore={true} />);
 
-      expect(screen.getByText("Load More Items")).toBeInTheDocument();
+      expect(screen.getByText('Load More Items')).toBeInTheDocument();
     });
 
-    test("calls onLoadMore when load more button clicked", async () => {
+    test('calls onLoadMore when load more button clicked', async () => {
       render(
         <ItemGrid
           items={mockItems}
           hasMore={true}
           onLoadMore={mockOnLoadMore}
-        />
+        />,
       );
 
-      const loadMoreButton = screen.getByText("Load More Items");
+      const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
       });
@@ -213,7 +213,7 @@ describe("ItemGrid Component", () => {
       expect(mockOnLoadMore).toHaveBeenCalledTimes(1);
     });
 
-    test("shows loading state during load more operation", async () => {
+    test('shows loading state during load more operation', async () => {
       let resolveLoadMore;
       const slowLoadMore = jest.fn(() => {
         return new Promise((resolve) => {
@@ -222,32 +222,32 @@ describe("ItemGrid Component", () => {
       });
 
       render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />
+        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
       );
 
-      const loadMoreButton = screen.getByText("Load More Items");
+      const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
       });
 
       // Should show loading state
-      expect(screen.getByText("Loading more...")).toBeInTheDocument();
-      expect(screen.queryByText("Load More Items")).not.toBeInTheDocument();
+      expect(screen.getByText('Loading more...')).toBeInTheDocument();
+      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
 
       // Should show loading skeletons
       const loadingSkeletons = document.querySelectorAll(
-        '[class*="skeletonCard"]'
+        '[class*="skeletonCard"]',
       );
       expect(loadingSkeletons).toHaveLength(4);
 
       // Resolve the promise
       resolveLoadMore();
       await waitFor(() => {
-        expect(screen.getByText("Load More Items")).toBeInTheDocument();
+        expect(screen.getByText('Load More Items')).toBeInTheDocument();
       });
     });
 
-    test("disables button during loading", async () => {
+    test('disables button during loading', async () => {
       let resolveLoadMore;
       const slowLoadMore = jest.fn(() => {
         return new Promise((resolve) => {
@@ -256,17 +256,17 @@ describe("ItemGrid Component", () => {
       });
 
       render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />
+        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
       );
 
-      const loadMoreButton = screen.getByText("Load More Items");
+      const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
       });
 
       // Button should be disabled
       await waitFor(() => {
-        const disabledButton = screen.getByRole("button", {
+        const disabledButton = screen.getByRole('button', {
           name: /loading more/i,
         });
         expect(disabledButton).toBeDisabled();
@@ -275,7 +275,7 @@ describe("ItemGrid Component", () => {
       resolveLoadMore();
     });
 
-    test("prevents multiple simultaneous load more calls", async () => {
+    test('prevents multiple simultaneous load more calls', async () => {
       let resolveLoadMore;
       const slowLoadMore = jest.fn(() => {
         return new Promise((resolve) => {
@@ -284,10 +284,10 @@ describe("ItemGrid Component", () => {
       });
 
       render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />
+        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
       );
 
-      const loadMoreButton = screen.getByText("Load More Items");
+      const loadMoreButton = screen.getByText('Load More Items');
 
       // Click multiple times rapidly
       await act(async () => {
@@ -306,9 +306,9 @@ describe("ItemGrid Component", () => {
       resolveLoadMore();
     });
 
-    test("handles load more error gracefully", async () => {
+    test('handles load more error gracefully', async () => {
       const failingLoadMore = jest.fn(() =>
-        Promise.reject(new Error("Load failed"))
+        Promise.reject(new Error('Load failed')),
       );
 
       render(
@@ -316,124 +316,124 @@ describe("ItemGrid Component", () => {
           items={mockItems}
           hasMore={true}
           onLoadMore={failingLoadMore}
-        />
+        />,
       );
 
-      const loadMoreButton = screen.getByText("Load More Items");
+      const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
       });
 
       // Should reset loading state even after error
       await waitFor(() => {
-        expect(screen.getByText("Load More Items")).toBeInTheDocument();
+        expect(screen.getByText('Load More Items')).toBeInTheDocument();
       });
 
       // Should not be loading anymore
-      expect(screen.queryByText("Loading more...")).not.toBeInTheDocument();
+      expect(screen.queryByText('Loading more...')).not.toBeInTheDocument();
     });
 
-    test("does not call load more when hasMore is false", () => {
+    test('does not call load more when hasMore is false', () => {
       render(
         <ItemGrid
           items={mockItems}
           hasMore={false}
           onLoadMore={mockOnLoadMore}
-        />
+        />,
       );
 
       // Should not show button, so no way to trigger call
-      expect(screen.queryByText("Load More Items")).not.toBeInTheDocument();
+      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
       expect(mockOnLoadMore).not.toHaveBeenCalled();
     });
   });
 
   // ===== END MESSAGE =====
-  describe("end message", () => {
-    test("shows end message when hasMore is false and items exist", () => {
+  describe('end message', () => {
+    test('shows end message when hasMore is false and items exist', () => {
       render(<ItemGrid items={mockItems} hasMore={false} />);
 
       expect(
-        screen.getByText("You have reached the end! 🎉")
+        screen.getByText('You have reached the end! 🎉'),
       ).toBeInTheDocument();
     });
 
-    test("does not show end message when hasMore is true", () => {
+    test('does not show end message when hasMore is true', () => {
       render(<ItemGrid items={mockItems} hasMore={true} />);
 
       expect(
-        screen.queryByText("You have reached the end! 🎉")
+        screen.queryByText('You have reached the end! 🎉'),
       ).not.toBeInTheDocument();
     });
 
-    test("does not show end message when no items", () => {
+    test('does not show end message when no items', () => {
       render(<ItemGrid items={[]} hasMore={false} />);
 
       expect(
-        screen.queryByText("You have reached the end! 🎉")
+        screen.queryByText('You have reached the end! 🎉'),
       ).not.toBeInTheDocument();
     });
   });
 
   // ===== CONDITIONAL RENDERING LOGIC =====
-  describe("conditional rendering combinations", () => {
-    test("loading=true with existing items shows items + skeletons", () => {
+  describe('conditional rendering combinations', () => {
+    test('loading=true with existing items shows items + skeletons', () => {
       render(<ItemGrid items={mockItems} loading={true} />);
 
       // Should show existing items
-      expect(screen.getByTestId("item-card-1")).toBeInTheDocument();
-      expect(screen.getByText("Showing 3 items")).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-1')).toBeInTheDocument();
+      expect(screen.getByText('Showing 3 items')).toBeInTheDocument();
 
       // Should NOT show initial loading skeletons (only shows when items.length === 0)
       const skeletons = document.querySelectorAll('[class*="skeletonCard"]');
       expect(skeletons).toHaveLength(0);
     });
 
-    test("hasMore=true, no onLoadMore shows items but no load button", () => {
+    test('hasMore=true, no onLoadMore shows items but no load button', () => {
       render(
         <ItemGrid
           items={mockItems}
           hasMore={true}
           // No onLoadMore provided
-        />
+        />,
       );
 
-      expect(screen.getByTestId("item-card-1")).toBeInTheDocument();
-      expect(screen.getByText("Load More Items")).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-1')).toBeInTheDocument();
+      expect(screen.getByText('Load More Items')).toBeInTheDocument();
       expect(
-        screen.queryByText("You have reached the end! 🎉")
+        screen.queryByText('You have reached the end! 🎉'),
       ).not.toBeInTheDocument();
     });
 
-    test("hasMore=false with items shows end message, no load button", () => {
+    test('hasMore=false with items shows end message, no load button', () => {
       render(
         <ItemGrid
           items={mockItems}
           hasMore={false}
           onLoadMore={mockOnLoadMore}
-        />
+        />,
       );
 
-      expect(screen.getByTestId("item-card-1")).toBeInTheDocument();
-      expect(screen.queryByText("Load More Items")).not.toBeInTheDocument();
+      expect(screen.getByTestId('item-card-1')).toBeInTheDocument();
+      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
       expect(
-        screen.getByText("You have reached the end! 🎉")
+        screen.getByText('You have reached the end! 🎉'),
       ).toBeInTheDocument();
     });
   });
 
   // ===== EDGE CASES =====
-  describe("edge cases", () => {
-    test("handles single item correctly", () => {
+  describe('edge cases', () => {
+    test('handles single item correctly', () => {
       const singleItem = [mockItems[0]];
 
       render(<ItemGrid items={singleItem} />);
 
-      expect(screen.getByText("Showing 1 items")).toBeInTheDocument();
-      expect(screen.getByTestId("item-card-1")).toBeInTheDocument();
+      expect(screen.getByText('Showing 1 items')).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-1')).toBeInTheDocument();
     });
 
-    test("handles large number of items", () => {
+    test('handles large number of items', () => {
       const manyItems = Array.from({ length: 50 }, (_, i) => ({
         id: `item-${i}`,
         title: `Item ${i}`,
@@ -442,32 +442,32 @@ describe("ItemGrid Component", () => {
 
       render(<ItemGrid items={manyItems} />);
 
-      expect(screen.getByText("Showing 50 items")).toBeInTheDocument();
-      expect(screen.getByTestId("item-card-item-0")).toBeInTheDocument();
-      expect(screen.getByTestId("item-card-item-49")).toBeInTheDocument();
+      expect(screen.getByText('Showing 50 items')).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-item-0')).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-item-49')).toBeInTheDocument();
     });
 
-    test("handles items with missing properties", () => {
+    test('handles items with missing properties', () => {
       const itemsWithMissingProps = [
-        { id: "1" }, // Missing title, price, etc.
-        { id: "2", title: "Has Title" },
+        { id: '1' }, // Missing title, price, etc.
+        { id: '2', title: 'Has Title' },
       ];
 
       render(<ItemGrid items={itemsWithMissingProps} />);
 
-      expect(screen.getByText("Showing 2 items")).toBeInTheDocument();
-      expect(screen.getByTestId("item-card-1")).toBeInTheDocument();
-      expect(screen.getByTestId("item-card-2")).toBeInTheDocument();
+      expect(screen.getByText('Showing 2 items')).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-1')).toBeInTheDocument();
+      expect(screen.getByTestId('item-card-2')).toBeInTheDocument();
     });
 
-    test("handles onLoadMore that returns non-promise", async () => {
-      const syncLoadMore = jest.fn(() => "not a promise");
+    test('handles onLoadMore that returns non-promise', async () => {
+      const syncLoadMore = jest.fn(() => 'not a promise');
 
       render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={syncLoadMore} />
+        <ItemGrid items={mockItems} hasMore={true} onLoadMore={syncLoadMore} />,
       );
 
-      const loadMoreButton = screen.getByText("Load More Items");
+      const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
       });
@@ -477,27 +477,27 @@ describe("ItemGrid Component", () => {
 
       // Should reset loading state
       await waitFor(() => {
-        expect(screen.getByText("Load More Items")).toBeInTheDocument();
+        expect(screen.getByText('Load More Items')).toBeInTheDocument();
       });
     });
   });
 
   // ===== ACCESSIBILITY =====
-  describe("accessibility", () => {
-    test("load more button is accessible", () => {
+  describe('accessibility', () => {
+    test('load more button is accessible', () => {
       render(
         <ItemGrid
           items={mockItems}
           hasMore={true}
           onLoadMore={mockOnLoadMore}
-        />
+        />,
       );
 
-      const button = screen.getByRole("button", { name: /load more items/i });
+      const button = screen.getByRole('button', { name: /load more items/i });
       expect(button).toBeInTheDocument();
     });
 
-    test("disabled load more button is accessible", async () => {
+    test('disabled load more button is accessible', async () => {
       let resolveLoadMore;
       const slowLoadMore = jest.fn(() => {
         return new Promise((resolve) => {
@@ -506,28 +506,28 @@ describe("ItemGrid Component", () => {
       });
 
       render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />
+        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
       );
 
-      const button = screen.getByText("Load More Items");
+      const button = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(button);
       });
 
       await waitFor(() => {
-        const disabledButton = screen.getByRole("button");
+        const disabledButton = screen.getByRole('button');
         expect(disabledButton).toBeDisabled();
-        expect(disabledButton).toHaveAttribute("disabled");
+        expect(disabledButton).toHaveAttribute('disabled');
       });
 
       resolveLoadMore();
     });
 
-    test("empty state has proper heading structure", () => {
+    test('empty state has proper heading structure', () => {
       render(<ItemGrid items={[]} loading={false} />);
 
-      const heading = screen.getByRole("heading", { level: 3 });
-      expect(heading).toHaveTextContent("No items found");
+      const heading = screen.getByRole('heading', { level: 3 });
+      expect(heading).toHaveTextContent('No items found');
     });
   });
 });

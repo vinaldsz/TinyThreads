@@ -6,11 +6,37 @@ TinyThreads is a small marketplace prototype built with Next.js (App Router) foc
 
 A marketplace that enables parents to list and browse second-hand baby clothes and toys in under 60 seconds per item.
 
-Key capabilities (MVP):
+### Sprint 2 – Updated MVP Capabilities
 
-- Browse local inventory by size, category (clothes/toys), and condition.
-- Create a listing in ~60 seconds: photo(s), size, brief title, price, and short description.
-- Optional client-side compression, then upload to S3.
+The MVP has evolved significantly since Sprint 0. As of Sprint 2, the live deployed version supports:
+
+- **Browse & Search**: Users can browse all available listings and search by keyword.
+- **Advanced Filtering (#16)**: Filter by size, category, condition, and price range.
+- **Real Production Listings (#48)**: Production database populated with real inventory instead of mock data.
+- **Add Listing Flow**: Create a listing in ~60 seconds with:
+  - Title, size, category, condition, age range, location, price, description
+  - Single image upload (validated for type & file size ≤ 5MB)
+  - Real-time preview
+- **Form Validations (#40)**:
+  - Required fields enforced
+  - Input sanitization (e.g., `1=1` does not bypass validation)
+  - File size/type validation
+- **Back Navigation (#44)**: Users can return to home without listing an item.
+- **Brand Identity (#45)**: Professional TinyThreads logo integrated into the navbar.
+- **About Page (#46)**: A dedicated, styled page explaining the platform’s mission and team.
+- **CI/CD Pipeline (#35)**: Pull Requests trigger linting, testing, and build checks.
+- **Separate Dev Infrastructure (#43)**: Distinct dev MongoDB and dev S3 bucket.
+- **Test Coverage (#38)**: 282 tests across 12 suites with ~77% coverage.
+
+### Live Production Deployment
+
+The MVP is deployed and accessible at:
+
+```
+https://tiny-threads-ten.vercel.app
+```
+
+This represents the current working version demoed to the Product Owner.
 
 ## Value proposition — how TinyThreads is better than alternatives
 
@@ -27,7 +53,6 @@ Current alternatives (users' pain points):
 How TinyThreads MVP adds value:
 
 - Speed — 10x faster listing
-
   - Them: ~10 minutes per item on Facebook Marketplace
   - Us: ~60 seconds per listing in TinyThreads
   - Value: Save hours when selling multiple items; lower friction improves supply and listing frequency.
@@ -46,17 +71,14 @@ Parents waste money buying baby clothes that are only used for a short period, a
 2. Specific pain points surfaced in interviews and how the MVP addresses them
 
 - Problem 1: Time investment vs. return
-
   - User quote (Tiffany): "I tried Facebook Marketplace once, but it was such a hassle - taking photos, meeting strangers. Now I just donate and take the tax deduction."
   - How MVP solves: 60-second listing creation means the effort is worth the return; quicker listings increase the chance of selling.
 
 - Problem 2: Clutter & storage
-
   - User quote (Bhavi): "Sorting takes a weekend; frustrating and feels wasteful."
   - How MVP solves: Quick listing and deletion mean items don't pile up; easier turnover reduces household clutter.
 
 - Problem 3: Finding right size quickly
-
   - User quote (Cathy): "Growth spurt happened overnight. Spent whole morning on failed Target trips."
   - How MVP solves: Browse by size and see local inventory instantly so parents can find available items fast.
 
@@ -110,10 +132,10 @@ npm run dev
 
 ## Developer workflows
 
-- Branching: create feature branches from `main`. Example:
+- Branching: create feature branches from `develop`. Example:
 
 ```bash
-git checkout -b feature/your-feature main
+git checkout -b feature/your-feature develop
 ```
 
 - Creating a Pull Request:
@@ -126,20 +148,161 @@ gh pr create --base main --head feature/your-branch --title "Short title" --body
 
 If GitHub reports the branches have no common history, recreate a branch from `main` and cherry-pick your commits (recommended) rather than force-pushing unrelated histories.
 
+## Testing
+
+TinyThreads uses **Jest** and **React Testing Library** for automated testing.
+
+Run all tests:
+
+```bash
+npm run test
+```
+
+Run in watch mode:
+
+```bash
+npm run test:watch
+```
+
+Run coverage:
+
+```bash
+npm run test:coverage
+```
+
+Test suites are located under:
+
+```
+src/**/__tests__/
+```
+
+## Linting & Formatting
+
+Run eslint:
+
+```bash
+npm run lint
+```
+
+Run Prettier (format all files):
+
+```bash
+npm run format
+```
+
+Eslint is configured via `eslint.config.mjs`, and Prettier is set up to ensure consistent code style.
+
+## CI/CD Pipeline Overview
+
+CI is configured using GitHub Actions (`.github/workflows/CI.yml`).
+
+On every Pull Request:
+
+- Install dependencies
+- Run `npm run lint`
+- Run tests
+- Run build
+
+All checks must pass before merging due to branch protection rules.
+
+Deployment:
+
+- Production is deployed on Vercel at:  
+  https://tiny-threads-ten.vercel.app
+
+### CI Pipeline Link
+
+View all CI runs here:
+https://github.com/vinaldsz/TinyThreads/actions
+
+### How CI/CD Works
+
+1. Developer opens a Pull Request into `develop`.
+2. GitHub Actions (`.github/workflows/CI.yml`) runs automatically:
+   - Install dependencies
+   - Run ESLint
+   - Run Jest tests
+   - Run Next.js build
+3. PR cannot be merged unless all checks pass.
+4. On merging `develop` → `main`, the team manually triggers a production deployment using Vercel.
+
+### Deployment Details
+
+- **Deployment Type:** Manual trigger on Vercel
+- **Dev Environment:** Uses separate Dev MongoDB + Dev S3 bucket
+- **Prod Environment:** Uses production MongoDB + production S3 bucket
+- **Rollback:** Previous commit can be redeployed from Vercel dashboard under _Deployments_.
+
+## Branching Strategy
+
+- `main` — Production-ready code
+- `development` — Integration branch
+- `feature/*` — Feature-specific branches
+
+Pull Requests:
+
+- Feature → development
+- Development → main (production release)
+
+## Testing Strategy Overview
+
+We follow a layered testing approach:
+
+- **Unit tests:** Components, services, utils
+- **Integration tests:** API interactions & component flows
+- **End-to-end tests:** Critical flows (future addition)
+
+Coverage target: **≥70%** (current: ~77%).
+
+### Current Sprint 2 Testing Summary
+
+- **282 tests** across **12 test suites**.
+- **77% overall coverage** (statements, branches, functions, and lines).
+- Core areas covered:
+  - FilterBar filtering logic
+  - ItemGrid pagination & load‑more behavior
+  - ItemCard interactions and routing
+  - ItemDetail rendering and fallback states
+  - Add Listing form validations (client-side)
+  - AWS S3 upload utility (mocked)
+  - MongoDB connection utility (mocked)
+  - ItemService business logic for listings
+- Error and edge cases covered:
+  - Empty results in filters
+  - Failed load-more operations
+  - Invalid file upload type/size
+  - Missing form fields
+
+  These tests collectively ensure the core user flows (browse → filter → view → add listing) remain stable across code changes.
+
+## Deployment Information
+
+Production URL:
+
+```
+https://tiny-threads-ten.vercel.app
+```
+
+No setup required for PO review:
+
+- Real production database
+- S3 storage configured
+- All features fully functional
+
 ## Documentation & useful links
 
 - Project board activity:
-
   - Board: https://github.com/vinaldsz/TinyThreads/projects
   - Milestones: https://github.com/vinaldsz/TinyThreads/milestones
   - Insights: https://github.com/vinaldsz/TinyThreads/pulse
 
-- Sprint Evidence: Refer `sprint-evidence.md`
+- Sprint Evidence: Refer `docs/Sprint-2/sprint-evidence.md`
 
 ## Repository tree (hierarchical view)
 
 - .eslintrc.json
 - .gitignore
+- .prettierrc
 - LICENSE
 - README.md
 - changed_files.txt
@@ -152,25 +315,49 @@ If GitHub reports the branches have no common history, recreate a branch from `m
 - package.json
 - postcss.config.mjs
 - public/
+  - Images/about/team
+    - member-1.png
+    - member-2.png
+    - member-3.png
+      journey-child.png
   - file.svg
   - globe.svg
   - next.svg
   - vercel.svg
   - window.svg
+  - TinyThreadsLogo.png
+  - TinyThreadsScribble.png
 - src/
   - app/
+    - **tests**/
+      - layout.test.js
+      - page.test.js
+    - about/
+      - page.js
+      - page.module.css
+      - components/
+        - BeliefCard/
+        - JourneySection/
+        - TeamCard/
+    - add-listing/
+      - **tests**/
+        - page.test.js
+      - actions.js
+      - page.js
+      - page.module.css
+    - api/items/
+      - id/route.js
+      - route.js
     - Items/
       - [id]/
         - page.js
-    - add-listing/
-      - page.js
-      - page.module.css
     - favicon.ico
     - globals.css
     - layout.js
     - page.js
     - page.module.css
   - components/
+    - **tests**/
     - FilterBar/
       - FilterBar.js
       - FilterBar.module.css
@@ -183,12 +370,18 @@ If GitHub reports the branches have no common history, recreate a branch from `m
     - ItemGrid/
       - ItemGrid.js
       - ItemGrid.module.css
+    - Navbar/
+      - Navbar.js
+      - Navbar.module.css
   - lib/
+    - tests/
     - awss3.js
     - mongodb.js
   - services/
+    - tests/
     - itemService.js
   - types/
+    - tests/
     - item.js
 - styles/
   - globals.css
