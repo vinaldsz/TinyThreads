@@ -1,6 +1,6 @@
 # Sprint Evidence — Sprint 1
 
-This document captures the sprint planning artifacts, execution evidence, SCRUM ceremonies, and the Working MVP deliverable required by the rubric. 
+This document captures the sprint planning artifacts, execution evidence, SCRUM ceremonies, and the Working MVP deliverable required by the rubric.
 
 ---
 
@@ -125,7 +125,6 @@ For each committed backlog issue include:
     - feature/add-listing — https://github.com/vinaldsz/TinyThreads/tree/feature/add-listing
   - Contributors this sprint: @vinaldsz, @abhishektuteja01, @Xiaow7123
 - Branch & PR usage:
-
   - Feature branches used this sprint:
     - feature/browse-items-frontend — https://github.com/vinaldsz/TinyThreads/tree/feature/browse-items-frontend
     - feature/browse-items-fixed — https://github.com/vinaldsz/TinyThreads/tree/feature/browse-items-fixed
@@ -195,7 +194,6 @@ For each committed backlog issue include:
 - Optional client-side compression, then upload to S3.
 
 - Backlog items covered:
-
   - [#1], [#2], [#21], [#22], [#20], [#26]
 
 - MVP Release: https://github.com/vinaldsz/TinyThreads/releases/tag/v0.1.0-sprint0
@@ -210,22 +208,18 @@ Parents waste money buying baby clothes that are only used for a short period, a
 2. Specific pain points surfaced in interviews and how the MVP addresses them
 
 - Problem 1: Time investment vs. return
-
   - User quote (Tiffany): "I tried Facebook Marketplace once, but it was such a hassle - taking photos, meeting strangers. Now I just donate and take the tax deduction."
   - How MVP solves: 60-second listing creation means the effort is worth the return; quicker listings increase the chance of selling.
 
 - Problem 2: Clutter & storage
-
   - User quote (Bhavi): "Sorting takes a weekend; frustrating and feels wasteful."
   - How MVP solves: Quick listing and deletion mean items don't pile up; easier turnover reduces household clutter.
 
 - Problem 3: Finding right size quickly
-
   - User quote (Cathy): "Growth spurt happened overnight. Spent whole morning on failed Target trips."
   - How MVP solves: Browse by size and see local inventory instantly so parents can find available items fast.
 
 - Problem 4: Wastefulness
-
   - User quote (Bhavi): "Biggest frustration: waste of barely worn outfits."
   - How MVP solves: Easy resale reduces waste and helps families recoup value from lightly worn items.
 
@@ -244,13 +238,11 @@ Current alternatives (users' pain points):
 How TinyThreads MVP adds value:
 
 - Speed — 10x faster listing
-
   - Them: ~10 minutes per item on Facebook Marketplace
   - Us: ~60 seconds per listing in TinyThreads
   - Value: Save hours when selling multiple items; lower friction improves supply and listing frequency.
 
 - Relevance — baby-specific
-
   - Them: Search through random, unrelated items
   - Us: Only baby clothes (0–5 years) and toys, categorized by size and type
   - Value: Buyers find the right items in seconds; sellers reach a highly relevant audience.

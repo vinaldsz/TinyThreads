@@ -1,4 +1,4 @@
-import styles from './BeliefCard.module.css'
+import styles from './BeliefCard.module.css';
 
 export default function BeliefCard({ icon, title, description }) {
   return (
@@ -7,5 +7,5 @@ export default function BeliefCard({ icon, title, description }) {
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.description}>{description}</p>
     </div>
-  )
+  );
 }

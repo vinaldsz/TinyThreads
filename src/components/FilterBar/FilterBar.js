@@ -1,8 +1,8 @@
 // components/FilterBar/FilterBar.js
-"use client";
-import styles from "./FilterBar.module.css";
-import { useState } from "react";
-import Link from "next/link";
+'use client';
+import styles from './FilterBar.module.css';
+import { useState } from 'react';
+import Link from 'next/link';
 
 export default function FilterBar({
   onFiltersChange,
@@ -10,15 +10,15 @@ export default function FilterBar({
   initialFilters = {},
   itemCount = 0,
   activeFiltersCount = 0,
-  sortLabel = "Newest First",
+  sortLabel = 'Newest First',
 }) {
   const [filters, setFilters] = useState({
-    category: initialFilters.category || "",
-    condition: initialFilters.condition || "",
-    ageRange: initialFilters.ageRange || "",
-    priceRange: initialFilters.priceRange || "",
-    sortBy: initialFilters.sortBy || "newest",
-    searchTerm: initialFilters.searchTerm || "",
+    category: initialFilters.category || '',
+    condition: initialFilters.condition || '',
+    ageRange: initialFilters.ageRange || '',
+    priceRange: initialFilters.priceRange || '',
+    sortBy: initialFilters.sortBy || 'newest',
+    searchTerm: initialFilters.searchTerm || '',
     ...initialFilters,
   });
 
@@ -26,27 +26,27 @@ export default function FilterBar({
 
   // Filter Options
   const categories = [
-    { value: "", label: "All Categories" },
-    { value: "Clothing", label: "Clothing" },
-    { value: "Toys", label: "Toys" },
-    { value: "Books", label: "Books" },
-    { value: "Gear", label: "Baby Gear" },
-    { value: "Other", label: "Other" },
+    { value: '', label: 'All Categories' },
+    { value: 'Clothing', label: 'Clothing' },
+    { value: 'Toys', label: 'Toys' },
+    { value: 'Books', label: 'Books' },
+    { value: 'Gear', label: 'Baby Gear' },
+    { value: 'Other', label: 'Other' },
   ];
 
   const conditions = [
-    { value: "", label: "Any Condition" },
-    { value: "New", label: "New" },
-    { value: "Like-New", label: "Like New" },
-    { value: "Good", label: "Good" },
-    { value: "Fair", label: "Fair" },
+    { value: '', label: 'Any Condition' },
+    { value: 'New', label: 'New' },
+    { value: 'Like-New', label: 'Like New' },
+    { value: 'Good', label: 'Good' },
+    { value: 'Fair', label: 'Fair' },
   ];
 
   const sortOptions = [
-    { value: "newest", label: "Newest First" },
-    { value: "oldest", label: "Oldest First" },
-    { value: "price-low", label: "Price: Low to High" },
-    { value: "price-high", label: "Price: High to Low" },
+    { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'price-high', label: 'Price: High to Low' },
   ];
 
   const handleFilterChange = (key, value) => {
@@ -70,35 +70,35 @@ export default function FilterBar({
   // normalize filters before sending to callbacks: trim whitespace but preserve casing
   const normalizeFilters = (raw) => {
     const f = { ...raw };
-    if (f.category && typeof f.category === "string") {
+    if (f.category && typeof f.category === 'string') {
       f.category = f.category.trim();
     }
-    if (f.condition && typeof f.condition === "string") {
+    if (f.condition && typeof f.condition === 'string') {
       f.condition = f.condition.trim();
     }
-    if (f.ageRange && typeof f.ageRange === "string") {
+    if (f.ageRange && typeof f.ageRange === 'string') {
       f.ageRange = f.ageRange.trim();
     }
-    if (f.searchTerm && typeof f.searchTerm === "string") {
+    if (f.searchTerm && typeof f.searchTerm === 'string') {
       f.searchTerm = f.searchTerm.trim();
     }
     return f;
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
   const handleClearFilters = () => {
     const clearedFilters = {
-      category: "",
-      condition: "",
-      ageRange: "",
-      priceRange: "",
-      sortBy: "newest",
-      searchTerm: "",
+      category: '',
+      condition: '',
+      ageRange: '',
+      priceRange: '',
+      sortBy: 'newest',
+      searchTerm: '',
     };
     setFilters(clearedFilters);
     setShowFilters(false);
@@ -111,7 +111,7 @@ export default function FilterBar({
   //generate filter button text
   const getFiltersButtonText = () => {
     if (activeFiltersCount === 0) {
-      return "Filter";
+      return 'Filter';
     }
     return `Filters (${activeFiltersCount})`;
   };
@@ -119,7 +119,7 @@ export default function FilterBar({
   //generate result description text
   const getResultsText = () => {
     if (itemCount <= 0) {
-      return "No results found";
+      return 'No results found';
     }
     if (itemCount === 1) {
       return `1 result · ${sortLabel}`;
@@ -137,7 +137,7 @@ export default function FilterBar({
             placeholder="Search baby items..."
             className={styles.searchInput}
             value={filters.searchTerm}
-            onChange={(e) => handleFilterChange("searchTerm", e.target.value)}
+            onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
             onKeyPress={handleKeyPress}
           />
           <button
@@ -155,7 +155,7 @@ export default function FilterBar({
         <div className={styles.controlLeft}>
           <button
             className={`${styles.filtersButton} ${
-              activeFiltersCount > 0 ? styles.filtersActive : ""
+              activeFiltersCount > 0 ? styles.filtersActive : ''
             }`}
             onClick={() => setShowFilters(!showFilters)}
             aria-expanded={showFilters}
@@ -177,7 +177,7 @@ export default function FilterBar({
           <select
             className={styles.sortSelect}
             value={filters.sortBy}
-            onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+            onChange={(e) => handleFilterChange('sortBy', e.target.value)}
             aria-label="Sort by"
           >
             {sortOptions.map((option) => (
@@ -201,7 +201,7 @@ export default function FilterBar({
                 id="filter-category"
                 className={styles.select}
                 value={filters.category}
-                onChange={(e) => handleFilterChange("category", e.target.value)}
+                onChange={(e) => handleFilterChange('category', e.target.value)}
               >
                 {categories.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -220,7 +220,7 @@ export default function FilterBar({
                 className={styles.select}
                 value={filters.condition}
                 onChange={(e) =>
-                  handleFilterChange("condition", e.target.value)
+                  handleFilterChange('condition', e.target.value)
                 }
               >
                 {conditions.map((option) => (

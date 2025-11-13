@@ -69,19 +69,19 @@
   .container {
     padding: var(--space-4);
   }
-  
+
   .headerSection {
     margin-bottom: var(--space-6);
   }
-  
+
   .title {
     font-size: var(--font-size-3xl);
   }
-  
+
   .logo {
     font-size: var(--font-size-3xl);
   }
-  
+
   .controlSection {
     border-radius: var(--radius-xl);
     margin-bottom: var(--space-5);
@@ -92,20 +92,20 @@
   .container {
     padding: var(--space-3);
   }
-  
+
   .logoContainer {
     flex-direction: column;
     gap: var(--space-2);
   }
-  
+
   .title {
     font-size: var(--font-size-2xl);
   }
-  
+
   .logo {
     font-size: var(--font-size-2xl);
   }
-  
+
   .controlSection {
     border-radius: var(--radius-lg);
   }

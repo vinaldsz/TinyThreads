@@ -1,8 +1,8 @@
-"use client";
-import styles from "./ItemCard.module.css";
-import { useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+'use client';
+import styles from './ItemCard.module.css';
+import { useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function ItemCard({ item }) {
   const router = useRouter();
@@ -20,13 +20,13 @@ export default function ItemCard({ item }) {
 
   const getConditionClass = (condition) => {
     switch (condition) {
-      case "new":
+      case 'new':
         return styles.conditionNew;
-      case "like-new":
+      case 'like-new':
         return styles.conditionLikeNew;
-      case "good":
+      case 'good':
         return styles.conditionGood;
-      case "fair":
+      case 'fair':
         return styles.conditionFair;
       default:
         return styles.conditionDefault;
@@ -35,44 +35,44 @@ export default function ItemCard({ item }) {
 
   const getConditionLabel = (condition) => {
     switch (condition) {
-      case "like-new":
-        return "Like New";
-      case "good":
-        return "Good";
-      case "new":
-        return "New";
-      case "fair":
-        return "Fair";
+      case 'like-new':
+        return 'Like New';
+      case 'good':
+        return 'Good';
+      case 'new':
+        return 'New';
+      case 'fair':
+        return 'Fair';
       default:
         // Fallback: try to prettify by replacing hyphens with spaces and title-casing
-        if (!condition) return "";
+        if (!condition) return '';
         return condition
-          .split("-")
+          .split('-')
           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-          .join(" ");
+          .join(' ');
     }
   };
 
   const getCategoryIcon = (category) => {
     switch (category) {
-      case "Clothing":
-        return "👕";
-      case "Toys":
-        return "🧸";
-      case "Books":
-        return "📚";
-      case "Gear":
-        return "🍼";
-      case "Other":
-        return "✨";
+      case 'Clothing':
+        return '👕';
+      case 'Toys':
+        return '🧸';
+      case 'Books':
+        return '📚';
+      case 'Gear':
+        return '🍼';
+      case 'Other':
+        return '✨';
       default:
-        return "🛍️";
+        return '🛍️';
     }
   };
 
   const handleItemClick = () => {
-    console.log("Navigating to:", `/items/${item.id}`);
-    console.log("Item ID:", item.id);
+    console.log('Navigating to:', `/items/${item.id}`);
+    console.log('Item ID:', item.id);
     router.push(`/Items/${item.id}`);
   };
 
@@ -80,7 +80,7 @@ export default function ItemCard({ item }) {
     <div
       className={styles.card}
       onClick={handleItemClick}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: 'pointer' }}
     >
       {/* Image Container */}
       <div className={styles.imageContainer}>

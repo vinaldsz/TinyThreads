@@ -1,11 +1,11 @@
-import styles from './TeamCard.module.css'
-import Image from 'next/image'
+import styles from './TeamCard.module.css';
+import Image from 'next/image';
 
 export default function TeamCard({ name, role, description, image, altText }) {
   return (
     <div className={styles.card}>
-      <Image 
-        src={image} 
+      <Image
+        src={image}
         alt={altText}
         width={120}
         height={120}
@@ -15,5 +15,5 @@ export default function TeamCard({ name, role, description, image, altText }) {
       <p className={styles.role}>{role}</p>
       <p className={styles.description}>{description}</p>
     </div>
-  )
+  );
 }

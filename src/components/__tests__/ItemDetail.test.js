@@ -4,21 +4,21 @@ import {
   fireEvent,
   waitFor,
   act,
-} from "@testing-library/react";
-import "@testing-library/jest-dom";
-import ItemDetail from "../ItemDetail/ItemDetail"; // Import current version, not ItemDetail 2
-import { getItemById } from "../../services/itemService"; // Current version uses getItemById
-import { useRouter } from "next/navigation";
+} from '@testing-library/react';
+import '@testing-library/jest-dom';
+import ItemDetail from '../ItemDetail/ItemDetail'; // Import current version, not ItemDetail 2
+import { getItemById } from '../../services/itemService'; // Current version uses getItemById
+import { useRouter } from 'next/navigation';
 
 // Mock Next.js router
 const mockPush = jest.fn();
 const mockBack = jest.fn();
-jest.mock("next/navigation", () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
 // Mock Next.js Image component
-jest.mock("next/image", () => ({
+jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, className, width, height, ...props }) => (
     // eslint-disable-next-line @next/next/no-img-element
@@ -34,39 +34,39 @@ jest.mock("next/image", () => ({
 }));
 
 // Mock itemService - current version uses getItemById
-jest.mock("../../services/itemService", () => ({
+jest.mock('../../services/itemService', () => ({
   getItemById: jest.fn(),
 }));
 
 // Mock CSS modules
-jest.mock("../ItemDetail/ItemDetail.module.css", () => ({
-  loading: "loading",
-  loadingSpinner: "loadingSpinner",
-  notFound: "notFound",
-  backButton: "backButton",
-  container: "container",
-  header: "header",
-  content: "content",
-  imageSection: "imageSection",
-  mainImage: "mainImage",
-  productImage: "productImage",
-  noImage: "noImage",
-  statusBadge: "statusBadge",
-  available: "available",
-  detailsSection: "detailsSection",
-  productInfo: "productInfo",
-  title: "title",
-  priceAndCondition: "priceAndCondition",
-  price: "price",
-  condition: "condition",
-  likenew: "likenew",
-  good: "good",
-  fair: "fair",
-  basicInfo: "basicInfo",
-  infoItem: "infoItem",
-  label: "label",
-  description: "description",
-  safetyNotice: "safetyNotice",
+jest.mock('../ItemDetail/ItemDetail.module.css', () => ({
+  loading: 'loading',
+  loadingSpinner: 'loadingSpinner',
+  notFound: 'notFound',
+  backButton: 'backButton',
+  container: 'container',
+  header: 'header',
+  content: 'content',
+  imageSection: 'imageSection',
+  mainImage: 'mainImage',
+  productImage: 'productImage',
+  noImage: 'noImage',
+  statusBadge: 'statusBadge',
+  available: 'available',
+  detailsSection: 'detailsSection',
+  productInfo: 'productInfo',
+  title: 'title',
+  priceAndCondition: 'priceAndCondition',
+  price: 'price',
+  condition: 'condition',
+  likenew: 'likenew',
+  good: 'good',
+  fair: 'fair',
+  basicInfo: 'basicInfo',
+  infoItem: 'infoItem',
+  label: 'label',
+  description: 'description',
+  safetyNotice: 'safetyNotice',
 }));
 
 // Mock console methods
@@ -82,7 +82,7 @@ afterAll(() => {
   console.log = originalLog;
 });
 
-describe("ItemDetail (Current Version)", () => {
+describe('ItemDetail (Current Version)', () => {
   const mockRouter = {
     push: mockPush,
     back: mockBack,
@@ -90,18 +90,18 @@ describe("ItemDetail (Current Version)", () => {
 
   // Current version uses different data structure (matches MongoDB schema)
   const mockItem = {
-    _id: "item-1",
-    title: "Test Item",
+    _id: 'item-1',
+    title: 'Test Item',
     price: 25,
-    condition: "Like New",
-    size: "Medium",
-    ageRange: "2-3 years",
-    category: "Clothing",
-    location: "San Francisco",
-    description: "Test description for the item",
-    imageUrl: "https://example.com/image.jpg",
-    status: "available",
-    sellerId: "seller1",
+    condition: 'Like New',
+    size: 'Medium',
+    ageRange: '2-3 years',
+    category: 'Clothing',
+    location: 'San Francisco',
+    description: 'Test description for the item',
+    imageUrl: 'https://example.com/image.jpg',
+    status: 'available',
+    sellerId: 'seller1',
     createdAt: new Date(),
   };
 
@@ -117,19 +117,19 @@ describe("ItemDetail (Current Version)", () => {
     jest.clearAllMocks();
   });
 
-  describe("Loading State", () => {
-    test("displays loading state initially", async () => {
+  describe('Loading State', () => {
+    test('displays loading state initially', async () => {
       getItemById.mockImplementation(() => new Promise(() => {})); // Never resolves
 
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
-      expect(screen.getByText("Loading item details...")).toBeInTheDocument();
-      expect(screen.getByText("Loading item details...")).toBeInTheDocument();
+      expect(screen.getByText('Loading item details...')).toBeInTheDocument();
+      expect(screen.getByText('Loading item details...')).toBeInTheDocument();
     });
 
-    test("shows loading spinner", async () => {
+    test('shows loading spinner', async () => {
       getItemById.mockImplementation(() => new Promise(() => {}));
 
       let container;
@@ -138,12 +138,12 @@ describe("ItemDetail (Current Version)", () => {
         container = result.container;
       });
 
-      expect(container.querySelector(".loadingSpinner")).toBeInTheDocument();
+      expect(container.querySelector('.loadingSpinner')).toBeInTheDocument();
     });
   });
 
-  describe("Item Not Found", () => {
-    test("displays not found message when item does not exist", async () => {
+  describe('Item Not Found', () => {
+    test('displays not found message when item does not exist', async () => {
       getItemById.mockResolvedValue(null);
 
       await act(async () => {
@@ -151,17 +151,17 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Item Not Found")).toBeInTheDocument();
+        expect(screen.getByText('Item Not Found')).toBeInTheDocument();
       });
 
       expect(
         screen.getByText(
-          "The item you are looking for does not exist or has been removed."
-        )
+          'The item you are looking for does not exist or has been removed.',
+        ),
       ).toBeInTheDocument();
     });
 
-    test("handles back navigation from not found page", async () => {
+    test('handles back navigation from not found page', async () => {
       getItemById.mockResolvedValue(null);
 
       await act(async () => {
@@ -169,49 +169,49 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Item Not Found")).toBeInTheDocument();
+        expect(screen.getByText('Item Not Found')).toBeInTheDocument();
       });
 
-      const backButton = screen.getByText("← Go Back");
+      const backButton = screen.getByText('← Go Back');
       fireEvent.click(backButton);
 
       expect(mockBack).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe("Successful Item Loading", () => {
-    test("displays item details correctly", async () => {
+  describe('Successful Item Loading', () => {
+    test('displays item details correctly', async () => {
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Test Item")).toBeInTheDocument();
+        expect(screen.getByText('Test Item')).toBeInTheDocument();
       });
 
-      expect(screen.getByText("$25.00")).toBeInTheDocument(); // Current version uses formatPrice
-      expect(screen.getByText("Like New")).toBeInTheDocument();
-      expect(screen.getByText("Medium (2-3 years)")).toBeInTheDocument();
-      expect(screen.getByText("Clothing")).toBeInTheDocument();
-      expect(screen.getByText("San Francisco")).toBeInTheDocument();
+      expect(screen.getByText('$25.00')).toBeInTheDocument(); // Current version uses formatPrice
+      expect(screen.getByText('Like New')).toBeInTheDocument();
+      expect(screen.getByText('Medium (2-3 years)')).toBeInTheDocument();
+      expect(screen.getByText('Clothing')).toBeInTheDocument();
+      expect(screen.getByText('San Francisco')).toBeInTheDocument();
       expect(
-        screen.getByText("Test description for the item")
+        screen.getByText('Test description for the item'),
       ).toBeInTheDocument();
     });
 
-    test("displays item image with correct attributes", async () => {
+    test('displays item image with correct attributes', async () => {
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
       await waitFor(() => {
-        const image = screen.getByAltText("Test Item");
-        expect(image.src).toBe("https://example.com/image.jpg");
-        expect(image).toHaveClass("productImage");
+        const image = screen.getByAltText('Test Item');
+        expect(image.src).toBe('https://example.com/image.jpg');
+        expect(image).toHaveClass('productImage');
       });
     });
 
-    test("displays no image placeholder when imageUrl is missing", async () => {
+    test('displays no image placeholder when imageUrl is missing', async () => {
       const itemWithoutImage = { ...mockItem, imageUrl: null };
       getItemById.mockResolvedValue(itemWithoutImage);
 
@@ -220,22 +220,22 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("No image available")).toBeInTheDocument();
+        expect(screen.getByText('No image available')).toBeInTheDocument();
       });
     });
 
-    test("displays available status badge", async () => {
+    test('displays available status badge', async () => {
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
       await waitFor(() => {
-        expect(screen.getByText("✓ Available")).toBeInTheDocument();
+        expect(screen.getByText('✓ Available')).toBeInTheDocument();
       });
     });
 
-    test("displays correct status for non-available items", async () => {
-      const soldItem = { ...mockItem, status: "sold" };
+    test('displays correct status for non-available items', async () => {
+      const soldItem = { ...mockItem, status: 'sold' };
       getItemById.mockResolvedValue(soldItem);
 
       await act(async () => {
@@ -243,13 +243,13 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("sold")).toBeInTheDocument();
+        expect(screen.getByText('sold')).toBeInTheDocument();
       });
     });
   });
 
-  describe("Price Formatting", () => {
-    test("formats numeric prices correctly", async () => {
+  describe('Price Formatting', () => {
+    test('formats numeric prices correctly', async () => {
       const itemWithDecimalPrice = { ...mockItem, price: 25.5 };
       getItemById.mockResolvedValue(itemWithDecimalPrice);
 
@@ -258,12 +258,12 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("$25.50")).toBeInTheDocument();
+        expect(screen.getByText('$25.50')).toBeInTheDocument();
       });
     });
 
-    test("handles string prices", async () => {
-      const itemWithStringPrice = { ...mockItem, price: "25" };
+    test('handles string prices', async () => {
+      const itemWithStringPrice = { ...mockItem, price: '25' };
       getItemById.mockResolvedValue(itemWithStringPrice);
 
       await act(async () => {
@@ -271,12 +271,12 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("$25.00")).toBeInTheDocument();
+        expect(screen.getByText('$25.00')).toBeInTheDocument();
       });
     });
 
-    test("handles invalid prices gracefully", async () => {
-      const itemWithInvalidPrice = { ...mockItem, price: "invalid" };
+    test('handles invalid prices gracefully', async () => {
+      const itemWithInvalidPrice = { ...mockItem, price: 'invalid' };
       getItemById.mockResolvedValue(itemWithInvalidPrice);
 
       await act(async () => {
@@ -284,18 +284,18 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("$invalid")).toBeInTheDocument();
+        expect(screen.getByText('$invalid')).toBeInTheDocument();
       });
     });
   });
 
-  describe("Field Safety (Null/Undefined Handling)", () => {
-    test("handles missing optional fields gracefully", async () => {
+  describe('Field Safety (Null/Undefined Handling)', () => {
+    test('handles missing optional fields gracefully', async () => {
       const itemWithMissingFields = {
-        _id: "item-1",
-        title: "Test Item",
+        _id: 'item-1',
+        title: 'Test Item',
         price: 25,
-        status: "available",
+        status: 'available',
         // Missing: condition, size, ageRange, category, location, description
       };
       getItemById.mockResolvedValue(itemWithMissingFields);
@@ -305,34 +305,34 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Test Item")).toBeInTheDocument();
+        expect(screen.getByText('Test Item')).toBeInTheDocument();
       });
 
       // Should display "—" for missing fields
-      expect(screen.getAllByText("—")).toHaveLength(5); // condition, size/age, category, location, description
+      expect(screen.getAllByText('—')).toHaveLength(5); // condition, size/age, category, location, description
     });
   });
 
-  describe("Navigation", () => {
-    test("handles back navigation from header", async () => {
+  describe('Navigation', () => {
+    test('handles back navigation from header', async () => {
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
       await waitFor(() => {
-        expect(screen.getByText("← Back to Browse")).toBeInTheDocument();
+        expect(screen.getByText('← Back to Browse')).toBeInTheDocument();
       });
 
-      const backButton = screen.getByText("← Back to Browse");
+      const backButton = screen.getByText('← Back to Browse');
       fireEvent.click(backButton);
 
       expect(mockBack).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe("Error Handling", () => {
-    test("handles API error gracefully", async () => {
-      const errorMessage = "API Error";
+  describe('Error Handling', () => {
+    test('handles API error gracefully', async () => {
+      const errorMessage = 'API Error';
       getItemById.mockRejectedValue(new Error(errorMessage));
 
       await act(async () => {
@@ -341,19 +341,19 @@ describe("ItemDetail (Current Version)", () => {
 
       await waitFor(() => {
         expect(console.error).toHaveBeenCalledWith(
-          "Error fetching item:",
-          expect.any(Error)
+          'Error fetching item:',
+          expect.any(Error),
         );
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Item Not Found")).toBeInTheDocument();
+        expect(screen.getByText('Item Not Found')).toBeInTheDocument();
       });
     });
   });
 
-  describe("Conditional Rendering", () => {
-    test("does not fetch item when itemId is not provided", async () => {
+  describe('Conditional Rendering', () => {
+    test('does not fetch item when itemId is not provided', async () => {
       await act(async () => {
         render(<ItemDetail itemId={null} />);
       });
@@ -361,21 +361,21 @@ describe("ItemDetail (Current Version)", () => {
       expect(getItemById).not.toHaveBeenCalled();
     });
 
-    test("fetches item when itemId is provided", async () => {
+    test('fetches item when itemId is provided', async () => {
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
-      expect(getItemById).toHaveBeenCalledWith("item-1");
+      expect(getItemById).toHaveBeenCalledWith('item-1');
       expect(getItemById).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe("Condition Styling", () => {
-    test("applies correct CSS class for condition", async () => {
+  describe('Condition Styling', () => {
+    test('applies correct CSS class for condition', async () => {
       const itemWithCondition = {
         ...mockItem,
-        condition: "Like New",
+        condition: 'Like New',
       };
       getItemById.mockResolvedValue(itemWithCondition);
 
@@ -387,16 +387,16 @@ describe("ItemDetail (Current Version)", () => {
 
       await waitFor(() => {
         // Current version uses safer condition styling
-        const conditionElement = container.querySelector(".condition");
+        const conditionElement = container.querySelector('.condition');
         expect(conditionElement).toBeInTheDocument();
-        expect(conditionElement).toHaveTextContent("Like New");
+        expect(conditionElement).toHaveTextContent('Like New');
       });
     });
 
-    test("handles empty condition gracefully", async () => {
+    test('handles empty condition gracefully', async () => {
       const itemWithEmptyCondition = {
         ...mockItem,
-        condition: "",
+        condition: '',
       };
       getItemById.mockResolvedValue(itemWithEmptyCondition);
 
@@ -405,44 +405,44 @@ describe("ItemDetail (Current Version)", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("—")).toBeInTheDocument();
+        expect(screen.getByText('—')).toBeInTheDocument();
       });
     });
   });
 
-  describe("Safety Notice", () => {
-    test("displays safety tips", async () => {
+  describe('Safety Notice', () => {
+    test('displays safety tips', async () => {
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
       await waitFor(() => {
-        expect(screen.getByText("🛡️ Safety Tips")).toBeInTheDocument();
+        expect(screen.getByText('🛡️ Safety Tips')).toBeInTheDocument();
       });
 
       expect(
         screen.getByText(
-          "Meet in a public place like a library, coffee shop, or mall"
-        )
+          'Meet in a public place like a library, coffee shop, or mall',
+        ),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Bring a friend if possible")
+        screen.getByText('Bring a friend if possible'),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Inspect items carefully before payment")
+        screen.getByText('Inspect items carefully before payment'),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Trust your instincts — if something feels off, walk away"
-        )
+          'Trust your instincts — if something feels off, walk away',
+        ),
       ).toBeInTheDocument();
     });
   });
 
-  describe("Development Environment", () => {
-    test("logs item data in development", async () => {
+  describe('Development Environment', () => {
+    test('logs item data in development', async () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = "development";
+      process.env.NODE_ENV = 'development';
 
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
@@ -450,29 +450,29 @@ describe("ItemDetail (Current Version)", () => {
 
       await waitFor(() => {
         expect(console.log).toHaveBeenCalledWith(
-          "ItemDetail loaded item:",
-          mockItem
+          'ItemDetail loaded item:',
+          mockItem,
         );
       });
 
       process.env.NODE_ENV = originalEnv;
     });
 
-    test("does not log in production", async () => {
+    test('does not log in production', async () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = "production";
+      process.env.NODE_ENV = 'production';
 
       await act(async () => {
         render(<ItemDetail itemId="item-1" />);
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Test Item")).toBeInTheDocument();
+        expect(screen.getByText('Test Item')).toBeInTheDocument();
       });
 
       expect(console.log).not.toHaveBeenCalledWith(
-        "ItemDetail loaded item:",
-        expect.anything()
+        'ItemDetail loaded item:',
+        expect.anything(),
       );
 
       process.env.NODE_ENV = originalEnv;
