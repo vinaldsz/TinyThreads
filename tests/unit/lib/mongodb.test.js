@@ -25,7 +25,7 @@ describe('mongodb helper getDb', () => {
       process.env.MONGODB_URI || 'mongodb://localhost:27017';
 
     // Import the module under test after mocks are set up
-    const { getDb } = await import('../../lib/mongodb.js');
+    const { getDb } = await import('@/lib/mongodb.js');
 
     // Call getDb and assert
     const db = await getDb('custom-db');

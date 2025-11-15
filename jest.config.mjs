@@ -35,6 +35,8 @@ const customJestConfig = {
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.(test|spec).{js,jsx,ts,tsx}',
     '<rootDir>/tests/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/tests/unit/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/tests/integration/**/*.{js,jsx,ts,tsx}',
   ],
 
   // Files to ignore
@@ -45,8 +47,8 @@ const customJestConfig = {
     '<rootDir>/dist/',
   ],
 
-  // Coverage configuration
-  collectCoverage: true,
+  // Coverage configuration - only collect coverage in CI to keep local runs fast
+  collectCoverage: !!process.env.CI,
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
 

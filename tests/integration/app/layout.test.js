@@ -8,9 +8,9 @@ jest.mock('next/font/google', () => ({
 }));
 
 // Mock CSS import
-jest.mock('../globals.css', () => ({}));
+jest.mock('@/app/globals.css', () => ({}));
 
-import RootLayout, { metadata } from '../layout';
+import RootLayout, { metadata } from '@/app/layout';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 // Get the mocked functions

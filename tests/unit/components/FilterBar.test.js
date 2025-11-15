@@ -1,6 +1,5 @@
-// src/components/__tests__/FilterBar.test.js
 import { render, screen, fireEvent } from '@testing-library/react';
-import FilterBar from '../FilterBar/FilterBar';
+import FilterBar from '@/components/FilterBar/FilterBar';
 
 describe('FilterBar Component', () => {
   const mockOnFiltersChange = jest.fn();

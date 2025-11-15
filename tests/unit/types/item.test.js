@@ -6,7 +6,7 @@ import {
   validateItem,
   getFilterOptions,
   exampleItem,
-} from '../item';
+} from '@/types/item';
 
 describe('item.js types and utilities', () => {
   // ===== ITEM_CONFIG TESTS =====

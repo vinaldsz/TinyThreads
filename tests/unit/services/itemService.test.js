@@ -1,4 +1,3 @@
-// src/services/__tests__/itemService.test.js
 import {
   getItems,
   getItemById,
@@ -7,10 +6,10 @@ import {
   getItemsBySeller,
   getAvailableFilters,
   getFeaturedItems,
-} from '../itemService';
+} from '@/services/itemService';
 
-// Mock the types/item module
-jest.mock('../../types/item', () => ({
+// Mock the types/item module using the alias so this file works from its new location
+jest.mock('@/types/item', () => ({
   getFilterOptions: jest.fn(() => ({
     categories: ['Clothing', 'Toys', 'Books'],
     conditions: ['New', 'Like New', 'Good', 'Fair'],

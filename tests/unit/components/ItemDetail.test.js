@@ -6,8 +6,8 @@ import {
   act,
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ItemDetail from '../ItemDetail/ItemDetail'; // Import current version, not ItemDetail 2
-import { getItemById } from '../../services/itemService'; // Current version uses getItemById
+import ItemDetail from '@/components/ItemDetail/ItemDetail'; // Import current version, not ItemDetail 2
+import { getItemById } from '@/services/itemService'; // Current version uses getItemById
 import { useRouter } from 'next/navigation';
 
 // Mock Next.js router
@@ -34,12 +34,12 @@ jest.mock('next/image', () => ({
 }));
 
 // Mock itemService - current version uses getItemById
-jest.mock('../../services/itemService', () => ({
+jest.mock('@/services/itemService', () => ({
   getItemById: jest.fn(),
 }));
 
 // Mock CSS modules
-jest.mock('../ItemDetail/ItemDetail.module.css', () => ({
+jest.mock('@/components/ItemDetail/ItemDetail.module.css', () => ({
   loading: 'loading',
   loadingSpinner: 'loadingSpinner',
   notFound: 'notFound',
