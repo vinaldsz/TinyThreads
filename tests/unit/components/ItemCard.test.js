@@ -1,7 +1,6 @@
-// src/components/__tests__/ItemCard.test.js
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
-import ItemCard from '../ItemCard/ItemCard';
+import ItemCard from '@/components/ItemCard/ItemCard';
 
 // Mock Next.js Image component (FIXED VERSION)
 jest.mock('next/image', () => {

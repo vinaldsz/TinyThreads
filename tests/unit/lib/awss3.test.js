@@ -51,7 +51,7 @@ describe('awss3', () => {
       delete process.env.AWS_REGION;
 
       await expect(async () => {
-        await import('../awss3.js');
+        await import('@/lib/awss3.js');
       }).rejects.toThrow(
         'Missing AWS credentials or region in environment variables',
       );
@@ -61,7 +61,7 @@ describe('awss3', () => {
       delete process.env.AWS_ACCESS_KEY_ID;
 
       await expect(async () => {
-        await import('../awss3.js');
+        await import('@/lib/awss3.js');
       }).rejects.toThrow(
         'Missing AWS credentials or region in environment variables',
       );
@@ -71,7 +71,7 @@ describe('awss3', () => {
       delete process.env.AWS_SECRET_ACCESS_KEY;
 
       await expect(async () => {
-        await import('../awss3.js');
+        await import('@/lib/awss3.js');
       }).rejects.toThrow(
         'Missing AWS credentials or region in environment variables',
       );
@@ -81,13 +81,13 @@ describe('awss3', () => {
       delete process.env.S3_BUCKET_NAME;
 
       await expect(async () => {
-        await import('../awss3.js');
+        await import('@/lib/awss3.js');
       }).rejects.toThrow('Missing S3_BUCKET_NAME in environment variables');
     });
 
     test('initializes S3Client with correct configuration when all env vars present', async () => {
       // Import with valid environment
-      await import('../awss3.js');
+      await import('@/lib/awss3.js');
 
       expect(mockS3Client).toHaveBeenCalledWith({
         region: 'us-east-1',
@@ -104,7 +104,7 @@ describe('awss3', () => {
     let getPublicUrl;
 
     beforeEach(async () => {
-      const awsModule = await import('../awss3.js');
+      const awsModule = await import('@/lib/awss3.js');
       getPublicUrl = awsModule.getPublicUrl;
     });
 
@@ -147,7 +147,7 @@ describe('awss3', () => {
       mockRandomUUID.mockReturnValue('12345678-1234-5678-9012-123456789abc');
       mockSend.mockResolvedValue({});
 
-      const awsModule = await import('../awss3.js');
+      const awsModule = await import('@/lib/awss3.js');
       uploadImageToS3 = awsModule.uploadImageToS3;
     });
 
@@ -379,7 +379,7 @@ describe('awss3', () => {
       jest.resetModules();
 
       await expect(async () => {
-        await import('../awss3.js');
+        await import('@/lib/awss3.js');
       }).rejects.toThrow('Invalid AWS configuration');
     });
 
@@ -427,7 +427,7 @@ describe('awss3', () => {
   // ===== DEFAULT EXPORT TEST =====
   describe('default export', () => {
     test('exports S3Client instance', async () => {
-      const awsModule = await import('../awss3.js');
+      const awsModule = await import('@/lib/awss3.js');
 
       expect(awsModule.default).toBeDefined();
       // The default export should be the result of new S3Client()

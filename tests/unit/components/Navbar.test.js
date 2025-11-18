@@ -1,5 +1,5 @@
 // Mock CSS modules
-jest.mock('../Navbar/Navbar.module.css', () => ({
+jest.mock('@/components/Navbar/Navbar.module.css', () => ({
   navbar: 'navbar',
   brandWrapper: 'brandWrapper',
   brand: 'brand',
@@ -29,8 +29,8 @@ jest.mock('next/image', () => {
 
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Navbar from '../Navbar/Navbar';
-jest.mock('../Navbar/Navbar.module.css', () => ({
+import Navbar from '@/components/Navbar/Navbar';
+jest.mock('@/components/Navbar/Navbar.module.css', () => ({
   navbar: 'navbar',
   brandWrapper: 'brandWrapper',
   brand: 'brand',

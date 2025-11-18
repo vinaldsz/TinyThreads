@@ -1,5 +1,3 @@
-// src/components/__tests__/ItemGrid.test.js
-
 import {
   render,
   screen,
@@ -7,10 +5,10 @@ import {
   waitFor,
   act,
 } from '@testing-library/react';
-import ItemGrid from '../ItemGrid/ItemGrid';
+import ItemGrid from '@/components/ItemGrid/ItemGrid';
 
 // Mock ItemCard component
-jest.mock('../ItemCard/ItemCard', () => {
+jest.mock('@/components/ItemCard/ItemCard', () => {
   return function MockItemCard({ item }) {
     return (
       <div data-testid={`item-card-${item.id}`}>

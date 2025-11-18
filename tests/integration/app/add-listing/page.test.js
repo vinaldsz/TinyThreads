@@ -9,9 +9,9 @@
 // src/app/add-listing/__tests__/page.test.js
 import { render, screen, fireEvent } from '@testing-library/react';
 import { redirect } from 'next/navigation';
-import AddListingPage from '../page';
-import { uploadListingAction } from '../actions';
-import { uploadImageToS3 } from '../../../lib/awss3';
+import AddListingPage from '@/app/add-listing/page';
+import { uploadListingAction } from '@/app/add-listing/actions';
+import { uploadImageToS3 } from '@/lib/awss3';
 
 // Mocked MongoDB client to simulate in-memory inserts and queries
 const mockCollection = {
@@ -24,7 +24,7 @@ const mockClient = {
   db: jest.fn(() => mockDb),
 };
 
-jest.mock('../../../lib/mongodb', () => ({
+jest.mock('@/lib/mongodb', () => ({
   default: Promise.resolve(mockClient),
   getDb: jest.fn((dbName) => {
     const name = dbName || process.env.MONGODB_DB || 'TinyThreads';
@@ -41,7 +41,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mocked AWS S3 helper to prevent real network requests
-jest.mock('../../../lib/awss3', () => ({
+jest.mock('@/lib/awss3', () => ({
   uploadImageToS3: jest.fn(),
 }));
 

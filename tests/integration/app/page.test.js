@@ -6,7 +6,7 @@ import {
   act,
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import BrowsePage from '../page';
+import BrowsePage from '@/app/page';
 import { getItems, filterItems } from '@/services/itemService';
 
 // Mock Next.js Link component
@@ -74,7 +74,7 @@ jest.mock('@/components/ItemGrid/ItemGrid', () => {
 });
 
 // Mock CSS modules
-jest.mock('../page.module.css', () => ({
+jest.mock('@/app/page.module.css', () => ({
   page: 'page',
   container: 'container',
   headerSection: 'headerSection',
