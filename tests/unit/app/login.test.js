@@ -12,8 +12,13 @@ jest.mock('next-auth/react', () => ({
   signIn: jest.fn(),
 }));
 
-const { signIn: mockSignIn } = require('next-auth/react');
+jest.mock('next-auth/react', () => {
+  return {
+    signIn: jest.fn(),
+  };
+});
 
+import { signIn as mockSignIn } from 'next-auth/react';
 import LoginPage from '@/app/login/page';
 
 describe('Login Page', () => {

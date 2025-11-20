@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 // We'll provide a different Image mock in this file to specifically exercise
 // the image-error path by calling onError instead of onLoadingComplete.
 jest.mock('next/image', () => {
-  return function MockImage({ src, alt, onLoadingComplete, onError }) {
+  return function MockImage({ src, alt, onError }) {
     // Simulate an image error
     setTimeout(() => onError && onError(), 0);
     return (

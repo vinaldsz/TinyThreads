@@ -17,11 +17,15 @@ jest.mock('next/image', () => {
   };
 });
 jest.mock('next/link', () => {
-  return ({ href, children, className }) => (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  );
+  function MockLink({ href, children, className }) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  }
+  MockLink.displayName = 'MockNextLink';
+  return MockLink;
 });
 
 // Mock CSS module to avoid missing class names
