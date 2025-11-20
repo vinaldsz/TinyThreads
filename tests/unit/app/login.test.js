@@ -7,16 +7,9 @@ import {
   act,
 } from '@testing-library/react';
 
-// Create the mock inside the factory to avoid hoisting issues
 jest.mock('next-auth/react', () => ({
   signIn: jest.fn(),
 }));
-
-jest.mock('next-auth/react', () => {
-  return {
-    signIn: jest.fn(),
-  };
-});
 
 import { signIn as mockSignIn } from 'next-auth/react';
 import LoginPage from '@/app/login/page';
