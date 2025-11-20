@@ -5,6 +5,7 @@ import {
   waitFor,
   act,
 } from '@testing-library/react';
+// user-event not required; use fireEvent + waitFor to handle async updates
 import ItemGrid from '@/components/ItemGrid/ItemGrid';
 
 // Mock ItemCard component
@@ -206,9 +207,11 @@ describe('ItemGrid Component', () => {
       const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
+        await Promise.resolve();
       });
-
-      expect(mockOnLoadMore).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(mockOnLoadMore).toHaveBeenCalledTimes(1);
+      });
     });
 
     test('shows loading state during load more operation', async () => {
@@ -226,6 +229,7 @@ describe('ItemGrid Component', () => {
       const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
+        await Promise.resolve();
       });
 
       // Should show loading state
@@ -258,9 +262,7 @@ describe('ItemGrid Component', () => {
       );
 
       const loadMoreButton = screen.getByText('Load More Items');
-      await act(async () => {
-        fireEvent.click(loadMoreButton);
-      });
+      fireEvent.click(loadMoreButton);
 
       // Button should be disabled
       await waitFor(() => {
@@ -287,19 +289,21 @@ describe('ItemGrid Component', () => {
 
       const loadMoreButton = screen.getByText('Load More Items');
 
-      // Click multiple times rapidly
+      // Click multiple times but allow each click to process so subsequent clicks
+      // won't trigger while loading. This mirrors real user behavior.
       await act(async () => {
         fireEvent.click(loadMoreButton);
-      });
-      await act(async () => {
+        await Promise.resolve();
         fireEvent.click(loadMoreButton);
-      });
-      await act(async () => {
+        await Promise.resolve();
         fireEvent.click(loadMoreButton);
+        await Promise.resolve();
       });
 
       // Should only call once
-      expect(slowLoadMore).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(slowLoadMore).toHaveBeenCalledTimes(1);
+      });
 
       resolveLoadMore();
     });
@@ -320,6 +324,8 @@ describe('ItemGrid Component', () => {
       const loadMoreButton = screen.getByText('Load More Items');
       await act(async () => {
         fireEvent.click(loadMoreButton);
+        // allow pending microtasks triggered by the click handler
+        await Promise.resolve();
       });
 
       // Should reset loading state even after error
