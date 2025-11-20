@@ -1,102 +1,89 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 
-// Mock next/image and next/link to simple elements so Navbar renders predictably
-jest.mock('next/image', () => {
-  return function MockImage({ src, alt, width, height, className }) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        className={className}
-      />
-    );
-  };
-});
-jest.mock('next/link', () => {
-  function MockLink({ href, children, className }) {
-    return (
-      <a href={href} className={className}>
-        {children}
-      </a>
-    );
-  }
-  MockLink.displayName = 'MockNextLink';
-  return MockLink;
-});
-
-// Mock CSS module to avoid missing class names
-jest.mock('@/components/Navbar/Navbar.module.css', () => ({
-  navbar: 'navbar',
-  brandWrapper: 'brandWrapper',
-  brand: 'brand',
-  brandLogo: 'brandLogo',
-  inner: 'inner',
-  spacer: 'spacer',
-  links: 'links',
-  aboutLink: 'aboutLink',
-  profileWrap: 'profileWrap',
-  profileButton: 'profileButton',
-  profileDropdown: 'profileDropdown',
-  dropdownItem: 'dropdownItem',
-  linkButton: 'linkButton',
-  signupButton: 'signupButton',
-}));
-
-// Mock next-auth so we can control session and signOut. Create the mock inside
-// the factory to avoid jest mock hoisting issues, then require it below.
 jest.mock('next-auth/react', () => ({
-  useSession: () => ({
-    data: { user: { name: 'Alice', email: 'a@b' } },
-    status: 'authenticated',
-  }),
-  signOut: jest.fn(),
+  signIn: jest.fn(),
 }));
 
-const { signOut: mockSignOut } = require('next-auth/react');
+import { signIn as mockSignIn } from 'next-auth/react';
+import LoginPage from '@/app/login/page';
 
-import Navbar from '@/components/Navbar/Navbar';
-
-describe('Navbar authenticated behavior', () => {
+describe('Login Page', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  test('shows profile and dropdown can sign out and closes on outside click', async () => {
-    render(<Navbar />);
+  test('renders form inputs and submit button', () => {
+    render(<LoginPage />);
 
-    // Profile button should render with user name
-    const profileButton = screen.getByRole('button', { name: /alice/i });
-    expect(profileButton).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Your password')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /sign in/i }),
+    ).toBeInTheDocument();
+  });
 
-    // Click to open
-    fireEvent.click(profileButton);
+  test('calls signIn and shows loading state while pending', async () => {
+    let resolveSignIn;
+    mockSignIn.mockImplementation(
+      () =>
+        new Promise((res) => {
+          resolveSignIn = res;
+        }),
+    );
 
-    // Dropdown should appear (menuitem role)
-    const signOutButton = await screen.findByRole('menuitem', {
-      name: /sign out/i,
+    render(<LoginPage />);
+
+    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const passwordInput = screen.getByPlaceholderText('Your password');
+    const submit = screen.getByRole('button', { name: /sign in/i });
+
+    await act(async () => {
+      fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+      fireEvent.change(passwordInput, { target: { value: 'Password123' } });
+      fireEvent.click(submit);
+      await Promise.resolve();
     });
-    expect(signOutButton).toBeInTheDocument();
 
-    // Simulate outside click to close
-    const evt = new MouseEvent('mousedown', { bubbles: true });
-    document.body.dispatchEvent(evt);
+    expect(screen.getByRole('button')).toHaveTextContent('Signing in...');
+    expect(screen.getByRole('button')).toBeDisabled();
+
+    resolveSignIn();
+
+    await waitFor(() => expect(mockSignIn).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: /sign in/i }),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  test('shows error message when signIn rejects', async () => {
+    mockSignIn.mockRejectedValueOnce(new Error('Invalid credentials'));
+
+    render(<LoginPage />);
+
+    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const passwordInput = screen.getByPlaceholderText('Your password');
+    const submit = screen.getByRole('button', { name: /sign in/i });
+
+    await act(async () => {
+      fireEvent.change(emailInput, { target: { value: 'bad@example.com' } });
+      fireEvent.change(passwordInput, { target: { value: 'badpass' } });
+      fireEvent.click(submit);
+      await Promise.resolve();
+    });
 
     await waitFor(() => {
-      expect(
-        screen.queryByRole('menuitem', { name: /sign out/i }),
-      ).not.toBeInTheDocument();
+      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
     });
 
-    // Open again and click sign out
-    fireEvent.click(profileButton);
-    const signOutButton2 = await screen.findByRole('menuitem', {
-      name: /sign out/i,
-    });
-    fireEvent.click(signOutButton2);
-    expect(mockSignOut).toHaveBeenCalledWith({ callbackUrl: '/' });
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeEnabled();
   });
 });
