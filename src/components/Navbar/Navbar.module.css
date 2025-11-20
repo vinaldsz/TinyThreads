@@ -60,6 +60,128 @@
   font-weight: 600;
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
+  /* Match username sizing */
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.linkButton {
+  background: transparent;
+  border: 0;
+  color: #374151;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none; /* remove default underline */
+}
+
+.signupButton {
+  /* make Sign up a link-style control (not a filled button) */
+  background: transparent;
+  color: #374151; /* black-ish text to match other navbar items */
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 0;
+}
+
+.userName {
+  /* Match the About link styling: use neutral-700 color and inherit font sizing */
+  color: #374151; /* neutral-700, same as .aboutLink */
+  font-weight: 600;
+  margin-right: 0.5rem;
+  /* Explicitly match About's font size and line-height for consistent appearance */
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.profileWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.profileButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.caret {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.profileDropdown {
+  position: absolute;
+  top: 100%; /* Always below the button */
+  right: 0;
+  margin-top: 0.5rem; /* Optional extra spacing */
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px rgba(20, 20, 30, 0.08);
+  border-radius: 8px;
+  padding: 0.25rem 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  color: #0f172a;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure anchors and buttons inside the dropdown are full-width blocks */
+.profileDropdown a,
+.profileDropdown button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 420px) {
+  .profileDropdown {
+    left: 8px;
+    right: 8px;
+    max-width: calc(100vw - 16px);
+  }
+}
+
+.dropdownItem + .dropdownItem {
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.dropdownItem:hover,
+.dropdownItem:focus {
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .aboutLink:hover,
