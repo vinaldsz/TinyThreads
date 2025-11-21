@@ -5,11 +5,15 @@ import { useRouter } from 'next/navigation';
 import { getItemById } from '../../services/itemService';
 import styles from './ItemDetail.module.css';
 import Image from 'next/image';
+import PurchaseModal from './PurchaseModal';
+import { useSession } from 'next-auth/react';
 
 export default function ItemDetail({ itemId }) {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { data: session } = useSession()
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -34,6 +38,20 @@ export default function ItemDetail({ itemId }) {
     const n = typeof p === 'number' ? p : Number(p);
     return Number.isFinite(n) ? n.toFixed(2) : String(p ?? '');
   };
+
+  // purchase button 
+  const isLoggedIn = !!session;
+  const isAvailable = item?.status === 'available';
+  const canPurchase = isLoggedIn && isAvailable;
+
+  const handleBuyClick = () => {
+    setShowPurchaseModal(true);
+  };
+
+  const handleLoginRedirect = () => {
+    router.push('/login');
+  };
+
 
   if (loading) {
     return (
@@ -111,6 +129,34 @@ export default function ItemDetail({ itemId }) {
               })()}
             </div>
 
+            {/* NEW: Purchase Button Section */}
+            <div className={styles.purchaseSection}>
+              {canPurchase && (
+                <button 
+                  onClick={handleBuyClick}
+                  className={styles.buyButton}
+                >
+                  Buy Now
+                </button>
+              )}
+              
+              {!isLoggedIn && isAvailable && (
+                <button 
+                  onClick={handleLoginRedirect}
+                  className={styles.loginButton}
+                >
+                  Sign in to purchase
+                </button>
+              )}
+              
+              {!isAvailable && (
+                <div className={styles.soldNotice}>
+                  This item has been sold
+                </div>
+              )}
+            </div>
+
+
             <div className={styles.basicInfo}>
               <div className={styles.infoItem}>
                 <span className={styles.label}>Size/Age:</span>
@@ -173,6 +219,16 @@ export default function ItemDetail({ itemId }) {
           </div>
         </div>
       </div>
+
+     {/* NEW: Purchase Modal */}
+     {showPurchaseModal && (
+        <PurchaseModal 
+          item={item}
+          user={session?.user}
+          onClose={() => setShowPurchaseModal(false)}
+        />
+      )}
+
     </div>
   );
 }
