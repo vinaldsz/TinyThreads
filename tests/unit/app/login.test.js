@@ -8,7 +8,17 @@ import {
 } from '@testing-library/react';
 
 jest.mock('next-auth/react', () => ({
+  __esModule: true,
   signIn: jest.fn(),
+  useSession: jest.fn(() => ({
+    data: null,
+    status: 'unauthenticated',
+  })),
+}));
+
+jest.mock('@/components/Navbar/Navbar', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-navbar" />,
 }));
 
 import { signIn as mockSignIn } from 'next-auth/react';

@@ -8,6 +8,11 @@ export default function ItemCard({ item }) {
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const images =
+    Array.isArray(item.imageUrls) && item.imageUrls.length > 0
+      ? item.imageUrls
+      : [item.imageUrl];
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -100,9 +105,9 @@ export default function ItemCard({ item }) {
             </div>
           </div>
         ) : (
-          <div className={styles.imageWrapper}>
+          <div className={styles.imageContainer}>
             <Image
-              src={item.imageUrl}
+              src={images[currentIndex]}
               alt={item.title}
               className={`${styles.image} ${
                 imageLoaded ? styles.imageLoaded : styles.imageLoading
@@ -112,6 +117,38 @@ export default function ItemCard({ item }) {
               onLoadingComplete={handleImageLoad}
               onError={handleImageError}
             />
+
+            {images.length > 1 && (
+              <div className={styles.carouselControls}>
+                <button
+                  className={styles.carouselBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentIndex((prev) =>
+                      prev === 0 ? images.length - 1 : prev - 1,
+                    );
+                  }}
+                >
+                  ‹
+                </button>
+
+                <span className={styles.carouselCounter}>
+                  {currentIndex + 1}/{images.length}
+                </span>
+
+                <button
+                  className={styles.carouselBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentIndex((prev) =>
+                      prev === images.length - 1 ? 0 : prev + 1,
+                    );
+                  }}
+                >
+                  ›
+                </button>
+              </div>
+            )}
           </div>
         )}
 

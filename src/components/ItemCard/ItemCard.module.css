@@ -7,6 +7,8 @@
   transition: all 0.2s ease;
   overflow: hidden;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
@@ -165,6 +167,9 @@
 /* Content */
 .content {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .metaRow {
@@ -205,7 +210,7 @@
 }
 
 .card:hover .title {
-  color: #9333ea;
+  color: #f27b65;
 }
 
 .description {
@@ -249,8 +254,8 @@
 /* Action Button */
 .viewButton {
   width: 100%;
-  margin-top: 16px;
-  background: #9333ea;
+  margin-top: auto;
+  background: #f27b65;
   color: white;
   padding: 8px 16px;
   border-radius: 8px;
@@ -262,5 +267,48 @@
 }
 
 .viewButton:hover {
-  background: #7c3aed;
+  background: #f27b65;
+}
+
+/* Carousel Controls */
+.carouselControls {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.carouselBtn {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b5563;
+  transition: all 0.2s ease;
+}
+
+.carouselBtn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.carouselCounter {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #374151;
 }

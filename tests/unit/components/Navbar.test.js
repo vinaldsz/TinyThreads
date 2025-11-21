@@ -80,8 +80,8 @@ describe('Navbar', () => {
       expect(logoImage).toBeInTheDocument();
       expect(logoImage).toHaveAttribute('src', '/TinyThreadsScribble.png');
       expect(logoImage).toHaveAttribute('alt', 'TinyThreads');
-      expect(logoImage).toHaveAttribute('width', '400');
-      expect(logoImage).toHaveAttribute('height', '400');
+      expect(logoImage).toHaveAttribute('width', '1000');
+      expect(logoImage).toHaveAttribute('height', '1000');
       expect(logoImage).toHaveClass('brandLogo');
     });
 
