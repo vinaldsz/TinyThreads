@@ -2,28 +2,29 @@
 .aboutContainer {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem; /* reduced from 2rem to 1rem to tighten top space */
 }
 
 /* Hero Section */
 .heroSection {
   text-align: center;
-  margin-bottom: 4rem;
-  padding: 2rem 0;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0 0.5rem 0; /* compact top/bottom spacing */
 }
 
 .heroSection h1 {
-  color: #8b5cf6;
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
+  color: #f27b65;
+  font-size: 8rem;
+  margin-bottom: 10rem;
+  font-weight: 1000;
 }
 
 .heroSection h2 {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   color: #333;
   margin-bottom: 1.5rem;
   font-weight: 700;
+  margin-top: 0.5rem;
 }
 
 .heroSection p {
@@ -36,28 +37,24 @@
 
 /* Journey Section */
 .journeySection {
-  margin-bottom: 4rem;
-  padding: 2rem 0;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem 0;
 }
 
-.journeySection h2 {
-  font-size: 2rem;
+.journeySection h2,
+.beliefsSection h2,
+.teamSection h2 {
+  font-size: 1.8rem;
   color: #333;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
   text-align: center;
 }
 
 /* Beliefs Section */
 .beliefsSection {
-  margin-bottom: 4rem;
-  padding: 2rem 0;
-}
-
-.beliefsSection h2 {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 3rem;
-  text-align: center;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem 0;
 }
 
 .beliefsGrid {
@@ -69,9 +66,9 @@
 /* CHANGE: Added Hello Section styles */
 .helloSection {
   text-align: center;
-  margin-bottom: 4rem;
-  padding: 3rem 0;
-  background: #f8f9ff;
+  margin-bottom: 2.5rem;
+  padding: 2rem 0;
+  background: #e9dfd6;
   border-radius: 16px;
 }
 
@@ -85,15 +82,8 @@
 
 /* Team Section */
 .teamSection {
-  margin-bottom: 4rem;
-  padding: 2rem 0;
-}
-
-.teamSection h2 {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 3rem;
-  text-align: center;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem 0;
 }
 
 /* CHANGE: Added teamGrid to display team members in a row */
@@ -113,11 +103,11 @@
   }
 
   .heroSection h1 {
-    font-size: 2rem;
+    font-size: 2000rem;
   }
 
   .heroSection h2 {
-    font-size: 3rem;
+    font-size: 2.2rem;
   }
 
   .beliefsGrid {
@@ -129,21 +119,31 @@
   .teamGrid {
     gap: 2.5rem;
   }
+
+  .journeySection h2,
+  .beliefsSection h2,
+  .teamSection h2 {
+    font-size: 2.2rem;
+  }
 }
 
 /* Desktop breakpoint */
 @media (min-width: 1024px) {
   .aboutContainer {
-    padding: 4rem 3rem;
+    padding: 2rem 3rem; /* reduced from 4rem to 2rem */
   }
 
   .heroSection {
-    margin-bottom: 6rem;
-    padding: 3rem 0;
+    margin-bottom: 2rem;
+    padding: 1rem 0 1.5rem 0;
+  }
+
+  .heroSection h1 {
+    font-size: 7rem;
   }
 
   .heroSection h2 {
-    font-size: 3.5rem;
+    font-size: 2.5rem;
   }
 
   .beliefsGrid {
@@ -154,7 +154,7 @@
   .journeySection,
   .beliefsSection,
   .teamSection {
-    margin-bottom: 6rem;
+    margin-bottom: 3.5rem;
   }
 
   /* CHANGE: Enhanced team grid layout for desktop */
@@ -164,6 +164,12 @@
     margin: 0 auto;
     justify-content: space-between;
   }
+
+  .journeySection h2,
+  .beliefsSection h2,
+  .teamSection h2 {
+    font-size: 2.5rem;
+  }
 }
 
 /* Large desktop */
@@ -171,23 +177,4 @@
   .aboutContainer {
     padding: 5rem 4rem;
   }
-}
-
-.backButton {
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 16px;
-  text-decoration: none; /* Remove underline from link */
-  padding: 8px 0;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: color 0.2s ease;
-  cursor: pointer;
-}
-
-.backButton:hover {
-  color: #333;
 }

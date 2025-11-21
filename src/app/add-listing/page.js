@@ -19,6 +19,9 @@ export default function AddListingPage() {
   const [categoryErr, setCategoryErr] = useState('');
   const [conditionErr, setConditionErr] = useState('');
 
+  const [fileInputs, setFileInputs] = useState([0]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
   // Client-side validation logic (mirrors server rules for instant feedback)
   function validateTitle(value) {
     const v = (value || '').trim();
@@ -90,6 +93,7 @@ export default function AddListingPage() {
 
     return Boolean(
       fileErr ||
+        selectedFiles.length === 0 ||
         validateTitle(titleVal) ||
         validateSellerName(sellerNameVal) ||
         validatePrice(priceVal) ||
@@ -98,19 +102,59 @@ export default function AddListingPage() {
     );
   }
 
-  // File upload validation: enforce 5 MB limit client-side for UX (server revalidates)
-  const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
-  function handleFileChange(e) {
-    const file = e.target.files?.[0];
-    if (!file) {
+  // File upload validation: enforce 5 MB limit per file client-side for UX (server revalidates)
+  const MAX_SIZE_PER_FILE = 5 * 1024 * 1024; // 5 MB per file
+  function handleFileChange(e, inputId) {
+    const files = Array.from(e.target.files || []);
+
+    if (!files.length) {
+      // Remove any files previously selected for this input
+      setSelectedFiles((prev) => prev.filter((f) => f.inputId !== inputId));
       setFileErr('');
       return;
     }
-    if (file.size > MAX_SIZE) {
+
+    const tooLarge = files.find((file) => file.size > MAX_SIZE_PER_FILE);
+    if (tooLarge) {
       setFileErr('File above 5 MB, please try again.');
     } else {
       setFileErr('');
     }
+
+    // Track file names for display (actual files are kept by the inputs for submission)
+    setSelectedFiles((prev) => {
+      const withoutThisInput = prev.filter((f) => f.inputId !== inputId);
+      const newEntries = files.map((file) => ({
+        inputId,
+        name: file.name,
+      }));
+      return [...withoutThisInput, ...newEntries];
+    });
+  }
+
+  function handleAddMoreFiles() {
+    setFileInputs((prev) => {
+      const nextId = prev.length ? prev[prev.length - 1] + 1 : 0;
+      return [...prev, nextId];
+    });
+  }
+
+  function handleRemoveFileInput(inputId) {
+    // Don't remove the last remaining input; always keep at least one
+    setFileInputs((prev) => {
+      if (prev.length <= 1) return prev;
+      return prev.filter((id) => id !== inputId);
+    });
+
+    // Remove any files tracked for this input
+    setSelectedFiles((prev) => {
+      const next = prev.filter((f) => f.inputId !== inputId);
+      // If no files remain selected at all, clear any file-related error
+      if (next.length === 0) {
+        setFileErr('');
+      }
+      return next;
+    });
   }
 
   return (
@@ -213,6 +257,64 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.formGroup}>
+              <label htmlFor="image">Upload Files</label>
+
+              {fileInputs.map((id, index) => (
+                <div key={id} className={styles.fileInputRow}>
+                  <input
+                    id={index === 0 ? 'image' : `image-${id}`}
+                    name="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, id)}
+                    aria-describedby="imageError"
+                    required={index === 0}
+                  />
+                  {fileInputs.length > 1 && (
+                    <button
+                      type="button"
+                      className={styles.removeFileInputBtn}
+                      onClick={() => handleRemoveFileInput(id)}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className={styles.addMoreFilesBtn}
+                onClick={handleAddMoreFiles}
+              >
+                + Add more files
+              </button>
+
+              {selectedFiles.length > 0 && (
+                <div className={styles.fileSummary}>
+                  <p>
+                    {selectedFiles.length} file
+                    {selectedFiles.length > 1 ? 's' : ''} selected
+                  </p>
+                </div>
+              )}
+
+              {fileErr && (
+                <p
+                  id="imageError"
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {fileErr}
+                </p>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
               <label htmlFor="sellerName">Seller Name</label>
               <input
                 id="sellerName"
@@ -288,32 +390,6 @@ export default function AddListingPage() {
                   }}
                 >
                   {priceErr}
-                </p>
-              )}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="image">Upload Image</label>
-              <input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                required
-                onChange={handleFileChange}
-                aria-describedby="imageError"
-              />
-              {fileErr && (
-                <p
-                  id="imageError"
-                  role="alert"
-                  style={{
-                    color: '#c62828',
-                    marginTop: '6px',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {fileErr}
                 </p>
               )}
             </div>

@@ -34,8 +34,8 @@ export default function Navbar() {
               src="/TinyThreadsScribble.png"
               alt="TinyThreads"
               className={styles.brandLogo}
-              width={400}
-              height={400}
+              width={1000}
+              height={1000}
             />
           </Link>
         </div>
@@ -43,49 +43,54 @@ export default function Navbar() {
 
       <div className={styles.inner}>
         <div className={styles.spacer} />
-        <div className={styles.links} ref={menuRef}>
-          <Link href="/about" className={styles.aboutLink}>
-            About
-          </Link>
+        <div className={styles.rightWrapper}>
+          <div className={styles.links} ref={menuRef}>
+            <Link href="/" className={styles.aboutLink}>
+              Home
+            </Link>
+            <Link href="/about" className={styles.aboutLink}>
+              About
+            </Link>
 
-          {status === 'loading' ? null : session ? (
-            <div className={styles.profileWrap}>
-              <button
-                className={styles.profileButton}
-                aria-haspopup="true"
-                aria-expanded={open}
-                onClick={() => setOpen((v) => !v)}
-                type="button"
-              >
-                <span className={styles.userName}>
-                  {session.user?.name || session.user?.email}
-                </span>
-                <span className={styles.caret}>▾</span>
-              </button>
+            {status === 'loading' ? null : session ? (
+              <div className={styles.profileWrap}>
+                <button
+                  className={styles.profileButton}
+                  aria-haspopup="true"
+                  aria-expanded={open}
+                  onClick={() => setOpen((v) => !v)}
+                  type="button"
+                >
+                  <span className={styles.userName}>
+                    {session.user?.name || session.user?.email}
+                  </span>
+                  <span className={styles.caret}>▾</span>
+                </button>
 
-              {open && (
-                <div className={styles.profileDropdown} role="menu">
-                  <button
-                    className={styles.dropdownItem}
-                    role="menuitem"
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    type="button"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              <Link href="/login" className={styles.linkButton}>
-                Log in
-              </Link>
-              <Link href="/signup" className={styles.signupButton}>
-                Sign up
-              </Link>
-            </>
-          )}
+                {open && (
+                  <div className={styles.profileDropdown} role="menu">
+                    <button
+                      className={styles.dropdownItem}
+                      role="menuitem"
+                      onClick={() => signOut({ callbackUrl: '/' })}
+                      type="button"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link href="/login" className={styles.linkButton}>
+                  Log in
+                </Link>
+                <Link href="/signup" className={styles.signupButton}>
+                  Sign up
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

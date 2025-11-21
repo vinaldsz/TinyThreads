@@ -46,24 +46,39 @@ export async function uploadListingAction(formData) {
     redirect('/add-listing?err=invalid_price_precision');
   }
 
-  const file = formData.get('image');
-  if (!file || typeof file === 'string' || !file.arrayBuffer) {
+  // Support both real FormData (with getAll) and Jest mocks (with only get)
+  const rawFiles =
+    typeof formData.getAll === 'function'
+      ? formData.getAll('image')
+      : [formData.get('image')];
+
+  const files = rawFiles.filter(Boolean);
+
+  if (!files.length) {
     redirect('/add-listing?err=missing_file');
   }
 
-  // Hard cap: limits upload size to 5 MB (defense-in-depth safeguard)
-  const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
-  if (typeof file.size === 'number' && file.size > MAX_BYTES) {
-    redirect('/add-listing?err=file_too_large');
-  }
-  if (file.type && !String(file.type).startsWith('image/')) {
-    redirect('/add-listing?err=bad_type');
+  const MAX_BYTES = 5 * 1024 * 1024; // 5 MB per file
+  for (const file of files) {
+    if (typeof file === 'string' || !file.arrayBuffer) {
+      redirect('/add-listing?err=missing_file');
+    }
+    if (typeof file.size === 'number' && file.size > MAX_BYTES) {
+      redirect('/add-listing?err=file_too_large');
+    }
+    if (file.type && !String(file.type).startsWith('image/')) {
+      redirect('/add-listing?err=bad_type');
+    }
   }
 
-  const { imageUrl } = await uploadImageToS3(file, {
-    folder: 'items',
-    filenamePrefix: 'item',
-  });
+  const imageUrls = [];
+  for (const file of files) {
+    const { imageUrl } = await uploadImageToS3(file, {
+      folder: 'items',
+      filenamePrefix: 'item',
+    });
+    imageUrls.push(imageUrl);
+  }
 
   const { getDb } = await import('@/lib/mongodb');
   const db = await getDb();
@@ -73,7 +88,7 @@ export async function uploadListingAction(formData) {
     price: Number(price),
     size: size ? String(size) : '',
     condition: String(condition),
-    imageUrls: [imageUrl],
+    imageUrls,
     description: description ? String(description) : '',
     sellerName: String(sName),
     category: String(category),

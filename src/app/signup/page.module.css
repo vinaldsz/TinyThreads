@@ -40,20 +40,33 @@
   font-size: 0.95rem;
 }
 
+.input:focus {
+  border-color: #f27b65;
+  outline: none;
+}
+
 .button {
   margin-top: 0.5rem;
   padding: 0.7rem 1rem;
-  background: #0b63ff;
+  background: #f27b65;
   color: white;
-  border: none;
+  border: 1px solid #000000;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.button:hover:not([disabled]) {
+  background: #e7674d;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
 .button[disabled] {
   opacity: 0.6;
   cursor: default;
+  border: 1px solid #000000;
 }
 
 .error {
