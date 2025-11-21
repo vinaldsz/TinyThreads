@@ -115,8 +115,18 @@ export default function AddListingPage() {
     }
 
     const tooLarge = files.find((file) => file.size > MAX_SIZE_PER_FILE);
+    const invalidType = files.find(
+      (file) =>
+        file.type &&
+        !['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(
+          file.type,
+        ),
+    );
+
     if (tooLarge) {
       setFileErr('File above 5 MB, please try again.');
+    } else if (invalidType) {
+      setFileErr('Unsupported file type. Please upload JPG, PNG, or GIF.');
     } else {
       setFileErr('');
     }
@@ -130,6 +140,12 @@ export default function AddListingPage() {
       }));
       return [...withoutThisInput, ...newEntries];
     });
+  }
+
+  function handleFileBlur() {
+    if (selectedFiles.length === 0) {
+      setFileErr('Please upload at least one image.');
+    }
   }
 
   function handleAddMoreFiles() {
@@ -267,6 +283,7 @@ export default function AddListingPage() {
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleFileChange(e, id)}
+                    onBlur={handleFileBlur}
                     aria-describedby="imageError"
                     required={index === 0}
                   />
