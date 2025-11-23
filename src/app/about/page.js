@@ -64,7 +64,10 @@ export default function AboutPage() {
       <Navbar />
       <div className={styles.aboutContainer}>
         <section className={styles.heroSection}>
-          <h1>About TinyThreads</h1>
+          <h1>
+            About <span className={styles.tiny}>Tiny</span>
+            <span className={styles.threads}>Threads</span>
+          </h1>
           <h2>Our Story</h2>
           <p>
             A warm community where parents share the joy of quality baby items,

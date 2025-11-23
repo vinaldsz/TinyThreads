@@ -13,10 +13,11 @@
 }
 
 .heroSection h1 {
+  font-family: 'Quicksand', sans-serif;
   color: #f27b65;
   font-size: 8rem;
   margin-bottom: 10rem;
-  font-weight: 1000;
+  font-weight: 600;
 }
 
 .heroSection h2 {
@@ -177,4 +178,16 @@
   .aboutContainer {
     padding: 5rem 4rem;
   }
+}
+
+.tiny {
+  font-family: 'Quicksand', sans-serif;
+  color: #4ecdc4;
+  font-weight: 600;
+}
+
+.threads {
+  font-family: 'Quicksand', sans-serif;
+  color: #9b59b6;
+  font-weight: 600;
 }

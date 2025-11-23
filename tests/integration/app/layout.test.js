@@ -5,6 +5,9 @@ jest.mock('next/font/google', () => ({
   Geist_Mono: jest.fn(() => ({
     variable: '--font-geist-mono',
   })),
+  Quicksand: jest.fn(() => ({
+    variable: '--font-quicksand',
+  })),
 }));
 
 // Mock CSS import
@@ -12,10 +15,11 @@ jest.mock('@/app/globals.css', () => ({}));
 
 import RootLayout, { metadata } from '@/app/layout';
 import { Geist, Geist_Mono } from 'next/font/google';
-
+import { Quicksand } from 'next/font/google';
 // Get the mocked functions
 const mockGeist = Geist;
 const mockGeistMono = Geist_Mono;
+const mockQuicksand = Quicksand;
 
 describe('RootLayout', () => {
   // RootLayout renders html/body elements which cannot be tested directly
@@ -62,6 +66,15 @@ describe('Font imports', () => {
     expect(mockGeistMono).toHaveBeenCalledWith({
       variable: '--font-geist-mono',
       subsets: ['latin'],
+    });
+  });
+
+  test('Quicksand font is imported and configured correctly', () => {
+    expect(mockQuicksand).toHaveBeenCalledTimes(1);
+    expect(mockQuicksand).toHaveBeenCalledWith({
+      subsets: ['latin'],
+      weight: ['300', '400', '500', '600', '700'],
+      variable: '--font-quicksand',
     });
   });
 });
