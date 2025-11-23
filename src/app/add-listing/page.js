@@ -22,6 +22,14 @@ export default function AddListingPage() {
   const [fileInputs, setFileInputs] = useState([0]);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
+
+  // add state to track field values
+  const [title, setTitle] = useState('');
+  const [sellerName, setSellerName] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [condition, setCondition] = useState('');
+
   // Client-side validation logic (mirrors server rules for instant feedback)
   function validateTitle(value) {
     const v = (value || '').trim();
@@ -51,56 +59,72 @@ export default function AddListingPage() {
   }
 
   // Field event handlers (validate on blur/change)
+  function handleTitleChange(e) {
+    const value = e.target.value;
+    setTitle(value);  // ✅ 保存到 state
+    if (titleErr) setTitleErr(validateTitle(value));
+  }
+
+  function handleSellerNameChange(e) {
+    const value = e.target.value;
+    setSellerName(value);  // ✅ 保存到 state
+    if (sellerNameErr) setSellerNameErr(validateSellerName(value));
+  }
+
+  function handlePriceChange(e) {
+    const value = e.target.value;
+    setPrice(value); 
+    if (priceErr) setPriceErr(validatePrice(value));
+  }
+
+  function handleCategoryChange(e) {
+    const value = e.target.value;
+    setCategory(value);  
+    setCategoryErr(validateRequiredSelect(value, 'category'));
+  }
+
+  function handleConditionChange(e) {
+    const value = e.target.value;
+    setCondition(value);  
+    setConditionErr(validateRequiredSelect(value, 'condition'));
+  }
+
   function handleTitleBlur(e) {
     setTitleErr(validateTitle(e.target.value));
-  }
-  function handleTitleChange(e) {
-    if (titleErr) setTitleErr(validateTitle(e.target.value));
   }
 
   function handleSellerNameBlur(e) {
     setSellerNameErr(validateSellerName(e.target.value));
   }
-  function handleSellerNameChange(e) {
-    if (sellerNameErr) setSellerNameErr(validateSellerName(e.target.value));
-  }
 
   function handlePriceBlur(e) {
     setPriceErr(validatePrice(e.target.value));
   }
-  function handlePriceChange(e) {
-    if (priceErr) setPriceErr(validatePrice(e.target.value));
-  }
-
-  function handleCategoryChange(e) {
-    setCategoryErr(validateRequiredSelect(e.target.value, 'category'));
-  }
-  function handleConditionChange(e) {
-    setConditionErr(validateRequiredSelect(e.target.value, 'condition'));
-  }
 
   // Global form validation state — disables Submit when any required field fails validation
-  function isFormInvalid() {
-    // Read current DOM values to avoid storing duplicates in state
-    const form =
-      typeof document !== 'undefined' &&
-      document.getElementById('addListingForm');
-    const titleVal = form?.title?.value ?? '';
-    const sellerNameVal = form?.sellerName?.value ?? '';
-    const priceVal = form?.price?.value ?? '';
-    const categoryVal = form?.category?.value ?? '';
-    const conditionVal = form?.condition?.value ?? '';
-
-    return Boolean(
-      fileErr ||
-        selectedFiles.length === 0 ||
-        validateTitle(titleVal) ||
-        validateSellerName(sellerNameVal) ||
-        validatePrice(priceVal) ||
-        validateRequiredSelect(categoryVal, 'category') ||
-        validateRequiredSelect(conditionVal, 'condition'),
-    );
+function isFormInvalid() {
+  // Read current DOM values to avoid storing duplicates in state
+  const hasAllFields = 
+      title.trim().length > 0 &&
+      sellerName.trim().length > 0 &&
+      price.trim().length > 0 &&
+      category.length > 0 &&
+      condition.length > 0 &&
+      selectedFiles.length > 0;
+  if (!hasAllFields) {
+    return true;
   }
+
+  return Boolean(
+    fileErr ||
+      validateTitle(title) ||
+      validateSellerName(sellerName) ||
+      validatePrice(price) ||
+      validateRequiredSelect(category, 'category') ||
+      validateRequiredSelect(condition, 'condition')
+  );
+}
+
 
   // File upload validation: enforce 5 MB limit per file client-side for UX (server revalidates)
   const MAX_SIZE_PER_FILE = 5 * 1024 * 1024; // 5 MB per file
@@ -332,6 +356,34 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.formGroup}>
+              <label htmlFor="price">Price ($)</label>
+              <input
+                id="price"
+                name="price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 20.00"
+                required
+                onBlur={handlePriceBlur}
+                onChange={handlePriceChange}
+              />
+              {priceErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {priceErr}
+                </p>
+              )}
+            </div>
+
+
+            <div className={styles.formGroup}>
               <label htmlFor="sellerName">Seller Name</label>
               <input
                 id="sellerName"
@@ -384,33 +436,7 @@ export default function AddListingPage() {
               )}
             </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="price">Price ($)</label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 20.00"
-                required
-                onBlur={handlePriceBlur}
-                onChange={handlePriceChange}
-              />
-              {priceErr && (
-                <p
-                  role="alert"
-                  style={{
-                    color: '#c62828',
-                    marginTop: '6px',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {priceErr}
-                </p>
-              )}
-            </div>
-
+           
             <div className={styles.formGroup}>
               <label htmlFor="description">Description</label>
               <textarea
@@ -426,6 +452,7 @@ export default function AddListingPage() {
                 type="submit"
                 className={styles.submitBtn}
                 disabled={isFormInvalid()}
+                //disabled={false}
               >
                 Add Listing
               </button>
@@ -439,3 +466,4 @@ export default function AddListingPage() {
     </div>
   );
 }
+

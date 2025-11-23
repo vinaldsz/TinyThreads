@@ -1,18 +1,51 @@
 'use client';
 import styles from './ItemCard.module.css';
-import { useState } from 'react';
+import { useState,useMemo} from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-
 export default function ItemCard({ item }) {
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images =
-    Array.isArray(item.imageUrls) && item.imageUrls.length > 0
+  const cleanImageUrl = (url) => {
+    if (!url || url === 'undefined') return null;
+    
+    // Remove 'undefined/' prefix if it exists
+    if (typeof url === 'string' && url.startsWith('undefined/')) {
+      url = url.replace('undefined/', '/');
+    }
+    
+    // Ensure proper URL format for local images
+    if (typeof url === 'string' && !url.startsWith('http') && !url.startsWith('/')) {
+      return `/${url}`;
+    }
+    
+    return url;
+  };
+
+  const images = useMemo(() => {
+    const rawImages = Array.isArray(item.imageUrls) && item.imageUrls.length > 0
       ? item.imageUrls
       : [item.imageUrl];
+    
+    const cleanedImages = rawImages
+      .map(cleanImageUrl)
+      .filter(url => url && url !== '/'); // Remove null/invalid URLs
+    
+    // Fallback to placeholder if no valid images
+    return cleanedImages.length > 0 ? cleanedImages : ['/placeholder-image.jpg'];
+  }, [item.imageUrls, item.imageUrl]);
+
+  
+  // Add this right after the images array definition
+  console.log('=== ITEM DEBUG ===');
+  console.log('Full item object:', item);
+  console.log('item.buyerUsername:', item.buyerUsername);
+  console.log('item.imageUrl:', item.imageUrl);
+  console.log('item.imageUrls:', item.imageUrls);
+  console.log('images array:', images);
+  console.log('==================');
 
   const handleImageLoad = () => {
     setImageLoaded(true);

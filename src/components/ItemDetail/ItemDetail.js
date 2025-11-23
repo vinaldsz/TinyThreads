@@ -1,35 +1,78 @@
 'use client';
 // src/components/ItemDetail/ItemDetail.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getItemById } from '../../services/itemService';
 import styles from './ItemDetail.module.css';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar/Navbar';
+import PurchaseModal from './PurchaseModal';
+import { useSession } from 'next-auth/react';
 
 export default function ItemDetail({ itemId }) {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
+  const { data: session } = useSession()
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+
+  // ADD THIS CLEANING FUNCTION HERE:
+  const cleanImageUrl = (url) => {
+    if (!url || url === 'undefined') return null;
+    
+    // Remove 'undefined/' prefix if it exists
+    if (typeof url === 'string' && url.startsWith('undefined/')) {
+      url = url.replace('undefined/', '/');
+    }
+    
+    // Ensure proper URL format for local images
+    if (typeof url === 'string' && !url.startsWith('http') && !url.startsWith('/')) {
+      return `/${url}`;
+    }
+    
+    return url;
+  };
+
+  const images = useMemo(() => {
+    if (!item) return [];
+    
+    const rawImages = Array.isArray(item.imageUrls) && item.imageUrls.length > 0
+      ? item.imageUrls
+      : item.imageUrl
+        ? [item.imageUrl]
+        : [];
+    
+    const cleanedImages = rawImages
+      .map(cleanImageUrl)
+      .filter(url => url && url !== '/'); // Remove null/invalid URLs
+    
+    return cleanedImages; // No placeholder fallback
+  }, [item]);
+
+  // reuse 
+  const fetchItem = useCallback(async () => {
+    try {
+      const data = await getItemById(itemId);
+      setItem(data);
+      setCurrentIndex(0);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('ItemDetail loaded item:', data);
+      }
+    } catch (err) {
+      console.error('Error fetching item:', err);
+    }
+  }, [itemId]);
 
   useEffect(() => {
-    const fetchItem = async () => {
-      try {
-        const data = await getItemById(itemId); // calls /api/items/:id
-        setItem(data);
-        setCurrentIndex(0);
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('ItemDetail loaded item:', data);
-        }
-      } catch (err) {
-        console.error('Error fetching item:', err);
-      } finally {
-        setLoading(false);
-      }
+    const loadItem = async () => {
+      setLoading(true);     
+      await fetchItem();    
+      setLoading(false);     
     };
-    if (itemId) fetchItem();
-  }, [itemId]);
+    
+    if (itemId) loadItem();
+  }, [itemId, fetchItem]);
 
   const handleBack = () => router.back();
 
@@ -37,6 +80,28 @@ export default function ItemDetail({ itemId }) {
     const n = typeof p === 'number' ? p : Number(p);
     return Number.isFinite(n) ? n.toFixed(2) : String(p ?? '');
   };
+
+  // purchase button 
+  const isLoggedIn = !!session;
+  const isAvailable = item?.status === 'available';
+  const canPurchase = isLoggedIn && isAvailable;
+
+  const handleBuyClick = () => {
+    setShowPurchaseModal(true);
+  };
+
+  const handleLoginRedirect = () => {
+    router.push('/login');
+  };
+
+
+const handlePurchaseSuccess = async () => {
+  console.log('Purchase successful! Refreshing item data...');
+  setShowPurchaseModal(false);
+  await fetchItem();  
+  console.log('Item data refreshed. Status:', item?.status);
+};
+
 
   if (loading) {
     return (
@@ -58,12 +123,18 @@ export default function ItemDetail({ itemId }) {
     );
   }
 
-  const images =
-    Array.isArray(item.imageUrls) && item.imageUrls.length > 0
-      ? item.imageUrls
-      : item.imageUrl
-        ? [item.imageUrl]
-        : [];
+  
+  
+  // ADD DEBUG HERE:
+  console.log('=== ITEMDETAIL DEBUG ===');
+  console.log('ItemID from URL:', itemId);
+  console.log('Fetched item:', item);
+  console.log('Item _id:', item?._id);
+  console.log('Item id:', item?.id);
+  console.log('item.imageUrl:', item.imageUrl);
+  console.log('item.imageUrls:', item.imageUrls);
+  console.log('images array:', images);
+  console.log('========================');
 
   return (
     <>
@@ -160,23 +231,51 @@ export default function ItemDetail({ itemId }) {
             <div className={styles.productInfo}>
               <h1 className={styles.title}>{item.title}</h1>
 
-              <div className={styles.priceAndCondition}>
-                <span className={styles.price}>${formatPrice(item.price)}</span>
-                {(() => {
-                  const raw = (item.condition ?? '').toString().trim();
-                  const key = raw.toLowerCase().replace(/\s+/g, '');
-                  const hasVariantClass = key && styles[key];
-                  return (
-                    <span
-                      className={`${styles.condition} ${
-                        hasVariantClass ? styles[key] : ''
-                      }`}
-                    >
-                      {raw || '—'}
-                    </span>
-                  );
-                })()}
-              </div>
+            <div className={styles.priceAndCondition}>
+              <span className={styles.price}>${formatPrice(item.price)}</span>
+              {(() => {
+                const raw = (item.condition ?? '').toString().trim();
+                const key = raw.toLowerCase().replace(/\s+/g, '');
+                const hasVariantClass = key && styles[key];
+                return (
+                  <span
+                    className={`${styles.condition} ${
+                      hasVariantClass ? styles[key] : ''
+                    }`}
+                  >
+                    {raw || '—'}
+                  </span>
+                );
+              })()}
+            </div>
+
+            {/* NEW: Purchase Button Section */}
+            <div className={styles.purchaseSection}>
+              {canPurchase && (
+                <button 
+                  onClick={handleBuyClick}
+                  className={styles.buyButton}
+                >
+                  Buy Now
+                </button>
+              )}
+              
+              {!isLoggedIn && isAvailable && (
+                <button 
+                  onClick={handleLoginRedirect}
+                  className={styles.loginButton}
+                >
+                  Sign in to purchase
+                </button>
+              )}
+              
+              {!isAvailable && (
+                <div className={styles.soldNotice}>
+                  This item has been sold
+                </div>
+              )}
+            </div>
+
 
               <div className={styles.basicInfo}>
                 <div className={styles.infoItem}>
@@ -244,6 +343,18 @@ export default function ItemDetail({ itemId }) {
           </div>
         </div>
       </div>
+
+     {/* NEW: Purchase Modal */}
+     {showPurchaseModal && (
+        <PurchaseModal 
+          item={item}
+          user={session?.user}
+          onClose={() => setShowPurchaseModal(false)}
+          onSuccess={handlePurchaseSuccess} 
+
+        />
+      )}
+
     </>
   );
 }
