@@ -20,6 +20,8 @@ export default function AddListingPage() {
   const [conditionErr, setConditionErr] = useState('');
   const [isDonation, setIsDonation] = useState(false);
 
+  const [formVersion, setFormVersion] = useState(0);
+
   const [fileInputs, setFileInputs] = useState([0]);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -54,6 +56,7 @@ export default function AddListingPage() {
       if (priceInput) priceInput.value = '0';
       setPriceErr('');
     }
+    setFormVersion((v) => v + 1);
   }
   function validateRequiredSelect(value, label) {
     if (!value) return `Please select a ${label}.`;
@@ -63,29 +66,37 @@ export default function AddListingPage() {
   // Field event handlers (validate on blur/change)
   function handleTitleBlur(e) {
     setTitleErr(validateTitle(e.target.value));
+    setFormVersion((v) => v + 1);
   }
   function handleTitleChange(e) {
+    setFormVersion((v) => v + 1);
     if (titleErr) setTitleErr(validateTitle(e.target.value));
   }
 
   function handleSellerNameBlur(e) {
     setSellerNameErr(validateSellerName(e.target.value));
+    setFormVersion((v) => v + 1);
   }
   function handleSellerNameChange(e) {
+    setFormVersion((v) => v + 1);
     if (sellerNameErr) setSellerNameErr(validateSellerName(e.target.value));
   }
 
   function handlePriceBlur(e) {
     setPriceErr(validatePrice(e.target.value));
+    setFormVersion((v) => v + 1);
   }
   function handlePriceChange(e) {
+    setFormVersion((v) => v + 1);
     if (priceErr) setPriceErr(validatePrice(e.target.value));
   }
 
   function handleCategoryChange(e) {
+    setFormVersion((v) => v + 1);
     setCategoryErr(validateRequiredSelect(e.target.value, 'category'));
   }
   function handleConditionChange(e) {
+    setFormVersion((v) => v + 1);
     setConditionErr(validateRequiredSelect(e.target.value, 'condition'));
   }
 
@@ -100,15 +111,16 @@ export default function AddListingPage() {
     const priceVal = form?.price?.value ?? '';
     const categoryVal = form?.category?.value ?? '';
     const conditionVal = form?.condition?.value ?? '';
+    void formVersion;
 
     return Boolean(
-      fileErr ||
-        selectedFiles.length === 0 ||
+      
         validateTitle(titleVal) ||
         validateSellerName(sellerNameVal) ||
         validatePrice(priceVal) ||
         validateRequiredSelect(categoryVal, 'category') ||
-        validateRequiredSelect(conditionVal, 'condition'),
+        validateRequiredSelect(conditionVal, 'condition') ||
+        selectedFiles.length === 0,
     );
   }
 
@@ -121,6 +133,7 @@ export default function AddListingPage() {
       // Remove any files previously selected for this input
       setSelectedFiles((prev) => prev.filter((f) => f.inputId !== inputId));
       setFileErr('');
+      setFormVersion((v) => v + 1);
       return;
     }
 
@@ -150,13 +163,10 @@ export default function AddListingPage() {
       }));
       return [...withoutThisInput, ...newEntries];
     });
+    setFormVersion((v) => v + 1);
   }
 
-  function handleFileBlur() {
-    if (selectedFiles.length === 0) {
-      setFileErr('Please upload at least one image.');
-    }
-  }
+  function handleFileBlur() {}
 
   function handleAddMoreFiles() {
     setFileInputs((prev) => {
@@ -282,64 +292,7 @@ export default function AddListingPage() {
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="image">Upload Files</label>
-
-              {fileInputs.map((id, index) => (
-                <div key={id} className={styles.fileInputRow}>
-                  <input
-                    id={index === 0 ? 'image' : `image-${id}`}
-                    name="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange(e, id)}
-                    onBlur={handleFileBlur}
-                    aria-describedby="imageError"
-                    required={index === 0}
-                  />
-                  {fileInputs.length > 1 && (
-                    <button
-                      type="button"
-                      className={styles.removeFileInputBtn}
-                      onClick={() => handleRemoveFileInput(id)}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
-
-              <button
-                type="button"
-                className={styles.addMoreFilesBtn}
-                onClick={handleAddMoreFiles}
-              >
-                + Add more files
-              </button>
-
-              {selectedFiles.length > 0 && (
-                <div className={styles.fileSummary}>
-                  <p>
-                    {selectedFiles.length} file
-                    {selectedFiles.length > 1 ? 's' : ''} selected
-                  </p>
-                </div>
-              )}
-
-              {fileErr && (
-                <p
-                  id="imageError"
-                  role="alert"
-                  style={{
-                    color: '#c62828',
-                    marginTop: '6px',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {fileErr}
-                </p>
-              )}
-            </div>
+            
 
             <div className={styles.formGroup}>
               <label htmlFor="sellerName">Seller Name</label>
@@ -442,6 +395,77 @@ export default function AddListingPage() {
                 placeholder="Add a short description of the item..."
                 rows="4"
               ></textarea>
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="image">Upload Files</label>
+
+              {fileInputs.map((id, index) => (
+                <div key={id} className={styles.fileInputRow}>
+                  <input
+                    id={index === 0 ? 'image' : `image-${id}`}
+                    name="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, id)}
+                    onBlur={handleFileBlur}
+                    aria-describedby="imageError"
+                    required={index === 0}
+                  />
+                  {fileInputs.length > 1 && (
+                    <button
+                      type="button"
+                      className={styles.removeFileInputBtn}
+                      onClick={() => handleRemoveFileInput(id)}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className={styles.addMoreFilesBtn}
+                onClick={handleAddMoreFiles}
+              >
+                + Add more files
+              </button>
+
+              {selectedFiles.length > 0 && (
+                <div className={styles.fileSummary}>
+                  <p>
+                    {selectedFiles.length} file
+                    {selectedFiles.length > 1 ? 's' : ''} selected
+                  </p>
+                </div>
+              )}
+
+              {selectedFiles.length === 0 && (
+                <p
+                  id="imageError"
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  Please upload at least one image.
+                </p>
+              )}
+
+              {fileErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {fileErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.actions}>
