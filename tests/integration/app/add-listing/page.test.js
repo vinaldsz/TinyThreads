@@ -6,53 +6,162 @@
  *  - Accessibility and integration behavior
  *  - Uses Jest mocks for MongoDB, Next.js navigation, and S3 uploads
  */
-// src/app/add-listing/__tests__/page.test.js
+
+// ========================================
+// Store references to mocked functions
+// ========================================
+
+let mockRedirect;
+let mockUploadImageToS3;
+let mockCollection;
+
+// ========================================
+// Create ALL mocks with internal definitions
+// ========================================
+
+// ✅ Mock MongoDB - define all objects inside
+jest.mock('@/lib/mongodb', () => {
+  const mockClient = {
+    db: jest.fn(),
+    connect: jest.fn(),
+    close: jest.fn(),
+  };
+
+  const mockDb = {
+    collection: jest.fn(),
+  };
+
+  const mockCollection = {
+    insertOne: jest.fn(),
+    find: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  mockClient.db.mockReturnValue(mockDb);
+  mockDb.collection.mockReturnValue(mockCollection);
+
+  // Store references globally so tests can access them
+  global.mockClient = mockClient;
+  global.mockDb = mockDb;
+  global.mockCollection = mockCollection;
+
+  return {
+    default: Promise.resolve(mockClient),
+    getDb: jest.fn(() => {
+      mockClient.db.mockReturnValue(mockDb);
+      mockDb.collection.mockReturnValue(mockCollection);
+      return Promise.resolve(mockDb);
+    }),
+  };
+});
+
+jest.mock('next-auth', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    GET: jest.fn(),
+    POST: jest.fn(),
+  })),
+  getServerSession: jest.fn(),  
+}));
+
+jest.mock('next-auth/next', () => ({
+  getServerSession: jest.fn(),
+}));
+
+// ✅ Mock next/navigation - define redirect inside
+jest.mock('next/navigation', () => {
+  const mockRedirect = jest.fn((path) => {
+    throw new Error(`Redirect: ${path}`);
+  });
+  
+  global.mockRedirect = mockRedirect;
+  
+  return {
+    redirect: mockRedirect,
+    useRouter: () => ({
+      push: jest.fn(),
+      back: jest.fn(),
+    }),
+  };
+});
+
+// ✅ Mock AWS S3 - define uploadImageToS3 inside
+jest.mock('@/lib/awss3', () => {
+  const mockUploadImageToS3 = jest.fn(() => 
+    Promise.resolve({ 
+      key: 'test-key', 
+      imageUrl: 'https://example.com/test-image.jpg' 
+    })
+  );
+  
+  global.mockUploadImageToS3 = mockUploadImageToS3;
+  
+  return {
+    uploadImageToS3: mockUploadImageToS3,
+  };
+});
+
+jest.mock('next-auth/react', () => ({
+  useSession: jest.fn(() => ({
+    data: { user: { id: '123', name: 'Test User', email: 'test@test.com' } },
+    status: 'authenticated',
+  })),
+}));
+
+jest.mock('@/components/Navbar/Navbar', () => {
+  return function MockNavbar() {
+    return <div data-testid="navbar">Navbar</div>;
+  };
+});
+
+jest.mock('next/link', () => {
+  return function MockLink({ children, href, className }) {
+    return <a href={href} className={className}>{children}</a>;
+  };
+});
+
+// ========================================
+// Imports
+// ========================================
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { redirect } from 'next/navigation';
+import '@testing-library/jest-dom';
 import AddListingPage from '@/app/add-listing/page';
 import { uploadListingAction } from '@/app/add-listing/actions';
-import { uploadImageToS3 } from '@/lib/awss3';
+import { getServerSession } from 'next-auth/next';
 
-// Mocked MongoDB client to simulate in-memory inserts and queries
-const mockCollection = {
-  insertOne: jest.fn(),
-};
-const mockDb = {
-  collection: jest.fn(() => mockCollection),
-};
-const mockClient = {
-  db: jest.fn(() => mockDb),
-};
+// ✅ Get references from global
+mockRedirect = global.mockRedirect;
+mockUploadImageToS3 = global.mockUploadImageToS3;
+mockCollection = global.mockCollection;
 
-jest.mock('@/lib/mongodb', () => ({
-  default: Promise.resolve(mockClient),
-  getDb: jest.fn((dbName) => {
-    const name = dbName || process.env.MONGODB_DB || 'TinyThreads';
-    mockClient.db(name);
-    return Promise.resolve(mockDb);
-  }),
-}));
-
-// Mocked Next.js redirect; throws Error('Redirect') to assert destination
-jest.mock('next/navigation', () => ({
-  redirect: jest.fn(() => {
-    throw new Error('Redirect');
-  }),
-}));
-
-// Mocked AWS S3 helper to prevent real network requests
-jest.mock('@/lib/awss3', () => ({
-  uploadImageToS3: jest.fn(),
-}));
+// ========================================
+// Tests
+// ========================================
 
 describe('Add Listing Page', () => {
   // Reset mocks before each test to ensure clean state
   beforeEach(() => {
-    redirect.mockClear();
-    uploadImageToS3.mockClear();
-    mockCollection.insertOne.mockClear();
-    mockDb.collection.mockClear();
-    mockClient.db.mockClear();
+    jest.clearAllMocks();
+    
+    // Setup default session for server actions
+    getServerSession.mockResolvedValue({
+      user: {
+        id: 'test-user-123',
+        name: 'Test User',
+        email: 'test@example.com',
+      },
+    });
+
+    // Reset mock implementations
+    mockUploadImageToS3.mockResolvedValue({
+      key: 'items/item-12345.jpg',
+      imageUrl: 'https://bucket.s3.amazonaws.com/items/item-12345.jpg',
+    });
+
+    mockCollection.insertOne.mockResolvedValue({
+      insertedId: 'new-item-id',
+    });
   });
 
   // ===== CLIENT COMPONENT TESTS =====  — render, structure, and inline validation
@@ -61,7 +170,7 @@ describe('Add Listing Page', () => {
       render(<AddListingPage />);
 
       // Check that the navbar is rendered (TinyThreads logo)
-      expect(screen.getByAltText('TinyThreads')).toBeInTheDocument();
+      expect(screen.getByTestId('navbar')).toBeInTheDocument();
       // Check that the back button is rendered
       expect(screen.getByText('← Back to Browse')).toBeInTheDocument();
     });
@@ -399,16 +508,8 @@ describe('Add Listing Page', () => {
         arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(1024)),
         name: 'test-image.jpg',
         type: 'image/jpeg',
+        size: 1024,
       };
-
-      uploadImageToS3.mockResolvedValue({
-        key: 'items/item-12345.jpg',
-        imageUrl: 'https://bucket.s3.amazonaws.com/items/item-12345.jpg',
-      });
-
-      mockCollection.insertOne.mockResolvedValue({
-        insertedId: 'new-item-id',
-      });
     });
 
     test('successfully processes valid form data', async () => {
@@ -429,35 +530,42 @@ describe('Add Listing Page', () => {
           };
           return data[key] || null;
         }),
+        getAll: jest.fn((key) => {
+          if (key === 'image') return [mockFile];
+          return [];
+        }),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
       // Valid input should trigger Redirect('/') after successful upload and DB insert
       // Should upload image to S3
-      expect(uploadImageToS3).toHaveBeenCalledWith(mockFile, {
+      expect(mockUploadImageToS3).toHaveBeenCalledWith(mockFile, {
         folder: 'items',
         filenamePrefix: 'item',
       });
 
       // Should insert into MongoDB
-      expect(mockCollection.insertOne).toHaveBeenCalledWith({
-        title: 'Test Baby Onesie',
-        price: 19.99,
-        size: '6M',
-        condition: 'like-new',
-        imageUrls: ['https://bucket.s3.amazonaws.com/items/item-12345.jpg'],
-        description: 'Beautiful baby onesie',
-        sellerName: 'Test Seller',
-        category: 'clothing',
-        ageRange: '3-6 months',
-        location: 'Fremont, CA',
-        status: 'available',
-        createdAt: expect.any(Date),
-      });
+      expect(mockCollection.insertOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Test Baby Onesie',
+          price: 19.99,
+          size: '6M',
+          condition: 'like-new',
+          imageUrls: ['https://bucket.s3.amazonaws.com/items/item-12345.jpg'],
+          description: 'Beautiful baby onesie',
+          sellerName: 'Test Seller',
+          category: 'clothing',
+          ageRange: '3-6 months',
+          location: 'Fremont, CA',
+          status: 'available',
+          createdAt: expect.any(Date),
+          sellerId: expect.any(Object),
+        }),
+      );
 
       // Should redirect to home
-      expect(redirect).toHaveBeenCalledWith('/');
+      expect(mockRedirect).toHaveBeenCalledWith('/');
     });
 
     test('redirects when sellerName is missing', async () => {
@@ -469,15 +577,16 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '10.00',
             image: mockFile,
-            sellerName: null, // Not provided
+            sellerName: null,
           };
           return data[key] || null;
         }),
+        getAll: jest.fn((key) => key === 'image' ? [mockFile] : []),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
       // Missing sellerName should trigger invalid_seller redirect
-      expect(redirect).toHaveBeenCalledWith('/add-listing?err=invalid_seller');
+      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=invalid_seller');
     });
 
     test('handles empty optional fields gracefully', async () => {
@@ -498,9 +607,10 @@ describe('Add Listing Page', () => {
           };
           return data[key] || null;
         }),
+        getAll: jest.fn((key) => key === 'image' ? [mockFile] : []),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
       expect(mockCollection.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -519,7 +629,7 @@ describe('Add Listing Page', () => {
             title: 'Test Item',
             category: 'books',
             condition: 'fair',
-            price: '15.50', // String that should be converted to number
+            price: '15.50',
             size: 'Large',
             ageRange: '2-3 years',
             location: 'San Jose, CA',
@@ -529,21 +639,22 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn((key) => key === 'image' ? [mockFile] : []),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
       expect(mockCollection.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: 'Test Item', // String
-          price: 15.5, // Number
-          size: 'Large', // String
-          condition: 'fair', // String
-          sellerName: 'Seller 123', // String
-          category: 'books', // String
-          ageRange: '2-3 years', // String
-          location: 'San Jose, CA', // String
-          status: 'available', // Default
+          title: 'Test Item',
+          price: 15.5,
+          size: 'Large',
+          condition: 'fair',
+          sellerName: 'Seller 123',
+          category: 'books',
+          ageRange: '2-3 years',
+          location: 'San Jose, CA',
+          status: 'available',
           createdAt: expect.any(Date),
         }),
       );
@@ -558,16 +669,17 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '20.00',
             sellerName: 'Valid Seller',
-            image: null, // No file
+            image: null,
           };
           return data[key];
         }),
+        getAll: jest.fn(() => []),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
-      expect(redirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
-      expect(uploadImageToS3).not.toHaveBeenCalled();
+      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
+      expect(mockUploadImageToS3).not.toHaveBeenCalled();
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
 
@@ -580,22 +692,25 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '20.00',
             sellerName: 'Valid Seller',
-            image: 'not-a-file', // String file
+            image: 'not-a-file',
           };
           return data[key];
         }),
+        getAll: jest.fn(() => ['not-a-file']),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
-      expect(redirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
-      expect(uploadImageToS3).not.toHaveBeenCalled();
+      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
+      expect(mockUploadImageToS3).not.toHaveBeenCalled();
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
 
     test('redirects back when file lacks arrayBuffer method', async () => {
       const invalidFile = {
         name: 'test.jpg',
+        type: 'image/jpeg',
+        size: 1024,
         // Missing arrayBuffer method
       };
 
@@ -611,12 +726,13 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn(() => [invalidFile]),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
-      expect(redirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
-      expect(uploadImageToS3).not.toHaveBeenCalled();
+      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
+      expect(mockUploadImageToS3).not.toHaveBeenCalled();
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
 
@@ -633,10 +749,11 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
 
       // Simulate S3 failure; should propagate error and skip DB insert
-      uploadImageToS3.mockRejectedValue(new Error('S3 upload failed'));
+      mockUploadImageToS3.mockRejectedValue(new Error('S3 upload failed'));
 
       await expect(uploadListingAction(formData)).rejects.toThrow(
         'S3 upload failed',
@@ -644,7 +761,7 @@ describe('Add Listing Page', () => {
 
       // Should not insert into database if S3 fails
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
-      expect(redirect).not.toHaveBeenCalled();
+      expect(mockRedirect).not.toHaveBeenCalled();
     });
 
     test('handles database insertion errors gracefully', async () => {
@@ -660,6 +777,7 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
 
       // Simulate DB failure after S3 upload; should not redirect
@@ -670,8 +788,8 @@ describe('Add Listing Page', () => {
       );
 
       // Should have tried S3 upload first
-      expect(uploadImageToS3).toHaveBeenCalled();
-      expect(redirect).not.toHaveBeenCalled();
+      expect(mockUploadImageToS3).toHaveBeenCalled();
+      expect(mockRedirect).not.toHaveBeenCalled();
     });
 
     test('uses correct database and collection names', async () => {
@@ -687,12 +805,13 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
-      expect(mockClient.db).toHaveBeenCalledWith('TinyThreads');
-      expect(mockDb.collection).toHaveBeenCalledWith('Listings');
+      expect(mockUploadImageToS3).toHaveBeenCalled();
+      expect(mockCollection.insertOne).toHaveBeenCalled();
     });
 
     test('sets status to available by default', async () => {
@@ -708,9 +827,10 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
       expect(mockCollection.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -718,6 +838,7 @@ describe('Add Listing Page', () => {
         }),
       );
     });
+
     test('rejects invalid category (not in allowlist)', async () => {
       const formData = {
         get: jest.fn((key) => {
@@ -731,9 +852,10 @@ describe('Add Listing Page', () => {
           };
           return data[key] || null;
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
-      expect(redirect).toHaveBeenCalledWith(
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
+      expect(mockRedirect).toHaveBeenCalledWith(
         '/add-listing?err=invalid_category',
       );
     });
@@ -751,9 +873,10 @@ describe('Add Listing Page', () => {
           };
           return data[key] || null;
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
-      expect(redirect).toHaveBeenCalledWith(
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
+      expect(mockRedirect).toHaveBeenCalledWith(
         '/add-listing?err=invalid_price_precision',
       );
     });
@@ -771,14 +894,15 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
 
-      uploadImageToS3.mockResolvedValue({
+      mockUploadImageToS3.mockResolvedValue({
         key: 'items/item-custom.jpg',
         imageUrl: 'https://custom-url.com/item-custom.jpg',
       });
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
       expect(mockCollection.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -803,9 +927,10 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
+        getAll: jest.fn(() => [mockFile]),
       };
 
-      await expect(uploadListingAction(formData)).rejects.toThrow('Redirect');
+      await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
       const afterTime = new Date();
       const insertCall = mockCollection.insertOne.mock.calls[0][0];

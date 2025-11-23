@@ -87,7 +87,10 @@ jest.mock('@/lib/mongodb', () => ({
       };
   
       const response = await GET(null, ctx);
+      const data = await response.json();
   
       expect(mockCollection.findOne).toHaveBeenCalled();
+      expect(response.status).toBe(404);  
+      expect(data.error).toBe('Item not found');  
     });
   });
