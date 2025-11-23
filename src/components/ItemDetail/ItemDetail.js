@@ -300,6 +300,6 @@ export default function ItemDetail({ itemId }) {
         />
       )}
 
-    </div>
+    </>
   );
 }
