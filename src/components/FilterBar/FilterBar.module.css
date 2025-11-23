@@ -20,6 +20,7 @@
 .searchInputContainer {
   display: flex;
   max-width: 100%;
+  cursor: default;
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -37,36 +38,17 @@
 .searchInput {
   flex: 1;
   padding: var(--space-3) var(--space-4);
+  height: 48px;
   border: none;
   font-size: var(--font-size-base);
   outline: none;
-  background: #f9f5f0;
+  background: #ffffff;
   color: var(--gray-900);
+  text-align: center;
 }
 
 .searchInput::placeholder {
   color: var(--gray-500);
-}
-
-.searchButton {
-  padding: var(--space-3) var(--space-4);
-  background: #f27b65;
-  color: var(--white);
-  border: none;
-  cursor: pointer;
-  min-width: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color var(--transition-fast);
-}
-
-.searchButton:hover {
-  background: #6b59c6;
-}
-
-.searchIcon {
-  font-size: var(--font-size-lg);
 }
 
 /* ===== control column ===== */
@@ -96,26 +78,26 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  background: #fff6f3;
-  border: 1px solid #f27b65;
+  background: #fff7f0;
+  border: 1px solid #ffc09c;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-lg);
   cursor: pointer;
-  color: #f27b65;
+  color: #241b0f;
   font-size: var(--font-size-sm);
   font-weight: 500;
   transition: all var(--transition-fast);
 }
 
 .filtersButton:hover {
-  border-color: #f27b65;
-  background: #fdece7;
+  border-color: #ffc09c;
+  background: #ffe0c7;
 }
 
 .filtersButton.filtersActive {
-  border-color: #f27b65;
-  color: #ffffff;
-  background: #f27b65;
+  border-color: #ffc09c;
+  color: #241b0f;
+  background: #ffc09c;
 }
 
 .filtersIcon {
@@ -194,6 +176,7 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-5);
   max-width: 800px;
+  margin: 0 auto;
 }
 
 .filterGroup {
@@ -233,6 +216,7 @@
 @media (max-width: 768px) {
   .searchRow {
     padding: var(--space-4);
+    cursor: default;
   }
 
   .controlRow {
@@ -308,19 +292,19 @@
   gap: 6px;
   padding: 8px 16px;
   border-radius: var(--radius-lg);
-  background: var(--gray-900, #f27b65);
-  color: var(--white, #fff);
+  background: #ffc09c;
+  color: #241b0f;
   font-size: var(--font-size-sm);
   font-weight: 600;
   text-decoration: none;
-  border: 1px solid var(--gray-300, #e5e7eb);
+  border: 1px solid #ffc09c;
   transition:
     background var(--transition-fast),
     transform var(--transition-fast);
 }
 
 .addListingBtn:hover {
-  background: var(--gray-800, #1f2937);
+  background: #ffb480;
   transform: translateY(-1px);
 }
 

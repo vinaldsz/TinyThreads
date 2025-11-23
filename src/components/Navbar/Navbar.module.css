@@ -1,7 +1,8 @@
 .navbar {
   width: 100%;
-  background: #e9dfd6;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 80px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -66,10 +67,8 @@
 }
 
 .aboutLink,
-.linkButton,
 .signupButton {
   padding: 2px 15px;
-  background-color: #f0f0f0;
   border-radius: 6px;
   font-weight: 600;
   color: #333;
@@ -79,12 +78,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-
-.signupButton {
-  background-color: #f27b65;
-  color: white;
-  border-color: #000000;
 }
 
 .userName {
@@ -186,9 +179,9 @@
 
 .aboutLink:hover,
 .aboutLink:focus {
-  background: rgba(0, 0, 0, 0.04);
-  color: #111827;
-  outline: none;
+  background-color: #ffc09c;
+  color: #241b0f;
+  border-color: #ffc09c;
 }
 
 @media (min-width: 640px) {

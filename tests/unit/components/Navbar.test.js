@@ -10,6 +10,11 @@ jest.mock('@/components/Navbar/Navbar.module.css', () => ({
   aboutLink: 'aboutLink',
 }));
 
+jest.mock('next-auth/react', () => ({
+  useSession: jest.fn(),
+  signOut: jest.fn(),
+}));
+
 // Mock Next.js Image component
 jest.mock('next/image', () => {
   return function MockImage({ src, alt, width, height, className }) {
@@ -27,22 +32,14 @@ jest.mock('next/image', () => {
   };
 });
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Navbar from '@/components/Navbar/Navbar';
-jest.mock('@/components/Navbar/Navbar.module.css', () => ({
-  navbar: 'navbar',
-  brandWrapper: 'brandWrapper',
-  brand: 'brand',
-  brandLogo: 'brandLogo',
-  inner: 'inner',
-  spacer: 'spacer',
-  links: 'links',
-  aboutLink: 'aboutLink',
-}));
+import { useSession, signOut } from 'next-auth/react';
 
 describe('Navbar', () => {
   beforeEach(() => {
+    useSession.mockReturnValue({ data: null, status: 'unauthenticated' });
     render(<Navbar />);
   });
 
@@ -179,6 +176,61 @@ describe('Navbar', () => {
 
       // Component should still be rendered
       expect(screen.getByRole('navigation')).toBeInTheDocument();
+    });
+  });
+
+  describe('Profile dropdown behavior', () => {
+    test('shows profile dropdown when authenticated user clicks profile button', () => {
+      cleanup();
+      useSession.mockReturnValue({
+        data: { user: { name: 'Test User', email: 'test@example.com' } },
+        status: 'authenticated',
+      });
+
+      render(<Navbar />);
+
+      const profileButton = screen.getByRole('button', { name: /test user/i });
+      fireEvent.click(profileButton);
+
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+    });
+
+    test('closes profile dropdown when clicking outside', () => {
+      cleanup();
+      useSession.mockReturnValue({
+        data: { user: { name: 'Test User', email: 'test@example.com' } },
+        status: 'authenticated',
+      });
+
+      render(<Navbar />);
+
+      const profileButton = screen.getByRole('button', { name: /test user/i });
+      fireEvent.click(profileButton);
+
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+
+      // Click outside the menu (on the document body)
+      fireEvent.mouseDown(document.body);
+
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
+    test('triggers signOut when logout is clicked in dropdown', () => {
+      cleanup();
+      useSession.mockReturnValue({
+        data: { user: { name: 'Test User', email: 'test@example.com' } },
+        status: 'authenticated',
+      });
+
+      render(<Navbar />);
+
+      const profileButton = screen.getByRole('button', { name: /test user/i });
+      fireEvent.click(profileButton);
+
+      const logoutButton = screen.getByRole('menuitem');
+      fireEvent.click(logoutButton);
+
+      expect(signOut).toHaveBeenCalledWith({ callbackUrl: '/' });
     });
   });
 });

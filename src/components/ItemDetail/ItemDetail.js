@@ -58,6 +58,8 @@ export default function ItemDetail({ itemId }) {
     );
   }
 
+  const isDonation = Number(item.price) === 0;
+
   const images =
     Array.isArray(item.imageUrls) && item.imageUrls.length > 0
       ? item.imageUrls
@@ -160,22 +162,25 @@ export default function ItemDetail({ itemId }) {
             <div className={styles.productInfo}>
               <h1 className={styles.title}>{item.title}</h1>
 
-              <div className={styles.priceAndCondition}>
-                <span className={styles.price}>${formatPrice(item.price)}</span>
-                {(() => {
-                  const raw = (item.condition ?? '').toString().trim();
-                  const key = raw.toLowerCase().replace(/\s+/g, '');
-                  const hasVariantClass = key && styles[key];
-                  return (
-                    <span
-                      className={`${styles.condition} ${
-                        hasVariantClass ? styles[key] : ''
-                      }`}
-                    >
-                      {raw || '—'}
-                    </span>
-                  );
-                })()}
+              <div className={styles.metaRow}>
+                {isDonation && (
+                  <span
+                    className={`${styles.metaTag} ${styles.metaTagDonation}`}
+                  >
+                    Donation · Free
+                  </span>
+                )}
+                {item.condition && (
+                  <span className={styles.metaTag}>
+                    Condition: {item.condition}
+                  </span>
+                )}
+              </div>
+
+              <div className={styles.priceRow}>
+                <span className={styles.price}>
+                  {isDonation ? 'Free' : `$${formatPrice(item.price)}`}
+                </span>
               </div>
 
               <div className={styles.basicInfo}>

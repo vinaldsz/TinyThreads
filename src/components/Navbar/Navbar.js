@@ -82,10 +82,10 @@ export default function Navbar() {
               </div>
             ) : (
               <>
-                <Link href="/login" className={styles.linkButton}>
+                <Link href="/login" className={styles.aboutLink}>
                   Log in
                 </Link>
-                <Link href="/signup" className={styles.signupButton}>
+                <Link href="/signup" className={styles.aboutLink}>
                   Sign up
                 </Link>
               </>

@@ -18,6 +18,7 @@ export default function AddListingPage() {
   const [priceErr, setPriceErr] = useState('');
   const [categoryErr, setCategoryErr] = useState('');
   const [conditionErr, setConditionErr] = useState('');
+  const [isDonation, setIsDonation] = useState(false);
 
   const [fileInputs, setFileInputs] = useState([0]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -44,6 +45,15 @@ export default function AddListingPage() {
     // allow up to 2 decimals
     if (!/^\d+(?:\.\d{1,2})?$/.test(v)) return 'Use up to 2 decimal places.';
     return '';
+  }
+  function handleDonationToggle(e) {
+    const checked = e.target.checked;
+    setIsDonation(checked);
+    if (checked) {
+      const priceInput = document.getElementById('price');
+      if (priceInput) priceInput.value = '0';
+      setPriceErr('');
+    }
   }
   function validateRequiredSelect(value, label) {
     if (!value) return `Please select a ${label}.`;
@@ -96,7 +106,7 @@ export default function AddListingPage() {
         selectedFiles.length === 0 ||
         validateTitle(titleVal) ||
         validateSellerName(sellerNameVal) ||
-        validatePrice(priceVal) ||
+        (!isDonation && validatePrice(priceVal)) ||
         validateRequiredSelect(categoryVal, 'category') ||
         validateRequiredSelect(conditionVal, 'condition'),
     );
@@ -385,10 +395,23 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.formGroup}>
+              <label htmlFor="donation">
+                <input
+                  id="donation"
+                  name="donation"
+                  type="checkbox"
+                  onChange={handleDonationToggle}
+                />
+                &nbsp;Mark as Donation (Price becomes $0)
+              </label>
+            </div>
+
+            <div className={styles.formGroup}>
               <label htmlFor="price">Price ($)</label>
               <input
                 id="price"
                 name="price"
+                disabled={isDonation}
                 type="number"
                 min="0"
                 step="0.01"

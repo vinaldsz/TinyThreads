@@ -38,7 +38,7 @@ const mockItem = {
   title: 'Baby Onesie 6M',
   price: 5.99,
   condition: 'Like New',
-  category: 'Clothing',
+  category: 'clothing',
   ageRange: '6M',
   imageUrl: '/test-image.jpg',
   description: 'Cute baby onesie, barely worn',
@@ -93,5 +93,56 @@ describe('ItemCard Component', () => {
     render(<ItemCard item={mockItem} />);
 
     expect(screen.getByText('View Details')).toBeInTheDocument();
+  });
+
+  test('shows Free when price is 0 (donation listing)', () => {
+    const donationItem = { ...mockItem, price: 0 };
+    render(<ItemCard item={donationItem} />);
+
+    expect(screen.getByText('Free')).toBeInTheDocument();
+  });
+
+  test('handles unknown category with default icon', () => {
+    const unknownCategory = { ...mockItem, category: 'unknown-category' };
+    render(<ItemCard item={unknownCategory} />);
+
+    expect(screen.getByText('🛍️')).toBeInTheDocument();
+  });
+
+  test('formats fallback condition label correctly', () => {
+    const customCondition = { ...mockItem, condition: 'gently-used' };
+    render(<ItemCard item={customCondition} />);
+
+    expect(screen.getByText('Gently Used')).toBeInTheDocument();
+  });
+
+  test('shows No Image fallback when image fails to load', () => {
+    const brokenImage = { ...mockItem, imageUrl: '/broken.jpg' };
+    const { container } = render(<ItemCard item={brokenImage} />);
+
+    const img = container.querySelector('img');
+    // Simulate an image load error so onError is called
+    fireEvent.error(img);
+
+    expect(screen.getByText('No Image')).toBeInTheDocument();
+  });
+
+  test('renders carousel controls when multiple images are provided', () => {
+    const multiImageItem = {
+      ...mockItem,
+      imageUrls: ['/1.jpg', '/2.jpg'],
+    };
+    render(<ItemCard item={multiImageItem} />);
+
+    // Shows pagination counter
+    expect(screen.getByText('1/2')).toBeInTheDocument();
+
+    // Go to next image
+    fireEvent.click(screen.getByText('›'));
+    expect(screen.getByText('2/2')).toBeInTheDocument();
+
+    // Wrap around back to first
+    fireEvent.click(screen.getByText('›'));
+    expect(screen.getByText('1/2')).toBeInTheDocument();
   });
 });

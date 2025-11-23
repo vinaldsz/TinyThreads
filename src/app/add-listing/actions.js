@@ -8,6 +8,8 @@ export async function uploadListingAction(formData) {
   const category = formData.get('category');
   const condition = formData.get('condition');
   const price = formData.get('price');
+  const donationRaw = formData.get('donation');
+  const isDonation = donationRaw === 'on' || donationRaw === 'true';
   const size = formData.get('size');
   const ageRange = formData.get('ageRange');
   const location = formData.get('location');
@@ -36,14 +38,24 @@ export async function uploadListingAction(formData) {
     redirect('/add-listing?err=invalid_condition');
   }
 
-  const pRaw = String(price ?? '').trim();
-  const pNum = Number(pRaw);
-  if (!pRaw || !Number.isFinite(pNum) || pNum < 0) {
-    redirect('/add-listing?err=invalid_price');
+  let finalPriceRaw = String(price ?? '').trim();
+  if (isDonation) {
+    finalPriceRaw = '0';
   }
-  // Price: allow up to 2 decimal places
-  if (!/^\d+(?:\.\d{1,2})?$/.test(pRaw)) {
-    redirect('/add-listing?err=invalid_price_precision');
+
+  const finalPriceNum = Number(finalPriceRaw);
+
+  if (!isDonation) {
+    if (
+      !finalPriceRaw ||
+      !Number.isFinite(finalPriceNum) ||
+      finalPriceNum < 0
+    ) {
+      redirect('/add-listing?err=invalid_price');
+    }
+    if (!/^\d+(?:\.\d{1,2})?$/.test(finalPriceRaw)) {
+      redirect('/add-listing?err=invalid_price_precision');
+    }
   }
 
   // Support both real FormData (with getAll) and Jest mocks (with only get)
@@ -85,7 +97,7 @@ export async function uploadListingAction(formData) {
 
   const doc = {
     title: String(title),
-    price: Number(price),
+    price: isDonation ? 0 : Number(price),
     size: size ? String(size) : '',
     condition: String(condition),
     imageUrls,

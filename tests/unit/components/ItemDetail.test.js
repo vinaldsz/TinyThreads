@@ -190,7 +190,7 @@ describe('ItemDetail (Current Version)', () => {
       });
 
       expect(screen.getByText('$25.00')).toBeInTheDocument(); // Current version uses formatPrice
-      expect(screen.getByText('Like New')).toBeInTheDocument();
+      expect(screen.getByText(/Condition:\s*Like New/i)).toBeInTheDocument();
       expect(screen.getByText('Medium (2-3 years)')).toBeInTheDocument();
       expect(screen.getByText('Clothing')).toBeInTheDocument();
       expect(screen.getByText('San Francisco')).toBeInTheDocument();
@@ -309,7 +309,7 @@ describe('ItemDetail (Current Version)', () => {
       });
 
       // Should display "—" for missing fields
-      expect(screen.getAllByText('—')).toHaveLength(5); // condition, size/age, category, location, description
+      expect(screen.getAllByText('—')).toHaveLength(4); // condition, size/age, category, location, description
     });
   });
 
@@ -371,28 +371,8 @@ describe('ItemDetail (Current Version)', () => {
     });
   });
 
+  // Condition Styling test block removed as requested
   describe('Condition Styling', () => {
-    test('applies correct CSS class for condition', async () => {
-      const itemWithCondition = {
-        ...mockItem,
-        condition: 'Like New',
-      };
-      getItemById.mockResolvedValue(itemWithCondition);
-
-      let container;
-      await act(async () => {
-        const result = render(<ItemDetail itemId="item-1" />);
-        container = result.container;
-      });
-
-      await waitFor(() => {
-        // Current version uses safer condition styling
-        const conditionElement = container.querySelector('.condition');
-        expect(conditionElement).toBeInTheDocument();
-        expect(conditionElement).toHaveTextContent('Like New');
-      });
-    });
-
     test('handles empty condition gracefully', async () => {
       const itemWithEmptyCondition = {
         ...mockItem,
@@ -405,7 +385,54 @@ describe('ItemDetail (Current Version)', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('—')).toBeInTheDocument();
+        // Condition no longer renders a placeholder — it renders nothing
+        const missingCondition = screen.queryByText('—');
+        expect(missingCondition).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Image Carousel', () => {
+    test('renders carousel for multiple images and allows navigation', async () => {
+      const itemWithMultipleImages = {
+        ...mockItem,
+        imageUrls: [
+          'https://example.com/image1.jpg',
+          'https://example.com/image2.jpg',
+        ],
+        imageUrl: null,
+      };
+      getItemById.mockResolvedValue(itemWithMultipleImages);
+
+      await act(async () => {
+        render(<ItemDetail itemId="item-1" />);
+      });
+
+      // Initial image and counter
+      await waitFor(() => {
+        const image = screen.getByAltText('Test Item');
+        expect(image).toBeInTheDocument();
+        expect(image.src).toBe('https://example.com/image1.jpg');
+      });
+
+      expect(screen.getByText('1/2')).toBeInTheDocument();
+
+      // Go to next image
+      fireEvent.click(screen.getByText('›'));
+
+      await waitFor(() => {
+        const image = screen.getByAltText('Test Item');
+        expect(screen.getByText('2/2')).toBeInTheDocument();
+        expect(image.src).toBe('https://example.com/image2.jpg');
+      });
+
+      // Go back to previous image
+      fireEvent.click(screen.getByText('‹'));
+
+      await waitFor(() => {
+        const image = screen.getByAltText('Test Item');
+        expect(screen.getByText('1/2')).toBeInTheDocument();
+        expect(image.src).toBe('https://example.com/image1.jpg');
       });
     });
   });
