@@ -59,11 +59,16 @@ export default function AddListingPage() {
   function handleDonationToggle(e) {
     const checked = e.target.checked;
     setIsDonation(checked);
+
     if (checked) {
-      const priceInput = document.getElementById('price');
-      if (priceInput) priceInput.value = '0';
+      // When marked as donation, lock price to 0
+      setPrice('0');
       setPriceErr('');
+    } else {
+      // When unchecking donation, clear price so user can enter a value
+      setPrice('');
     }
+
     setFormVersion((v) => v + 1);
   }
   function validateRequiredSelect(value, label) {
@@ -74,31 +79,36 @@ export default function AddListingPage() {
   // Field event handlers (validate on blur/change)
   function handleTitleChange(e) {
     const value = e.target.value;
-    setTitle(value);  // ✅ 保存到 state
+    setTitle(value);
+    setFormVersion((v) => v + 1);
     if (titleErr) setTitleErr(validateTitle(value));
   }
 
   function handleSellerNameChange(e) {
     const value = e.target.value;
-    setSellerName(value);  // ✅ 保存到 state
+    setSellerName(value);
+    setFormVersion((v) => v + 1);
     if (sellerNameErr) setSellerNameErr(validateSellerName(value));
   }
 
   function handlePriceChange(e) {
     const value = e.target.value;
-    setPrice(value); 
+    setPrice(value);
+    setFormVersion((v) => v + 1);
     if (priceErr) setPriceErr(validatePrice(value));
   }
 
   function handleCategoryChange(e) {
     const value = e.target.value;
-    setCategory(value);  
+    setCategory(value);
+    setFormVersion((v) => v + 1);
     setCategoryErr(validateRequiredSelect(value, 'category'));
   }
 
   function handleConditionChange(e) {
     const value = e.target.value;
-    setCondition(value);  
+    setCondition(value);
+    setFormVersion((v) => v + 1);
     setConditionErr(validateRequiredSelect(value, 'condition'));
   }
 
@@ -106,61 +116,48 @@ export default function AddListingPage() {
     setTitleErr(validateTitle(e.target.value));
     setFormVersion((v) => v + 1);
   }
-  function handleTitleChange(e) {
-    setFormVersion((v) => v + 1);
-    if (titleErr) setTitleErr(validateTitle(e.target.value));
-  }
 
   function handleSellerNameBlur(e) {
     setSellerNameErr(validateSellerName(e.target.value));
     setFormVersion((v) => v + 1);
-  }
-  function handleSellerNameChange(e) {
-    setFormVersion((v) => v + 1);
-    if (sellerNameErr) setSellerNameErr(validateSellerName(e.target.value));
   }
 
   function handlePriceBlur(e) {
     setPriceErr(validatePrice(e.target.value));
     setFormVersion((v) => v + 1);
   }
-  function handlePriceChange(e) {
-    setFormVersion((v) => v + 1);
-    if (priceErr) setPriceErr(validatePrice(e.target.value));
-  }
-
-  function handleCategoryChange(e) {
-    setFormVersion((v) => v + 1);
-    setCategoryErr(validateRequiredSelect(e.target.value, 'category'));
-  }
-  function handleConditionChange(e) {
-    setFormVersion((v) => v + 1);
-    setConditionErr(validateRequiredSelect(e.target.value, 'condition'));
-  }
 
   // Global form validation state — disables Submit when any required field fails validation
-function isFormInvalid() {
-  // Read current DOM values to avoid storing duplicates in state
-  const hasAllFields = 
-      title.trim().length > 0 &&
-      sellerName.trim().length > 0 &&
-      price.trim().length > 0 &&
-      category.length > 0 &&
-      condition.length > 0 &&
+  function isFormInvalid() {
+    // Use current state values
+    const titleVal = title.trim();
+    const sellerNameVal = sellerName.trim();
+    const priceVal = price.trim();
+    const categoryVal = category;
+    const conditionVal = condition;
+
+    const hasAllFields =
+      titleVal.length > 0 &&
+      sellerNameVal.length > 0 &&
+      priceVal.length > 0 &&
+      categoryVal.length > 0 &&
+      conditionVal.length > 0 &&
       selectedFiles.length > 0;
-  if (!hasAllFields) {
-    return true;
-  }
+
+    if (!hasAllFields) {
+      return true;
+    }
+
+    // touch formVersion so React knows this depends on validation-triggering changes
     void formVersion;
 
     return Boolean(
-      
-        validateTitle(titleVal) ||
-        validateSellerName(sellerNameVal) ||
-        validatePrice(priceVal) ||
-        validateRequiredSelect(categoryVal, 'category') ||
-        validateRequiredSelect(conditionVal, 'condition') ||
-        selectedFiles.length === 0,
+      validateTitle(titleVal) ||
+      validateSellerName(sellerNameVal) ||
+      validatePrice(priceVal) ||
+      validateRequiredSelect(categoryVal, 'category') ||
+      validateRequiredSelect(conditionVal, 'condition') ||
+      selectedFiles.length === 0
     );
   }
 
@@ -332,34 +329,6 @@ function isFormInvalid() {
               />
             </div>
 
-            
-
-            <div className={styles.formGroup}>
-              <label htmlFor="price">Price ($)</label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 20.00"
-                required
-                onBlur={handlePriceBlur}
-                onChange={handlePriceChange}
-              />
-              {priceErr && (
-                <p
-                  role="alert"
-                  style={{
-                    color: '#c62828',
-                    marginTop: '6px',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {priceErr}
-                </p>
-              )}
-            </div>
 
 
             <div className={styles.formGroup}>
@@ -438,6 +407,7 @@ function isFormInvalid() {
                 step="0.01"
                 placeholder="e.g. 20.00"
                 required
+                value={price}
                 onBlur={handlePriceBlur}
                 onChange={handlePriceChange}
               />
