@@ -106,7 +106,7 @@ export default function AddListingPage() {
         selectedFiles.length === 0 ||
         validateTitle(titleVal) ||
         validateSellerName(sellerNameVal) ||
-        (!isDonation && validatePrice(priceVal)) ||
+        validatePrice(priceVal) ||
         validateRequiredSelect(categoryVal, 'category') ||
         validateRequiredSelect(conditionVal, 'condition'),
     );
