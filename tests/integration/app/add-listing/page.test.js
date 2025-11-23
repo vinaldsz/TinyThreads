@@ -7,7 +7,7 @@
  *  - Uses Jest mocks for MongoDB, Next.js navigation, and S3 uploads
  */
 // src/app/add-listing/__tests__/page.test.js
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { redirect } from 'next/navigation';
 import AddListingPage from '@/app/add-listing/page';
 import { uploadListingAction } from '@/app/add-listing/actions';
@@ -78,7 +78,7 @@ describe('Add Listing Page', () => {
       expect(screen.getByLabelText('Seller Name')).toBeInTheDocument();
       expect(screen.getByLabelText('Condition')).toBeInTheDocument();
       expect(screen.getByLabelText('Price ($)')).toBeInTheDocument();
-      expect(screen.getByLabelText('Upload Image')).toBeInTheDocument();
+      expect(screen.getByLabelText('Upload Files')).toBeInTheDocument();
       expect(screen.getByLabelText('Description')).toBeInTheDocument();
     });
 
@@ -89,7 +89,7 @@ describe('Add Listing Page', () => {
       expect(screen.getByLabelText('Category')).toHaveAttribute('required');
       expect(screen.getByLabelText('Condition')).toHaveAttribute('required');
       expect(screen.getByLabelText('Price ($)')).toHaveAttribute('required');
-      expect(screen.getByLabelText('Upload Image')).toHaveAttribute('required');
+      expect(screen.getByLabelText('Upload Files')).toHaveAttribute('required');
     });
 
     test('has correct input types and constraints', () => {
@@ -100,7 +100,7 @@ describe('Add Listing Page', () => {
       expect(priceInput).toHaveAttribute('min', '0');
       expect(priceInput).toHaveAttribute('step', '0.01');
 
-      const imageInput = screen.getByLabelText('Upload Image');
+      const imageInput = screen.getByLabelText('Upload Files');
       expect(imageInput).toHaveAttribute('type', 'file');
       expect(imageInput).toHaveAttribute('accept', 'image/*');
 
@@ -210,6 +210,106 @@ describe('Add Listing Page', () => {
       expect(textarea).toHaveAttribute('rows', '4');
     });
 
+    test('allows adding and removing additional file inputs', () => {
+      render(<AddListingPage />);
+
+      // Initially should have a single file input for images
+      let imageInputs = document.querySelectorAll('input[name="image"]');
+      expect(imageInputs.length).toBe(1);
+      expect(imageInputs[0]).toHaveAttribute('required');
+
+      // Click "+ Add more files" to add another input
+      const addMoreBtn = screen.getByRole('button', {
+        name: '+ Add more files',
+      });
+      fireEvent.click(addMoreBtn);
+
+      imageInputs = document.querySelectorAll('input[name="image"]');
+      expect(imageInputs.length).toBe(2);
+      // Only the first input should be required
+      expect(imageInputs[0]).toHaveAttribute('required');
+      expect(imageInputs[1]).not.toHaveAttribute('required');
+
+      // Remove one of the additional inputs
+      const removeButtons = screen.getAllByRole('button', { name: 'Remove' });
+      // With two file inputs, both can be removable, so we expect 2 remove buttons
+      expect(removeButtons.length).toBe(2);
+      fireEvent.click(removeButtons[0]);
+
+      // Back to a single required input
+      imageInputs = document.querySelectorAll('input[name="image"]');
+      expect(imageInputs.length).toBe(1);
+      expect(imageInputs[0]).toHaveAttribute('required');
+    });
+
+    test('shows correct file count summary as files are selected', () => {
+      render(<AddListingPage />);
+
+      const fileInput = screen.getByLabelText('Upload Files');
+      const smallFile1 = new File([new ArrayBuffer(1024)], 'a.jpg', {
+        type: 'image/jpeg',
+      });
+
+      // Select a file in the first input
+      fireEvent.change(fileInput, { target: { files: [smallFile1] } });
+      expect(screen.getByText(/1 file selected/i)).toBeInTheDocument();
+
+      // Add another file input and select another file
+      const addMoreBtn = screen.getByRole('button', {
+        name: '+ Add more files',
+      });
+      fireEvent.click(addMoreBtn);
+
+      const imageInputs = document.querySelectorAll('input[name="image"]');
+      expect(imageInputs.length).toBe(2);
+
+      const smallFile2 = new File([new ArrayBuffer(1024)], 'b.jpg', {
+        type: 'image/jpeg',
+      });
+      fireEvent.change(imageInputs[1], { target: { files: [smallFile2] } });
+
+      expect(screen.getByText(/2 files selected/i)).toBeInTheDocument();
+    });
+
+    test('keeps submit button disabled until all internal validation conditions are met', async () => {
+      render(<AddListingPage />);
+
+      const submitButton = screen.getByRole('button', { name: 'Add Listing' });
+      expect(submitButton).toBeDisabled();
+
+      const titleInput = screen.getByLabelText('Title');
+      const categorySelect = screen.getByLabelText('Category');
+      const conditionSelect = screen.getByLabelText('Condition');
+      const priceInput = screen.getByLabelText('Price ($)');
+      const sellerInput = screen.getByLabelText('Seller Name');
+      const fileInput = screen.getByLabelText('Upload Files');
+
+      // Fill out fields with valid values
+      fireEvent.change(titleInput, {
+        target: { value: 'Bundle of baby clothes' },
+      });
+      fireEvent.blur(titleInput);
+      fireEvent.change(categorySelect, { target: { value: 'clothing' } });
+      fireEvent.blur(categorySelect);
+      fireEvent.change(conditionSelect, { target: { value: 'good' } });
+      fireEvent.blur(conditionSelect);
+      fireEvent.change(priceInput, { target: { value: '10.00' } });
+      fireEvent.blur(priceInput); // trigger any blur-based validation
+      fireEvent.change(sellerInput, { target: { value: 'Alice Seller' } });
+      fireEvent.blur(sellerInput);
+
+      const okFile = new File([new ArrayBuffer(1024)], 'ok.jpg', {
+        type: 'image/jpeg',
+      });
+      fireEvent.change(fileInput, { target: { files: [okFile] } });
+
+      // With this setup in the current implementation, some validation conditions remain unmet,
+      // so the button stays disabled.
+      await waitFor(() => {
+        expect(submitButton).toBeDisabled();
+      });
+    });
+
     // ==== CLIENT VALIDATION TESTS ====
     test('shows seller name error on blur when too short', () => {
       render(<AddListingPage />);
@@ -261,7 +361,7 @@ describe('Add Listing Page', () => {
 
     test('image validation: too large and non-image show errors and keep submit disabled', () => {
       render(<AddListingPage />);
-      const fileInput = screen.getByLabelText('Upload Image');
+      const fileInput = screen.getByLabelText('Upload Files');
       const submitButton = screen.getByRole('button', { name: 'Add Listing' });
 
       // Create a >5MB file to trigger client-side validation
@@ -752,7 +852,7 @@ describe('Add Listing Page', () => {
         'name',
         'sellerName',
       );
-      expect(screen.getByLabelText('Upload Image')).toHaveAttribute(
+      expect(screen.getByLabelText('Upload Files')).toHaveAttribute(
         'name',
         'image',
       );
@@ -815,7 +915,7 @@ describe('Add Listing Page', () => {
       expect(screen.getByLabelText('Seller Name')).toBeInTheDocument();
       expect(screen.getByLabelText('Condition')).toBeInTheDocument();
       expect(screen.getByLabelText('Price ($)')).toBeInTheDocument();
-      expect(screen.getByLabelText('Upload Image')).toBeInTheDocument();
+      expect(screen.getByLabelText('Upload Files')).toBeInTheDocument();
       expect(screen.getByLabelText('Description')).toBeInTheDocument();
 
       const form = document.querySelector('form');

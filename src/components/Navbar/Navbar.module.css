@@ -1,23 +1,33 @@
 .navbar {
   width: 100%;
-  background: #ffffff;
+  background: #e9dfd6;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 1000;
   /* ensure tall enough for larger logos */
-  min-height: 88px;
+  padding-top: 0px;
+  padding-bottom: 60px;
 }
 
 .brandWrapper {
   position: absolute;
   left: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  height: 100%;
+}
+
+.rightWrapper {
+  position: absolute;
+  right: 0;
   top: 0;
   bottom: 0;
   display: flex;
   align-items: center;
-  padding-left: 12px;
-  z-index: 50;
+  padding-right: 12px;
+  height: 100%;
 }
 
 .inner {
@@ -38,7 +48,7 @@
 }
 
 .brandLogo {
-  height: 64px;
+  height: 300px;
   width: auto;
   display: block;
   object-fit: contain;
@@ -50,41 +60,31 @@
 
 .links {
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
 }
 
-.aboutLink {
-  color: #374151; /* neutral-700 */
+.aboutLink,
+.linkButton,
+.signupButton {
+  padding: 2px 15px;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #333;
+  border: 1px solid #dcdcdc;
   text-decoration: none;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  /* Match username sizing */
-  font-size: 0.95rem;
-  line-height: 1.25;
-}
-
-.linkButton {
-  background: transparent;
-  border: 0;
-  color: #374151;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  text-decoration: none; /* remove default underline */
 }
 
 .signupButton {
-  /* make Sign up a link-style control (not a filled button) */
-  background: transparent;
-  color: #374151; /* black-ish text to match other navbar items */
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  text-decoration: none;
-  border: 0;
+  background-color: #f27b65;
+  color: white;
+  border-color: #000000;
 }
 
 .userName {
@@ -196,6 +196,6 @@
     font-size: 1.25rem;
   }
   .brandLogo {
-    height: 88px;
+    height: 300px;
   }
 }

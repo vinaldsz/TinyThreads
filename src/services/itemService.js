@@ -38,6 +38,7 @@ function normalizeItem(i) {
       Array.isArray(i.imageUrls) && i.imageUrls.length
         ? i.imageUrls[0]
         : (i.imageUrl ?? null),
+    imageUrls: Array.isArray(i.imageUrls) ? i.imageUrls : [],
     description: i.description ?? '',
     category: i.category ?? '',
     ageRange: i.ageRange ?? '',

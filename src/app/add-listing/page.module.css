@@ -75,7 +75,7 @@
 .formGroup input:focus,
 .formGroup select:focus,
 .formGroup textarea:focus {
-  border-color: #2563eb;
+  border-color: #f27b65;
 }
 
 .actions {
@@ -85,18 +85,24 @@
 }
 
 .submitBtn {
-  background: var(--gray-900, #111);
-  color: var(--white, #fff);
+  background: #f27b65;
+  color: #ffffff;
   padding: 10px 18px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid #000000;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .submitBtn:hover {
-  background: var(--gray-800, #1f2937);
+  background: #e7674d;
+  border-color: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .cancelBtn {
@@ -144,4 +150,68 @@
 .backButton:hover {
   background: var(--gray-100);
   color: var(--gray-900);
+}
+
+/* File upload controls */
+.fileSummary {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: var(--gray-600);
+}
+
+.addMoreFilesBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #000000;
+  background: var(--white);
+  color: #333333;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.addMoreFilesBtn:hover {
+  background: var(--gray-100);
+  border-color: #000000;
+  color: #111111;
+}
+
+/* File input row + remove button */
+.fileInputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.fileInputRow input[type='file'] {
+  flex: 1;
+}
+
+.removeFileInputBtn {
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.removeFileInputBtn:hover {
+  background-color: #fee2e2;
+  color: #7f1d1d;
 }
