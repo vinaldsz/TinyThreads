@@ -179,7 +179,7 @@ export default function ItemDetail({ itemId }) {
 
               <div className={styles.priceRow}>
                 <span className={styles.price}>
-                  {isDonation ? 'Free' : `$${formatPrice(item.price)}`}
+                  {`$${formatPrice(item.price)}`}
                 </span>
               </div>
 
