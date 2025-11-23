@@ -56,8 +56,12 @@ describe('SignUp Page', () => {
 
     expect(screen.getByPlaceholderText('Your name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Choose a strong password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('Choose a strong password'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /create account/i }),
+    ).toBeInTheDocument();
   });
 
   test('submits form and navigates to login on success', async () => {
@@ -70,7 +74,9 @@ describe('SignUp Page', () => {
 
     const nameInput = screen.getByPlaceholderText('Your name');
     const emailInput = screen.getByPlaceholderText('you@example.com');
-    const passwordInput = screen.getByPlaceholderText('Choose a strong password');
+    const passwordInput = screen.getByPlaceholderText(
+      'Choose a strong password',
+    );
     const submit = screen.getByRole('button', { name: /create account/i });
 
     await act(async () => {
@@ -86,10 +92,10 @@ describe('SignUp Page', () => {
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/auth/signup',
-        expect.objectContaining({ 
+        expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-        })
+        }),
       );
     });
 
@@ -108,7 +114,9 @@ describe('SignUp Page', () => {
 
     const nameInput = screen.getByPlaceholderText('Your name');
     const emailInput = screen.getByPlaceholderText('you@example.com');
-    const passwordInput = screen.getByPlaceholderText('Choose a strong password');
+    const passwordInput = screen.getByPlaceholderText(
+      'Choose a strong password',
+    );
     const submit = screen.getByRole('button', { name: /create account/i });
 
     await act(async () => {

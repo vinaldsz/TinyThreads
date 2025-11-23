@@ -14,43 +14,48 @@ export default function ItemDetail({ itemId }) {
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
-  const { data: session } = useSession()
+  const { data: session } = useSession();
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // ADD THIS CLEANING FUNCTION HERE:
   const cleanImageUrl = (url) => {
     if (!url || url === 'undefined') return null;
-    
+
     // Remove 'undefined/' prefix if it exists
     if (typeof url === 'string' && url.startsWith('undefined/')) {
       url = url.replace('undefined/', '/');
     }
-    
+
     // Ensure proper URL format for local images
-    if (typeof url === 'string' && !url.startsWith('http') && !url.startsWith('/')) {
+    if (
+      typeof url === 'string' &&
+      !url.startsWith('http') &&
+      !url.startsWith('/')
+    ) {
       return `/${url}`;
     }
-    
+
     return url;
   };
 
   const images = useMemo(() => {
     if (!item) return [];
-    
-    const rawImages = Array.isArray(item.imageUrls) && item.imageUrls.length > 0
-      ? item.imageUrls
-      : item.imageUrl
-        ? [item.imageUrl]
-        : [];
-    
+
+    const rawImages =
+      Array.isArray(item.imageUrls) && item.imageUrls.length > 0
+        ? item.imageUrls
+        : item.imageUrl
+          ? [item.imageUrl]
+          : [];
+
     const cleanedImages = rawImages
       .map(cleanImageUrl)
-      .filter(url => url && url !== '/'); // Remove null/invalid URLs
-    
+      .filter((url) => url && url !== '/'); // Remove null/invalid URLs
+
     return cleanedImages; // No placeholder fallback
   }, [item]);
 
-  // reuse 
+  // reuse
   const fetchItem = useCallback(async () => {
     try {
       const data = await getItemById(itemId);
@@ -66,11 +71,11 @@ export default function ItemDetail({ itemId }) {
 
   useEffect(() => {
     const loadItem = async () => {
-      setLoading(true);     
-      await fetchItem();    
-      setLoading(false);     
+      setLoading(true);
+      await fetchItem();
+      setLoading(false);
     };
-    
+
     if (itemId) loadItem();
   }, [itemId, fetchItem]);
 
@@ -81,7 +86,7 @@ export default function ItemDetail({ itemId }) {
     return Number.isFinite(n) ? n.toFixed(2) : String(p ?? '');
   };
 
-  // purchase button 
+  // purchase button
   const isLoggedIn = !!session;
   const isAvailable = item?.status === 'available';
   const canPurchase = isLoggedIn && isAvailable;
@@ -94,14 +99,12 @@ export default function ItemDetail({ itemId }) {
     router.push('/login');
   };
 
-
-const handlePurchaseSuccess = async () => {
-  console.log('Purchase successful! Refreshing item data...');
-  setShowPurchaseModal(false);
-  await fetchItem();  
-  console.log('Item data refreshed. Status:', item?.status);
-};
-
+  const handlePurchaseSuccess = async () => {
+    console.log('Purchase successful! Refreshing item data...');
+    setShowPurchaseModal(false);
+    await fetchItem();
+    console.log('Item data refreshed. Status:', item?.status);
+  };
 
   if (loading) {
     return (
@@ -123,8 +126,6 @@ const handlePurchaseSuccess = async () => {
     );
   }
 
-  
-  
   // ADD DEBUG HERE:
   console.log('=== ITEMDETAIL DEBUG ===');
   console.log('ItemID from URL:', itemId);
@@ -231,51 +232,47 @@ const handlePurchaseSuccess = async () => {
             <div className={styles.productInfo}>
               <h1 className={styles.title}>{item.title}</h1>
 
-            <div className={styles.priceAndCondition}>
-              <span className={styles.price}>${formatPrice(item.price)}</span>
-              {(() => {
-                const raw = (item.condition ?? '').toString().trim();
-                const key = raw.toLowerCase().replace(/\s+/g, '');
-                const hasVariantClass = key && styles[key];
-                return (
-                  <span
-                    className={`${styles.condition} ${
-                      hasVariantClass ? styles[key] : ''
-                    }`}
+              <div className={styles.priceAndCondition}>
+                <span className={styles.price}>${formatPrice(item.price)}</span>
+                {(() => {
+                  const raw = (item.condition ?? '').toString().trim();
+                  const key = raw.toLowerCase().replace(/\s+/g, '');
+                  const hasVariantClass = key && styles[key];
+                  return (
+                    <span
+                      className={`${styles.condition} ${
+                        hasVariantClass ? styles[key] : ''
+                      }`}
+                    >
+                      {raw || '—'}
+                    </span>
+                  );
+                })()}
+              </div>
+
+              {/* NEW: Purchase Button Section */}
+              <div className={styles.purchaseSection}>
+                {canPurchase && (
+                  <button onClick={handleBuyClick} className={styles.buyButton}>
+                    Buy Now
+                  </button>
+                )}
+
+                {!isLoggedIn && isAvailable && (
+                  <button
+                    onClick={handleLoginRedirect}
+                    className={styles.loginButton}
                   >
-                    {raw || '—'}
-                  </span>
-                );
-              })()}
-            </div>
+                    Sign in to purchase
+                  </button>
+                )}
 
-            {/* NEW: Purchase Button Section */}
-            <div className={styles.purchaseSection}>
-              {canPurchase && (
-                <button 
-                  onClick={handleBuyClick}
-                  className={styles.buyButton}
-                >
-                  Buy Now
-                </button>
-              )}
-              
-              {!isLoggedIn && isAvailable && (
-                <button 
-                  onClick={handleLoginRedirect}
-                  className={styles.loginButton}
-                >
-                  Sign in to purchase
-                </button>
-              )}
-              
-              {!isAvailable && (
-                <div className={styles.soldNotice}>
-                  This item has been sold
-                </div>
-              )}
-            </div>
-
+                {!isAvailable && (
+                  <div className={styles.soldNotice}>
+                    This item has been sold
+                  </div>
+                )}
+              </div>
 
               <div className={styles.basicInfo}>
                 <div className={styles.infoItem}>
@@ -344,17 +341,15 @@ const handlePurchaseSuccess = async () => {
         </div>
       </div>
 
-     {/* NEW: Purchase Modal */}
-     {showPurchaseModal && (
-        <PurchaseModal 
+      {/* NEW: Purchase Modal */}
+      {showPurchaseModal && (
+        <PurchaseModal
           item={item}
           user={session?.user}
           onClose={() => setShowPurchaseModal(false)}
-          onSuccess={handlePurchaseSuccess} 
-
+          onSuccess={handlePurchaseSuccess}
         />
       )}
-
     </>
   );
 }

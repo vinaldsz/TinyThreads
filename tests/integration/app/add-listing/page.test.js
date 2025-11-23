@@ -61,7 +61,7 @@ jest.mock('next-auth', () => ({
     GET: jest.fn(),
     POST: jest.fn(),
   })),
-  getServerSession: jest.fn(),  
+  getServerSession: jest.fn(),
 }));
 
 jest.mock('next-auth/next', () => ({
@@ -73,9 +73,9 @@ jest.mock('next/navigation', () => {
   const mockRedirect = jest.fn((path) => {
     throw new Error(`Redirect: ${path}`);
   });
-  
+
   global.mockRedirect = mockRedirect;
-  
+
   return {
     redirect: mockRedirect,
     useRouter: () => ({
@@ -87,15 +87,15 @@ jest.mock('next/navigation', () => {
 
 // ✅ Mock AWS S3 - define uploadImageToS3 inside
 jest.mock('@/lib/awss3', () => {
-  const mockUploadImageToS3 = jest.fn(() => 
-    Promise.resolve({ 
-      key: 'test-key', 
-      imageUrl: 'https://example.com/test-image.jpg' 
-    })
+  const mockUploadImageToS3 = jest.fn(() =>
+    Promise.resolve({
+      key: 'test-key',
+      imageUrl: 'https://example.com/test-image.jpg',
+    }),
   );
-  
+
   global.mockUploadImageToS3 = mockUploadImageToS3;
-  
+
   return {
     uploadImageToS3: mockUploadImageToS3,
   };
@@ -116,7 +116,11 @@ jest.mock('@/components/Navbar/Navbar', () => {
 
 jest.mock('next/link', () => {
   return function MockLink({ children, href, className }) {
-    return <a href={href} className={className}>{children}</a>;
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
   };
 });
 
@@ -143,7 +147,7 @@ describe('Add Listing Page', () => {
   // Reset mocks before each test to ensure clean state
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Setup default session for server actions
     getServerSession.mockResolvedValue({
       user: {
@@ -581,12 +585,14 @@ describe('Add Listing Page', () => {
           };
           return data[key] || null;
         }),
-        getAll: jest.fn((key) => key === 'image' ? [mockFile] : []),
+        getAll: jest.fn((key) => (key === 'image' ? [mockFile] : [])),
       };
 
       await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
       // Missing sellerName should trigger invalid_seller redirect
-      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=invalid_seller');
+      expect(mockRedirect).toHaveBeenCalledWith(
+        '/add-listing?err=invalid_seller',
+      );
     });
 
     test('handles empty optional fields gracefully', async () => {
@@ -607,7 +613,7 @@ describe('Add Listing Page', () => {
           };
           return data[key] || null;
         }),
-        getAll: jest.fn((key) => key === 'image' ? [mockFile] : []),
+        getAll: jest.fn((key) => (key === 'image' ? [mockFile] : [])),
       };
 
       await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
@@ -639,7 +645,7 @@ describe('Add Listing Page', () => {
           };
           return data[key];
         }),
-        getAll: jest.fn((key) => key === 'image' ? [mockFile] : []),
+        getAll: jest.fn((key) => (key === 'image' ? [mockFile] : [])),
       };
 
       await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
@@ -678,7 +684,9 @@ describe('Add Listing Page', () => {
 
       await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
-      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
+      expect(mockRedirect).toHaveBeenCalledWith(
+        '/add-listing?err=missing_file',
+      );
       expect(mockUploadImageToS3).not.toHaveBeenCalled();
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
@@ -701,7 +709,9 @@ describe('Add Listing Page', () => {
 
       await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
-      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
+      expect(mockRedirect).toHaveBeenCalledWith(
+        '/add-listing?err=missing_file',
+      );
       expect(mockUploadImageToS3).not.toHaveBeenCalled();
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
@@ -731,7 +741,9 @@ describe('Add Listing Page', () => {
 
       await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
 
-      expect(mockRedirect).toHaveBeenCalledWith('/add-listing?err=missing_file');
+      expect(mockRedirect).toHaveBeenCalledWith(
+        '/add-listing?err=missing_file',
+      );
       expect(mockUploadImageToS3).not.toHaveBeenCalled();
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });

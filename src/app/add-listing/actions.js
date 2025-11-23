@@ -8,20 +8,20 @@ import { authOptions } from '../api/auth/[...nextauth]/route';
 
 export async function uploadListingAction(formData) {
   console.log('\n=== UPLOAD LISTING ACTION STARTED ===');
-  
+
   try {
     // Get the logged-in user
     console.log('Step 1: Getting session...');
     const session = await getServerSession(authOptions);
     console.log('Session:', JSON.stringify(session, null, 2));
 
-    // Check if the user is logged in 
+    // Check if the user is logged in
     if (!session?.user?.id) {
       console.log('❌ No session - redirecting to login');
       redirect('/login');
     }
     console.log('✅ User logged in:', session.user.id);
-    
+
     console.log('\nStep 2: Extracting form data...');
     const title = formData.get('title');
     const category = formData.get('category');
@@ -43,7 +43,7 @@ export async function uploadListingAction(formData) {
       ageRange,
       location,
       sellerName,
-      description
+      description,
     });
 
     // Server-side validations
@@ -165,7 +165,6 @@ export async function uploadListingAction(formData) {
 
     console.log('\nStep 13: Redirecting to home...');
     redirect('/');
-    
   } catch (error) {
     console.error('\n❌ ERROR in uploadListingAction:');
     console.error('Error message:', error.message);

@@ -462,7 +462,7 @@
 }
 
 .buyButton {
-  background-color: #4F46E5;
+  background-color: #4f46e5;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -475,15 +475,15 @@
 }
 
 .buyButton:hover {
-  background-color: #4338CA;
+  background-color: #4338ca;
 }
 
 .buyButton:active {
-  background-color: #3730A3;
+  background-color: #3730a3;
 }
 
 .loginButton {
-  background-color: #6B7280;
+  background-color: #6b7280;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -496,15 +496,15 @@
 }
 
 .loginButton:hover {
-  background-color: #4B5563;
+  background-color: #4b5563;
 }
 
 .soldNotice {
-  background-color: #FEE2E2;
-  color: #DC2626;
+  background-color: #fee2e2;
+  color: #dc2626;
   padding: 12px 24px;
   border-radius: 8px;
   text-align: center;
   font-weight: 600;
-  border: 1px solid #FECACA;
+  border: 1px solid #fecaca;
 }
