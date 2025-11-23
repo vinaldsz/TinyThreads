@@ -125,13 +125,6 @@ const handlePurchaseSuccess = async () => {
 
   const isDonation = Number(item.price) === 0;
 
-  const images =
-    Array.isArray(item.imageUrls) && item.imageUrls.length > 0
-      ? item.imageUrls
-      : item.imageUrl
-        ? [item.imageUrl]
-        : [];
-
   return (
     <>
       <Navbar />
@@ -227,50 +220,6 @@ const handlePurchaseSuccess = async () => {
             <div className={styles.productInfo}>
               <h1 className={styles.title}>{item.title}</h1>
 
-            <div className={styles.priceAndCondition}>
-              <span className={styles.price}>${formatPrice(item.price)}</span>
-              {(() => {
-                const raw = (item.condition ?? '').toString().trim();
-                const key = raw.toLowerCase().replace(/\s+/g, '');
-                const hasVariantClass = key && styles[key];
-                return (
-                  <span
-                    className={`${styles.condition} ${
-                      hasVariantClass ? styles[key] : ''
-                    }`}
-                  >
-                    {raw || '—'}
-                  </span>
-                );
-              })()}
-            </div>
-
-            {/* NEW: Purchase Button Section */}
-            <div className={styles.purchaseSection}>
-              {canPurchase && (
-                <button 
-                  onClick={handleBuyClick}
-                  className={styles.buyButton}
-                >
-                  Buy Now
-                </button>
-              )}
-              
-              {!isLoggedIn && isAvailable && (
-                <button 
-                  onClick={handleLoginRedirect}
-                  className={styles.loginButton}
-                >
-                  Sign in to purchase
-                </button>
-              )}
-              
-              {!isAvailable && (
-                <div className={styles.soldNotice}>
-                  This item has been sold
-                </div>
-              )}
-            </div>
 
               <div className={styles.metaRow}>
                 {isDonation && (
@@ -314,6 +263,33 @@ const handlePurchaseSuccess = async () => {
               <div className={styles.description}>
                 <h3>Description</h3>
                 <p>{item.description || '—'}</p>
+              </div>
+
+              {/* Purchase Section moved below Description */}
+              <div className={styles.purchaseSection}>
+                {canPurchase && (
+                  <button 
+                    onClick={handleBuyClick}
+                    className={styles.buyButton}
+                  >
+                    Buy Now
+                  </button>
+                )}
+                
+                {!isLoggedIn && isAvailable && (
+                  <button 
+                    onClick={handleLoginRedirect}
+                    className={styles.loginButton}
+                  >
+                    Sign in to purchase
+                  </button>
+                )}
+                
+                {!isAvailable && (
+                  <div className={styles.soldNotice}>
+                    This item has been sold
+                  </div>
+                )}
               </div>
             </div>
 
