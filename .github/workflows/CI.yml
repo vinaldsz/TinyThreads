@@ -27,17 +27,18 @@ jobs:
       - name: Run ESLint
         run: npm run lint -- --max-warnings=10
 
+      - name: Check formatting with Prettier
+        run: npx prettier --check .
+
       - name: Run tests with coverage
-        # do not fail the job here so we can always verify the coverage file
-        continue-on-error: true
+        # Run tests and produce coverage. If tests fail this step will fail the job
         run: |
-          # produce coverage + json output for jest results (always exit 0 here so we can verify later)
           npm test -- \
             --coverage \
             --coverageReporters=json-summary \
             --coverageDirectory=coverage \
             --runInBand \
-            --json --outputFile=jest-results.json || true
+            --json --outputFile=jest-results.json
         env:
           CI: 'true'
 
