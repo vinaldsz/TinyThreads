@@ -1,6 +1,6 @@
 'use client';
 // src/components/ItemDetail/ItemDetail.js
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getItemById } from '../../services/itemService';
 import styles from './ItemDetail.module.css';
@@ -17,6 +17,38 @@ export default function ItemDetail({ itemId }) {
   const { data: session } = useSession()
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
+  // ADD THIS CLEANING FUNCTION HERE:
+  const cleanImageUrl = (url) => {
+    if (!url || url === 'undefined') return null;
+    
+    // Remove 'undefined/' prefix if it exists
+    if (typeof url === 'string' && url.startsWith('undefined/')) {
+      url = url.replace('undefined/', '/');
+    }
+    
+    // Ensure proper URL format for local images
+    if (typeof url === 'string' && !url.startsWith('http') && !url.startsWith('/')) {
+      return `/${url}`;
+    }
+    
+    return url;
+  };
+
+  const images = useMemo(() => {
+    if (!item) return [];
+    
+    const rawImages = Array.isArray(item.imageUrls) && item.imageUrls.length > 0
+      ? item.imageUrls
+      : item.imageUrl
+        ? [item.imageUrl]
+        : [];
+    
+    const cleanedImages = rawImages
+      .map(cleanImageUrl)
+      .filter(url => url && url !== '/'); // Remove null/invalid URLs
+    
+    return cleanedImages; // No placeholder fallback
+  }, [item]);
 
   // reuse 
   const fetchItem = useCallback(async () => {
@@ -91,12 +123,18 @@ const handlePurchaseSuccess = async () => {
     );
   }
 
-  const images =
-    Array.isArray(item.imageUrls) && item.imageUrls.length > 0
-      ? item.imageUrls
-      : item.imageUrl
-        ? [item.imageUrl]
-        : [];
+  
+  
+  // ADD DEBUG HERE:
+  console.log('=== ITEMDETAIL DEBUG ===');
+  console.log('ItemID from URL:', itemId);
+  console.log('Fetched item:', item);
+  console.log('Item _id:', item?._id);
+  console.log('Item id:', item?.id);
+  console.log('item.imageUrl:', item.imageUrl);
+  console.log('item.imageUrls:', item.imageUrls);
+  console.log('images array:', images);
+  console.log('========================');
 
   return (
     <>
