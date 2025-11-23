@@ -25,6 +25,14 @@ export default function AddListingPage() {
   const [fileInputs, setFileInputs] = useState([0]);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
+
+  // add state to track field values
+  const [title, setTitle] = useState('');
+  const [sellerName, setSellerName] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [condition, setCondition] = useState('');
+
   // Client-side validation logic (mirrors server rules for instant feedback)
   function validateTitle(value) {
     const v = (value || '').trim();
@@ -64,6 +72,36 @@ export default function AddListingPage() {
   }
 
   // Field event handlers (validate on blur/change)
+  function handleTitleChange(e) {
+    const value = e.target.value;
+    setTitle(value);  // ✅ 保存到 state
+    if (titleErr) setTitleErr(validateTitle(value));
+  }
+
+  function handleSellerNameChange(e) {
+    const value = e.target.value;
+    setSellerName(value);  // ✅ 保存到 state
+    if (sellerNameErr) setSellerNameErr(validateSellerName(value));
+  }
+
+  function handlePriceChange(e) {
+    const value = e.target.value;
+    setPrice(value); 
+    if (priceErr) setPriceErr(validatePrice(value));
+  }
+
+  function handleCategoryChange(e) {
+    const value = e.target.value;
+    setCategory(value);  
+    setCategoryErr(validateRequiredSelect(value, 'category'));
+  }
+
+  function handleConditionChange(e) {
+    const value = e.target.value;
+    setCondition(value);  
+    setConditionErr(validateRequiredSelect(value, 'condition'));
+  }
+
   function handleTitleBlur(e) {
     setTitleErr(validateTitle(e.target.value));
     setFormVersion((v) => v + 1);
@@ -101,16 +139,18 @@ export default function AddListingPage() {
   }
 
   // Global form validation state — disables Submit when any required field fails validation
-  function isFormInvalid() {
-    // Read current DOM values to avoid storing duplicates in state
-    const form =
-      typeof document !== 'undefined' &&
-      document.getElementById('addListingForm');
-    const titleVal = form?.title?.value ?? '';
-    const sellerNameVal = form?.sellerName?.value ?? '';
-    const priceVal = form?.price?.value ?? '';
-    const categoryVal = form?.category?.value ?? '';
-    const conditionVal = form?.condition?.value ?? '';
+function isFormInvalid() {
+  // Read current DOM values to avoid storing duplicates in state
+  const hasAllFields = 
+      title.trim().length > 0 &&
+      sellerName.trim().length > 0 &&
+      price.trim().length > 0 &&
+      category.length > 0 &&
+      condition.length > 0 &&
+      selectedFiles.length > 0;
+  if (!hasAllFields) {
+    return true;
+  }
     void formVersion;
 
     return Boolean(
@@ -295,6 +335,34 @@ export default function AddListingPage() {
             
 
             <div className={styles.formGroup}>
+              <label htmlFor="price">Price ($)</label>
+              <input
+                id="price"
+                name="price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 20.00"
+                required
+                onBlur={handlePriceBlur}
+                onChange={handlePriceChange}
+              />
+              {priceErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {priceErr}
+                </p>
+              )}
+            </div>
+
+
+            <div className={styles.formGroup}>
               <label htmlFor="sellerName">Seller Name</label>
               <input
                 id="sellerName"
@@ -473,6 +541,7 @@ export default function AddListingPage() {
                 type="submit"
                 className={styles.submitBtn}
                 disabled={isFormInvalid()}
+                //disabled={false}
               >
                 Add Listing
               </button>
@@ -486,3 +555,4 @@ export default function AddListingPage() {
     </div>
   );
 }
+

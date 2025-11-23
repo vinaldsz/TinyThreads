@@ -1,5 +1,15 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
+jest.mock('next-auth/react', () => ({
+  SessionProvider: ({ children }) => <div data-testid="session-provider">{children}</div>,
+  useSession: jest.fn(() => ({
+    data: null,
+    status: 'unauthenticated',
+  })),
+}));
+
 import Providers from '@/components/Providers';
 
 describe('Providers component', () => {

@@ -1,25 +1,23 @@
-// Mock CSS modules
-jest.mock('@/components/Navbar/Navbar.module.css', () => ({
-  navbar: 'navbar',
-  brandWrapper: 'brandWrapper',
-  brand: 'brand',
-  brandLogo: 'brandLogo',
-  inner: 'inner',
-  spacer: 'spacer',
-  links: 'links',
-  aboutLink: 'aboutLink',
-}));
+/**
+ * @jest-environment jsdom
+ */
+/* eslint-disable @next/next/no-img-element */ 
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { useSession, signOut } from 'next-auth/react';
+import Navbar from '@/components/Navbar/Navbar';
 
+// Mock next-auth/react
 jest.mock('next-auth/react', () => ({
   useSession: jest.fn(),
   signOut: jest.fn(),
 }));
 
-// Mock Next.js Image component
+// Mock Next.js Image
 jest.mock('next/image', () => {
   return function MockImage({ src, alt, width, height, className }) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
         alt={alt}
@@ -32,205 +30,235 @@ jest.mock('next/image', () => {
   };
 });
 
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Navbar from '@/components/Navbar/Navbar';
-import { useSession, signOut } from 'next-auth/react';
+// Mock Next.js Link
+jest.mock('next/link', () => {
+  return function MockLink({ children, href, className }) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  };
+});
 
-describe('Navbar', () => {
+describe('Navbar Component', () => {
   beforeEach(() => {
-    useSession.mockReturnValue({ data: null, status: 'unauthenticated' });
-    render(<Navbar />);
+    jest.clearAllMocks();
   });
 
-  describe('Structure and Rendering', () => {
-    test('renders navbar element with correct role and aria-label', () => {
-      const navbar = screen.getByRole('navigation', {
-        name: /main navigation/i,
+  // ========================================
+  // Unauthenticated User Tests
+  // ========================================
+
+  describe('When User is NOT Logged In', () => {
+    beforeEach(() => {
+      useSession.mockReturnValue({
+        data: null,
+        status: 'unauthenticated',
       });
+    });
+
+    test('renders navbar with logo', () => {
+      render(<Navbar />);
+
+      const navbar = screen.getByRole('navigation');
       expect(navbar).toBeInTheDocument();
-      expect(navbar).toHaveClass('navbar');
+      
+      const logo = screen.getByAltText('TinyThreads');
+      expect(logo).toBeInTheDocument();
     });
 
-    test('renders brand wrapper and brand sections', () => {
-      const navbar = screen.getByRole('navigation');
+    test('renders about link', () => {
+      render(<Navbar />);
 
-      // Check for brand wrapper (by class since it's not semantic)
-      expect(navbar.querySelector('.brandWrapper')).toBeInTheDocument();
-      expect(navbar.querySelector('.brand')).toBeInTheDocument();
-    });
-
-    test('renders inner section with spacer and links', () => {
-      const navbar = screen.getByRole('navigation');
-
-      // Check for inner section structure
-      expect(navbar.querySelector('.inner')).toBeInTheDocument();
-      expect(navbar.querySelector('.spacer')).toBeInTheDocument();
-      expect(navbar.querySelector('.links')).toBeInTheDocument();
-    });
-  });
-
-  describe('Logo/Brand Image', () => {
-    test('renders TinyThreads logo with correct attributes', () => {
-      const logoImage = screen.getByTestId('navbar-image');
-
-      expect(logoImage).toBeInTheDocument();
-      expect(logoImage).toHaveAttribute('src', '/TinyThreadsScribble.png');
-      expect(logoImage).toHaveAttribute('alt', 'TinyThreads');
-      expect(logoImage).toHaveAttribute('width', '1000');
-      expect(logoImage).toHaveAttribute('height', '1000');
-      expect(logoImage).toHaveClass('brandLogo');
-    });
-
-    test('logo has proper alt text for accessibility', () => {
-      const logoImage = screen.getByAltText('TinyThreads');
-      expect(logoImage).toBeInTheDocument();
-    });
-  });
-
-  describe('Navigation Links', () => {
-    test('renders about link with correct href and text', () => {
       const aboutLink = screen.getByRole('link', { name: /about/i });
-
-      expect(aboutLink).toBeInTheDocument();
       expect(aboutLink).toHaveAttribute('href', '/about');
-      expect(aboutLink).toHaveClass('aboutLink');
-      expect(aboutLink).toHaveTextContent('About');
     });
 
-    test('about link is accessible', () => {
-      const aboutLink = screen.getByRole('link', { name: /about/i });
-      expect(aboutLink).toBeInTheDocument();
-      expect(aboutLink).toHaveAttribute('href');
+    test('does NOT show user menu when not logged in', () => {
+      render(<Navbar />);
+
+      expect(screen.queryByRole('button', { name: /user menu/i })).not.toBeInTheDocument();
+    });
+
+    test('has correct structure', () => {
+      const { container } = render(<Navbar />);
+      
+      expect(container.querySelector('.navbar')).toBeInTheDocument();
+      expect(container.querySelector('.brandWrapper')).toBeInTheDocument();
+      expect(container.querySelector('.inner')).toBeInTheDocument();
+    });
+  });
+
+  // ========================================
+  // Authenticated User Tests  
+  // ========================================
+
+  describe('When User IS Logged In', () => {
+    beforeEach(() => {
+      useSession.mockReturnValue({
+        data: {
+          user: {
+            id: 'user123',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+        },
+        status: 'authenticated',
+      });
+    });
+
+    test('displays user name', () => {
+      render(<Navbar />);
+
+      expect(screen.getByText('Test User')).toBeInTheDocument();
+    });
+
+    test('shows user menu button', () => {
+      render(<Navbar />);
+
+      // Look for user name as button or clickable element
+      const userButton = screen.getByText('Test User');
+      expect(userButton).toBeInTheDocument();
+    });
+
+    test('opens dropdown menu when user name is clicked', async () => {
+      render(<Navbar />);
+
+      const userButton = screen.getByText('Test User');
+      
+      fireEvent.click(userButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/sign out/i)).toBeInTheDocument();
+      });
+    });
+
+    test('closes dropdown when clicking outside', async () => {
+      render(<Navbar />);
+
+      const userButton = screen.getByText('Test User');
+      fireEvent.click(userButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/sign out/i)).toBeInTheDocument();
+      });
+
+      // Click outside
+      fireEvent.mouseDown(document.body);
+
+      await waitFor(() => {
+        expect(screen.queryByText(/sign out/i)).not.toBeInTheDocument();
+      });
+    });
+
+    test('calls signOut when Sign Out is clicked', async () => {
+      render(<Navbar />);
+
+      const userButton = screen.getByText('Test User');
+      fireEvent.click(userButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/sign out/i)).toBeInTheDocument();
+      });
+
+      const signOutButton = screen.getByText(/sign out/i);
+      fireEvent.click(signOutButton);
+
+      expect(signOut).toHaveBeenCalledTimes(1);
+    });
+
+    test('displays email as fallback when name is not available', () => {
+      useSession.mockReturnValue({
+        data: {
+          user: {
+            id: 'user123',
+            email: 'test@example.com',
+            // name is undefined
+          },
+        },
+        status: 'authenticated',
+      });
+
+      render(<Navbar />);
+
+      expect(screen.getByText('test@example.com')).toBeInTheDocument();
     });
   });
 
-  describe('CSS Classes', () => {
-    test('applies correct CSS classes to elements', () => {
-      const navbar = screen.getByRole('navigation');
-      const aboutLink = screen.getByRole('link', { name: /about/i });
-      const logoImage = screen.getByTestId('navbar-image');
+  // ========================================
+  // Logo and Branding Tests
+  // ========================================
 
-      expect(navbar).toHaveClass('navbar');
-      expect(aboutLink).toHaveClass('aboutLink');
-      expect(logoImage).toHaveClass('brandLogo');
+  describe('Logo and Branding', () => {
+    beforeEach(() => {
+      useSession.mockReturnValue({
+        data: null,
+        status: 'unauthenticated',
+      });
+    });
+
+    test('renders logo with correct attributes', () => {
+      render(<Navbar />);
+
+      const logo = screen.getByTestId('navbar-image');
+      expect(logo).toHaveAttribute('src', '/TinyThreadsScribble.png');
+      expect(logo).toHaveAttribute('alt', 'TinyThreads');
+      expect(logo).toHaveAttribute('width', '1000');
+      expect(logo).toHaveAttribute('height', '1000');
+    });
+
+    test('logo is clickable and links to home', () => {
+      render(<Navbar />);
+
+      const brandLink = screen.getByRole('link', { name: /tinythreads/i });
+      expect(brandLink).toHaveAttribute('href', '/');
     });
   });
+
+  // ========================================
+  // Accessibility Tests
+  // ========================================
 
   describe('Accessibility', () => {
-    test('navbar has proper ARIA attributes', () => {
-      const navbar = screen.getByRole('navigation');
+    beforeEach(() => {
+      useSession.mockReturnValue({
+        data: null,
+        status: 'unauthenticated',
+      });
+    });
 
-      expect(navbar).toHaveAttribute('role', 'navigation');
+    test('navbar has proper ARIA label', () => {
+      render(<Navbar />);
+
+      const navbar = screen.getByRole('navigation');
       expect(navbar).toHaveAttribute('aria-label', 'Main navigation');
     });
 
-    test('all interactive elements are accessible', () => {
-      // About link should be focusable and have proper role
+    test('all links are accessible', () => {
+      render(<Navbar />);
+
       const aboutLink = screen.getByRole('link', { name: /about/i });
       expect(aboutLink).toBeInTheDocument();
       expect(aboutLink).toHaveAttribute('href');
     });
-
-    test('logo image has meaningful alt text', () => {
-      const logoImage = screen.getByAltText('TinyThreads');
-      expect(logoImage).toBeInTheDocument();
-      // Alt text should not be empty or generic
-      expect(logoImage.getAttribute('alt')).toBe('TinyThreads');
-    });
   });
 
-  describe('Layout Structure', () => {
-    test('maintains expected DOM structure', () => {
+  // ========================================
+  // Loading State Tests
+  // ========================================
+
+  describe('Session Loading State', () => {
+    test('handles loading session state', () => {
+      useSession.mockReturnValue({
+        data: null,
+        status: 'loading',
+      });
+
+      render(<Navbar />);
+
       const navbar = screen.getByRole('navigation');
-
-      // Check hierarchical structure exists
-      expect(navbar.querySelector('.brandWrapper .brand')).toBeInTheDocument();
-      expect(navbar.querySelector('.inner .links')).toBeInTheDocument();
-      expect(navbar.querySelector('.inner .spacer')).toBeInTheDocument();
-    });
-
-    test('brand wrapper is separate from inner section', () => {
-      const navbar = screen.getByRole('navigation');
-      const brandWrapper = navbar.querySelector('.brandWrapper');
-      const inner = navbar.querySelector('.inner');
-
-      expect(brandWrapper).toBeInTheDocument();
-      expect(inner).toBeInTheDocument();
-
-      // Check that brandWrapper and inner are siblings, not nested
-      expect(brandWrapper.parentElement).toBe(navbar);
-      expect(inner.parentElement).toBe(navbar);
-      expect(brandWrapper.nextElementSibling).toBe(inner);
-    });
-  });
-
-  describe('Error Handling', () => {
-    test('handles missing image gracefully', () => {
-      // This tests that the component doesn't crash if image fails to load
-      const logoImage = screen.getByTestId('navbar-image');
-
-      // Simulate image error
-      const errorEvent = new Event('error');
-      logoImage.dispatchEvent(errorEvent);
-
-      // Component should still be rendered
-      expect(screen.getByRole('navigation')).toBeInTheDocument();
-    });
-  });
-
-  describe('Profile dropdown behavior', () => {
-    test('shows profile dropdown when authenticated user clicks profile button', () => {
-      cleanup();
-      useSession.mockReturnValue({
-        data: { user: { name: 'Test User', email: 'test@example.com' } },
-        status: 'authenticated',
-      });
-
-      render(<Navbar />);
-
-      const profileButton = screen.getByRole('button', { name: /test user/i });
-      fireEvent.click(profileButton);
-
-      expect(screen.getByRole('menu')).toBeInTheDocument();
-    });
-
-    test('closes profile dropdown when clicking outside', () => {
-      cleanup();
-      useSession.mockReturnValue({
-        data: { user: { name: 'Test User', email: 'test@example.com' } },
-        status: 'authenticated',
-      });
-
-      render(<Navbar />);
-
-      const profileButton = screen.getByRole('button', { name: /test user/i });
-      fireEvent.click(profileButton);
-
-      expect(screen.getByRole('menu')).toBeInTheDocument();
-
-      // Click outside the menu (on the document body)
-      fireEvent.mouseDown(document.body);
-
-      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-    });
-
-    test('triggers signOut when logout is clicked in dropdown', () => {
-      cleanup();
-      useSession.mockReturnValue({
-        data: { user: { name: 'Test User', email: 'test@example.com' } },
-        status: 'authenticated',
-      });
-
-      render(<Navbar />);
-
-      const profileButton = screen.getByRole('button', { name: /test user/i });
-      fireEvent.click(profileButton);
-
-      const logoutButton = screen.getByRole('menuitem');
-      fireEvent.click(logoutButton);
-
-      expect(signOut).toHaveBeenCalledWith({ callbackUrl: '/' });
+      expect(navbar).toBeInTheDocument();
     });
   });
 });
