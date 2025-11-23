@@ -8,7 +8,7 @@ import styles from './PurchaseModal.module.css';
 // const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 // Main PurchaseModal Component
-function PurchaseModal({ item, user, onClose, onSuccess, onError }) {
+function PurchaseModal({ item, onClose, onSuccess, onError }) {
   const [loading, setLoading] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [purchaseError, setPurchaseError] = useState(null);
@@ -40,14 +40,14 @@ function PurchaseModal({ item, user, onClose, onSuccess, onError }) {
 
       // Show success within modal
       setPurchaseSuccess(true);
-      
-      if (onSuccess) {
-        onSuccess({
-          item: item,
-          user: user
-        });
-      }
-      
+
+      //wait 2 seconds and then refresh the page
+      setTimeout(() => {
+        if (onSuccess){
+          onSuccess();
+        }
+      }, 2000);
+    
     } catch (error) {
       console.error('Purchase error:', error);
       setPurchaseError(error.message);

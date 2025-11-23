@@ -1,6 +1,6 @@
 'use client';
 // src/components/ItemDetail/ItemDetail.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getItemById } from '../../services/itemService';
 import styles from './ItemDetail.module.css';
@@ -17,23 +17,30 @@ export default function ItemDetail({ itemId }) {
   const { data: session } = useSession()
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
-  useEffect(() => {
-    const fetchItem = async () => {
-      try {
-        const data = await getItemById(itemId); // calls /api/items/:id
-        setItem(data);
-        setCurrentIndex(0);
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('ItemDetail loaded item:', data);
-        }
-      } catch (err) {
-        console.error('Error fetching item:', err);
-      } finally {
-        setLoading(false);
+
+  // reuse 
+  const fetchItem = useCallback(async () => {
+    try {
+      const data = await getItemById(itemId);
+      setItem(data);
+      setCurrentIndex(0);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('ItemDetail loaded item:', data);
       }
-    };
-    if (itemId) fetchItem();
+    } catch (err) {
+      console.error('Error fetching item:', err);
+    }
   }, [itemId]);
+
+  useEffect(() => {
+    const loadItem = async () => {
+      setLoading(true);     
+      await fetchItem();    
+      setLoading(false);     
+    };
+    
+    if (itemId) loadItem();
+  }, [itemId, fetchItem]);
 
   const handleBack = () => router.back();
 
@@ -54,6 +61,14 @@ export default function ItemDetail({ itemId }) {
   const handleLoginRedirect = () => {
     router.push('/login');
   };
+
+
+const handlePurchaseSuccess = async () => {
+  console.log('Purchase successful! Refreshing item data...');
+  setShowPurchaseModal(false);
+  await fetchItem();  
+  console.log('Item data refreshed. Status:', item?.status);
+};
 
 
   if (loading) {
@@ -297,6 +312,8 @@ export default function ItemDetail({ itemId }) {
           item={item}
           user={session?.user}
           onClose={() => setShowPurchaseModal(false)}
+          onSuccess={handlePurchaseSuccess} 
+
         />
       )}
 
