@@ -61,9 +61,6 @@ export default function ItemDetail({ itemId }) {
       const data = await getItemById(itemId);
       setItem(data);
       setCurrentIndex(0);
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('ItemDetail loaded item:', data);
-      }
     } catch (err) {
       console.error('Error fetching item:', err);
     }
@@ -79,6 +76,12 @@ export default function ItemDetail({ itemId }) {
     if (itemId) loadItem();
   }, [itemId, fetchItem]);
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && item) {
+      console.log('ItemDetail loaded item:', item);
+    }
+  }, [item]);
+
   const handleBack = () => router.back();
 
   const formatPrice = (p) => {
@@ -91,6 +94,11 @@ export default function ItemDetail({ itemId }) {
   const isAvailable = item?.status === 'available';
   const canPurchase = isLoggedIn && isAvailable;
 
+  // Ownership check: match listing.sellerId to session.user.id
+  const sellerId = item?.sellerId ? String(item.sellerId) : null;
+  const sessionUserId = session?.user?.id ? String(session.user.id) : null;
+  const isOwner = !!sellerId && !!sessionUserId && sellerId === sessionUserId;
+
   const handleBuyClick = () => {
     setShowPurchaseModal(true);
   };
@@ -100,10 +108,44 @@ export default function ItemDetail({ itemId }) {
   };
 
   const handlePurchaseSuccess = async () => {
-    console.log('Purchase successful! Refreshing item data...');
     setShowPurchaseModal(false);
     await fetchItem();
-    console.log('Item data refreshed. Status:', item?.status);
+  };
+
+  const handleEdit = () => {
+    if (!item?._id) return;
+    router.push(`/edit-listing/${item._id}`);
+  };
+
+  const handleDelete = async () => {
+    if (!item?._id) return;
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this listing? This action cannot be undone.',
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/api/items/${item._id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        let message = 'Failed to delete listing';
+        try {
+          const body = await res.json();
+          if (body?.error) message = body.error;
+        } catch (e) {}
+        throw new Error(message);
+      }
+
+      router.push('/');
+    } catch (err) {
+      console.error('Error deleting listing:', err);
+      alert(
+        'Something went wrong while deleting the listing. Please try again.',
+      );
+    }
   };
 
   if (loading) {
@@ -294,6 +336,25 @@ export default function ItemDetail({ itemId }) {
                   </div>
                 )}
               </div>
+
+              {isOwner && (
+                <div className={styles.ownerActions}>
+                  <button
+                    type="button"
+                    onClick={handleEdit}
+                    className={styles.editButton}
+                  >
+                    Edit listing
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    className={styles.deleteButton}
+                  >
+                    Delete listing
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Seller Information — commented out for this sprint */}

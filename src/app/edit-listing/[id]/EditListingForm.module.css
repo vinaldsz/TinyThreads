@@ -1,0 +1,94 @@
+/* Container */
+.formContainer {
+  max-width: 640px;
+  margin: 1.5rem auto 0;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #f1f3f5;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Field Wrapper */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Labels */
+.label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Inputs & Selects */
+.input,
+.select {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+/* Textarea */
+.textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  min-height: 90px;
+  outline: none;
+  resize: vertical;
+}
+
+/* Helper Text */
+.helpText {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Error Box */
+.errorBox {
+  color: #b91c1c;
+  background: #fee2e2;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #fecaca;
+}
+
+/* Submit Button */
+.submitBtn {
+  margin-top: 0.75rem;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid #f27b65;
+  background-color: #f27b65;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.submitBtn:hover {
+  background-color: #e7674d;
+  transform: translateY(-1px);
+}
+
+.submitBtn:disabled {
+  background-color: #f8a896;
+  cursor: wait;
+  transform: none;
+}

@@ -147,7 +147,6 @@ import '@testing-library/jest-dom';
 import AddListingPage from '@/app/add-listing/page';
 import { uploadListingAction } from '@/app/add-listing/actions';
 import { getServerSession } from 'next-auth/next';
-import * as nextAuth from 'next-auth';
 
 // ✅ Get references from global
 mockRedirect = global.mockRedirect;

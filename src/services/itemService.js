@@ -5,7 +5,9 @@ import { getFilterOptions } from '../types/item';
 
 // Base URL (works for Next.js App Router API routes). If you have a separate backend,
 // set NEXT_PUBLIC_API_BASE_URL to something like "https://api.tinythreads.app".
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (typeof window === 'undefined' ? 'http://localhost:3000' : '');
 
 async function apiFetch(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -44,11 +46,9 @@ function normalizeItem(i) {
     ageRange: i.ageRange ?? '',
     location: i.location ?? '',
     status: i.status ?? 'available',
-    // --- Commented out for current sprint ---
-    // sellerId: i.sellerId ?? '',
-    // sellerName: i.sellerName ?? '',
-    // createdAt: i.createdAt ?? null,
-    // Any seller or timestamp fields are ignored for now
+    sellerId: i.sellerId ?? '',
+    sellerName: i.sellerName ?? '',
+    createdAt: i.createdAt ?? null,
   };
 }
 
