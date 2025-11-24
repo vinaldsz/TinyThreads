@@ -126,16 +126,9 @@ export default function ItemDetail({ itemId }) {
     );
   }
 
-  // ADD DEBUG HERE:
-  console.log('=== ITEMDETAIL DEBUG ===');
-  console.log('ItemID from URL:', itemId);
-  console.log('Fetched item:', item);
-  console.log('Item _id:', item?._id);
-  console.log('Item id:', item?.id);
-  console.log('item.imageUrl:', item.imageUrl);
-  console.log('item.imageUrls:', item.imageUrls);
-  console.log('images array:', images);
-  console.log('========================');
+  const isDonation = Number(item.price) === 0;
+  const conditionKey = (item.condition || '').toLowerCase().replace(/\s/g, '');
+  const conditionClass = styles[conditionKey] || '';
 
   return (
     <>
@@ -232,46 +225,27 @@ export default function ItemDetail({ itemId }) {
             <div className={styles.productInfo}>
               <h1 className={styles.title}>{item.title}</h1>
 
-              <div className={styles.priceAndCondition}>
-                <span className={styles.price}>${formatPrice(item.price)}</span>
-                {(() => {
-                  const raw = (item.condition ?? '').toString().trim();
-                  const key = raw.toLowerCase().replace(/\s+/g, '');
-                  const hasVariantClass = key && styles[key];
-                  return (
-                    <span
-                      className={`${styles.condition} ${
-                        hasVariantClass ? styles[key] : ''
-                      }`}
-                    >
-                      {raw || '—'}
-                    </span>
-                  );
-                })()}
+              <div className={styles.metaRow}>
+                {isDonation && (
+                  <span
+                    className={`${styles.metaTag} ${styles.metaTagDonation}`}
+                  >
+                    Donation · Free
+                  </span>
+                )}
+                {item.condition && (
+                  <span
+                    className={`${styles.metaTag} ${styles.condition} ${conditionClass}`}
+                  >
+                    Condition: {item.condition}
+                  </span>
+                )}
               </div>
 
-              {/* NEW: Purchase Button Section */}
-              <div className={styles.purchaseSection}>
-                {canPurchase && (
-                  <button onClick={handleBuyClick} className={styles.buyButton}>
-                    Buy Now
-                  </button>
-                )}
-
-                {!isLoggedIn && isAvailable && (
-                  <button
-                    onClick={handleLoginRedirect}
-                    className={styles.loginButton}
-                  >
-                    Sign in to purchase
-                  </button>
-                )}
-
-                {!isAvailable && (
-                  <div className={styles.soldNotice}>
-                    This item has been sold
-                  </div>
-                )}
+              <div className={styles.priceRow}>
+                <span className={styles.price}>
+                  {`$${formatPrice(item.price)}`}
+                </span>
               </div>
 
               <div className={styles.basicInfo}>
@@ -295,6 +269,30 @@ export default function ItemDetail({ itemId }) {
               <div className={styles.description}>
                 <h3>Description</h3>
                 <p>{item.description || '—'}</p>
+              </div>
+
+              {/* Purchase Section moved below Description */}
+              <div className={styles.purchaseSection}>
+                {canPurchase && (
+                  <button onClick={handleBuyClick} className={styles.buyButton}>
+                    Buy Now
+                  </button>
+                )}
+
+                {!isLoggedIn && isAvailable && (
+                  <button
+                    onClick={handleLoginRedirect}
+                    className={styles.loginButton}
+                  >
+                    Sign in to purchase
+                  </button>
+                )}
+
+                {!isAvailable && (
+                  <div className={styles.soldNotice}>
+                    This item has been sold
+                  </div>
+                )}
               </div>
             </div>
 

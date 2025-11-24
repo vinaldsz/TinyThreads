@@ -27,6 +27,8 @@ export async function uploadListingAction(formData) {
     const category = formData.get('category');
     const condition = formData.get('condition');
     const price = formData.get('price');
+    const donationRaw = formData.get('donation');
+    const isDonation = donationRaw === 'on' || donationRaw === 'true';
     const size = formData.get('size');
     const ageRange = formData.get('ageRange');
     const location = formData.get('location');
@@ -79,18 +81,25 @@ export async function uploadListingAction(formData) {
     }
     console.log('✅ Condition valid');
 
-    console.log('\nStep 7: Validating price...');
-    const pRaw = String(price ?? '').trim();
-    const pNum = Number(pRaw);
-    if (!pRaw || !Number.isFinite(pNum) || pNum < 0) {
-      console.log('❌ Invalid price:', price);
-      redirect('/add-listing?err=invalid_price');
+    let finalPriceRaw = String(price ?? '').trim();
+    if (isDonation) {
+      finalPriceRaw = '0';
     }
-    if (!/^\d+(?:\.\d{1,2})?$/.test(pRaw)) {
-      console.log('❌ Invalid price precision:', price);
-      redirect('/add-listing?err=invalid_price_precision');
+
+    const finalPriceNum = Number(finalPriceRaw);
+
+    if (!isDonation) {
+      if (
+        !finalPriceRaw ||
+        !Number.isFinite(finalPriceNum) ||
+        finalPriceNum < 0
+      ) {
+        redirect('/add-listing?err=invalid_price');
+      }
+      if (!/^\d+(?:\.\d{1,2})?$/.test(finalPriceRaw)) {
+        redirect('/add-listing?err=invalid_price_precision');
+      }
     }
-    console.log('✅ Price valid:', pNum);
 
     console.log('\nStep 8: Processing files...');
     const rawFiles =
@@ -143,7 +152,7 @@ export async function uploadListingAction(formData) {
     console.log('\nStep 11: Creating document...');
     const doc = {
       title: String(title),
-      price: Number(price),
+      price: isDonation ? 0 : Number(price),
       size: size ? String(size) : '',
       condition: String(condition),
       imageUrls,

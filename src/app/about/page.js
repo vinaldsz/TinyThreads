@@ -64,12 +64,19 @@ export default function AboutPage() {
       <Navbar />
       <div className={styles.aboutContainer}>
         <section className={styles.heroSection}>
-          <h1>About TinyThreads</h1>
+          <h1>
+            About <span className={styles.tiny}>Tiny</span>
+            <span className={styles.threads}>Threads</span>
+          </h1>
+          <p className={styles.heroTagline}>
+            A circular marketplace for pre-loved baby essentials.
+          </p>
           <h2>Our Story</h2>
           <p>
-            A warm community where parents share the joy of quality baby items,
-            giving each piece a new start while making parenting more affordable
-            and sustainable for everyone.
+            TinyThreads is a curated marketplace where parents can list and
+            discover pre-loved baby clothes and toys in under 60 seconds —
+            making parenting more affordable while keeping quality items in
+            circulation, not in landfills.
           </p>
         </section>
 
@@ -95,8 +102,9 @@ export default function AboutPage() {
         <section className={styles.helloSection}>
           <h2>Say Hello</h2>
           <p className={styles.helloText}>
-            We are just software engineers trying to make the parenting journey
-            a little easier and a lot more sustainable.
+            We are a small engineering-led team focused on making the parenting
+            journey a little easier, a lot more affordable, and meaningfully
+            more sustainable.
           </p>
         </section>
 

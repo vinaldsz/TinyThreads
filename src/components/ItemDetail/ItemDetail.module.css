@@ -13,7 +13,7 @@
 
 .backButton {
   background: #f27b65;
-  border: 1px solid #000000;
+  border: 1px solid #f27b65;
   color: #ffffff;
   padding: 10px 20px;
   border-radius: 8px;
@@ -22,11 +22,13 @@
   font-weight: 600;
   transition: all 0.2s ease;
   text-decoration: none;
+  display: inline-block;
 }
 
 .backButton:hover {
   background: #e7674d;
-  border-color: #000000;
+  border-color: #e7674d;
+  transform: translateY(-1px);
 }
 
 .content {
@@ -98,49 +100,10 @@
   line-height: 1.2;
 }
 
-.priceAndCondition {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
 .price {
   font-size: 2rem;
   font-weight: 700;
   color: #f27b65;
-}
-
-.condition {
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  /* Fallback styles so condition text is always visible */
-  background: #f2f2f2;
-  color: #222;
-}
-
-.condition.new {
-  background: #d4edda;
-  color: #155724;
-}
-
-.condition.likenew {
-  background: #cce5ff;
-  color: #0066cc;
-}
-
-.condition.good {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.condition.fair {
-  background: #f8d7da;
-  color: #721c24;
 }
 
 .basicInfo {
@@ -436,12 +399,6 @@
     font-size: 1.5rem;
   }
 
-  .priceAndCondition {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
   .contactButtons {
     flex-direction: column;
   }
@@ -462,6 +419,7 @@
 }
 
 .buyButton {
+  background-color: #4f46e5;
   background-color: #4f46e5;
   color: white;
   padding: 12px 24px;
@@ -507,4 +465,32 @@
   text-align: center;
   font-weight: 600;
   border: 1px solid #fecaca;
+}
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 5px 0;
+}
+
+.metaTag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #f1f3f5;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #495057;
+  border: 1px solid #dee2e6;
+}
+
+.metaTagDonation {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #c3e6cb;
+  font-weight: 600;
+}
+
+.priceRow {
+  margin: 5px 0 20px 0;
 }

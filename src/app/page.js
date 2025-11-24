@@ -51,9 +51,9 @@ export default function BrowsePage() {
 
   // calculate active filters count
   const getActiveFiltersCount = () => {
-    return Object.values(filters).filter(
-      (value) => value && value !== '' && value !== 'newest',
-    ).length;
+    const { sortBy, ...rest } = filters;
+    void sortBy;
+    return Object.values(rest).filter((value) => value && value !== '').length;
   };
 
   // get sort label

@@ -309,9 +309,12 @@ describe('ItemGrid Component', () => {
     });
 
     test('handles load more error gracefully', async () => {
-      const failingLoadMore = jest.fn(() =>
-        Promise.reject(new Error('Load failed')),
-      );
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const failingLoadMore = jest.fn(() => {
+        throw new Error('Load failed');
+      });
 
       render(
         <ItemGrid
@@ -322,11 +325,7 @@ describe('ItemGrid Component', () => {
       );
 
       const loadMoreButton = screen.getByText('Load More Items');
-      await act(async () => {
-        fireEvent.click(loadMoreButton);
-        // allow pending microtasks triggered by the click handler
-        await Promise.resolve();
-      });
+      fireEvent.click(loadMoreButton);
 
       // Should reset loading state even after error
       await waitFor(() => {
@@ -335,6 +334,7 @@ describe('ItemGrid Component', () => {
 
       // Should not be loading anymore
       expect(screen.queryByText('Loading more...')).not.toBeInTheDocument();
+      consoleSpy.mockRestore();
     });
 
     test('does not call load more when hasMore is false', () => {
