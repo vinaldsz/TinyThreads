@@ -48,6 +48,7 @@ function normalizeItem(i) {
     status: i.status ?? 'available',
     sellerId: i.sellerId ?? '',
     sellerName: i.sellerName ?? '',
+    sellerEmail: i.sellerEmail ?? '',
     createdAt: i.createdAt ?? null,
   };
 }

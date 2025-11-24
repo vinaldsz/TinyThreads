@@ -15,7 +15,7 @@ export async function GET(_, ctx) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
 
     const { _id: oid, ...rest } = item;
-    return NextResponse.json({ item: { _id: oid?.toString(), ...rest } });
+    return NextResponse.json({ _id: oid?.toString(), ...rest });
   } catch (error) {
     console.error('Error fetching item:', error);
     return NextResponse.json(
