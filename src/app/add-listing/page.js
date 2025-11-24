@@ -14,7 +14,7 @@ import { uploadListingAction } from './actions';
 export default function AddListingPage() {
   const [fileErr, setFileErr] = useState('');
   const [titleErr, setTitleErr] = useState('');
-  const [sellerNameErr, setSellerNameErr] = useState('');
+  //const [sellerNameErr, setSellerNameErr] = useState('');
   const [priceErr, setPriceErr] = useState('');
   const [categoryErr, setCategoryErr] = useState('');
   const [conditionErr, setConditionErr] = useState('');
@@ -24,7 +24,6 @@ export default function AddListingPage() {
 
   // add state to track field values
   const [title, setTitle] = useState('');
-  const [sellerName, setSellerName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [condition, setCondition] = useState('');
@@ -34,12 +33,6 @@ export default function AddListingPage() {
     const v = (value || '').trim();
     if (v.length < 3 || v.length > 150)
       return 'Title must be 3–150 characters.';
-    return '';
-  }
-  function validateSellerName(value) {
-    const v = (value || '').trim();
-    if (v.length < 2 || v.length > 100)
-      return 'Seller name must be 2–100 characters.';
     return '';
   }
   function validatePrice(value) {
@@ -60,14 +53,8 @@ export default function AddListingPage() {
   // Field event handlers (validate on blur/change)
   function handleTitleChange(e) {
     const value = e.target.value;
-    setTitle(value); // ✅ 保存到 state
+    setTitle(value);
     if (titleErr) setTitleErr(validateTitle(value));
-  }
-
-  function handleSellerNameChange(e) {
-    const value = e.target.value;
-    setSellerName(value); // ✅ 保存到 state
-    if (sellerNameErr) setSellerNameErr(validateSellerName(value));
   }
 
   function handlePriceChange(e) {
@@ -92,9 +79,7 @@ export default function AddListingPage() {
     setTitleErr(validateTitle(e.target.value));
   }
 
-  function handleSellerNameBlur(e) {
-    setSellerNameErr(validateSellerName(e.target.value));
-  }
+  // Seller name is provided by server-side session; client-side blur handler removed.
 
   function handlePriceBlur(e) {
     setPriceErr(validatePrice(e.target.value));
@@ -105,7 +90,7 @@ export default function AddListingPage() {
     // Read current DOM values to avoid storing duplicates in state
     const hasAllFields =
       title.trim().length > 0 &&
-      sellerName.trim().length > 0 &&
+      //sellerName.trim().length > 0 &&
       price.trim().length > 0 &&
       category.length > 0 &&
       condition.length > 0 &&
@@ -117,7 +102,7 @@ export default function AddListingPage() {
     return Boolean(
       fileErr ||
         validateTitle(title) ||
-        validateSellerName(sellerName) ||
+        //validateSellerName(sellerName) ||
         validatePrice(price) ||
         validateRequiredSelect(category, 'category') ||
         validateRequiredSelect(condition, 'condition'),
@@ -376,31 +361,6 @@ export default function AddListingPage() {
                   }}
                 >
                   {priceErr}
-                </p>
-              )}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="sellerName">Seller Name</label>
-              <input
-                id="sellerName"
-                name="sellerName"
-                type="text"
-                placeholder="e.g., Alice Johnson"
-                onBlur={handleSellerNameBlur}
-                onChange={handleSellerNameChange}
-                required
-              />
-              {sellerNameErr && (
-                <p
-                  role="alert"
-                  style={{
-                    color: '#c62828',
-                    marginTop: '6px',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {sellerNameErr}
                 </p>
               )}
             </div>

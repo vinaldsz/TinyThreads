@@ -7,22 +7,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/route';
 
 export async function uploadListingAction(formData) {
-  console.log('\n=== UPLOAD LISTING ACTION STARTED ===');
-
   try {
     // Get the logged-in user
-    console.log('Step 1: Getting session...');
     const session = await getServerSession(authOptions);
-    console.log('Session:', JSON.stringify(session, null, 2));
 
-    // Check if the user is logged in
-    if (!session?.user?.id) {
-      console.log('❌ No session - redirecting to login');
-      redirect('/login');
-    }
-    console.log('✅ User logged in:', session.user.id);
+    // If not logged in, redirect to login (Next.js will control-flow via exception)
+    if (!session?.user?.id) redirect('/login');
 
-    console.log('\nStep 2: Extracting form data...');
+    // Extract form values (we ignore client-provided sellerName for storage)
     const title = formData.get('title');
     const category = formData.get('category');
     const condition = formData.get('condition');
@@ -30,117 +22,76 @@ export async function uploadListingAction(formData) {
     const size = formData.get('size');
     const ageRange = formData.get('ageRange');
     const location = formData.get('location');
-    const sellerName = formData.get('sellerName');
-    const status = 'available';
     const description = formData.get('description');
 
-    console.log('Form data:', {
-      title,
-      category,
-      condition,
-      price,
-      size,
-      ageRange,
-      location,
-      sellerName,
-      description,
-    });
-
     // Server-side validations
-    console.log('\nStep 3: Validating title...');
     const t = (title || '').trim();
-    if (!t || t.length < 3 || t.length > 150) {
-      console.log('❌ Invalid title');
+    if (!t || t.length < 3 || t.length > 150)
       redirect('/add-listing?err=invalid_title');
-    }
-    console.log('✅ Title valid');
 
-    console.log('\nStep 4: Validating seller name...');
-    const sName = (sellerName || '').trim();
-    if (!sName || sName.length < 2 || sName.length > 100) {
-      console.log('❌ Invalid seller name:', sName);
+    const sName = (session?.user?.name || '').trim();
+    if (!sName || sName.length < 2 || sName.length > 100)
       redirect('/add-listing?err=invalid_seller');
-    }
-    console.log('✅ Seller name valid:', sName);
 
-    console.log('\nStep 5: Validating category...');
     const allowedCategories = ['clothing', 'toys', 'books', 'gear'];
-    if (!allowedCategories.includes(String(category || ''))) {
-      console.log('❌ Invalid category:', category);
+    if (!allowedCategories.includes(String(category || '')))
       redirect('/add-listing?err=invalid_category');
-    }
-    console.log('✅ Category valid');
 
-    console.log('\nStep 6: Validating condition...');
     const allowedConditions = ['new', 'like-new', 'good', 'fair'];
-    if (!allowedConditions.includes(String(condition || ''))) {
-      console.log('❌ Invalid condition:', condition);
+    if (!allowedConditions.includes(String(condition || '')))
       redirect('/add-listing?err=invalid_condition');
-    }
-    console.log('✅ Condition valid');
 
-    console.log('\nStep 7: Validating price...');
     const pRaw = String(price ?? '').trim();
     const pNum = Number(pRaw);
-    if (!pRaw || !Number.isFinite(pNum) || pNum < 0) {
-      console.log('❌ Invalid price:', price);
+    if (!pRaw || !Number.isFinite(pNum) || pNum < 0)
       redirect('/add-listing?err=invalid_price');
-    }
-    if (!/^\d+(?:\.\d{1,2})?$/.test(pRaw)) {
-      console.log('❌ Invalid price precision:', price);
+    if (!/^\d+(?:\.\d{1,2})?$/.test(pRaw))
       redirect('/add-listing?err=invalid_price_precision');
-    }
-    console.log('✅ Price valid:', pNum);
 
-    console.log('\nStep 8: Processing files...');
     const rawFiles =
       typeof formData.getAll === 'function'
         ? formData.getAll('image')
         : [formData.get('image')];
-
     const files = rawFiles.filter(Boolean);
-    console.log('Files found:', files.length);
-
-    if (!files.length) {
-      console.log('❌ No files');
-      redirect('/add-listing?err=missing_file');
-    }
+    if (!files.length) redirect('/add-listing?err=missing_file');
 
     const MAX_BYTES = 5 * 1024 * 1024;
     for (const file of files) {
-      if (typeof file === 'string' || !file.arrayBuffer) {
-        console.log('❌ Invalid file format');
+      if (typeof file === 'string' || !file.arrayBuffer)
         redirect('/add-listing?err=missing_file');
-      }
-      if (typeof file.size === 'number' && file.size > MAX_BYTES) {
-        console.log('❌ File too large:', file.size);
+      if (typeof file.size === 'number' && file.size > MAX_BYTES)
         redirect('/add-listing?err=file_too_large');
-      }
-      if (file.type && !String(file.type).startsWith('image/')) {
-        console.log('❌ Invalid file type:', file.type);
+      if (file.type && !String(file.type).startsWith('image/'))
         redirect('/add-listing?err=bad_type');
-      }
     }
-    console.log('✅ Files validated');
 
-    console.log('\nStep 9: Uploading to S3...');
+    // Upload files to S3
     const imageUrls = [];
     for (const file of files) {
-      console.log('  Uploading file:', file.name);
       const { imageUrl } = await uploadImageToS3(file, {
         folder: 'items',
         filenamePrefix: 'item',
       });
       imageUrls.push(imageUrl);
-      console.log('  ✅ Uploaded:', imageUrl);
     }
 
-    console.log('\nStep 10: Connecting to database...');
+    // Persist listing
     const { getDb } = await import('@/lib/mongodb');
     const db = await getDb();
-    console.log('✅ Database connected');
+    // Lookup user to fetch email for the listing
+    let sellerEmail = '';
+    try {
+      const usersColl = db.collection('users');
+      const uid = ObjectId.isValid(session.user.id)
+        ? new ObjectId(session.user.id)
+        : session.user.id;
+      const user = await usersColl.findOne({ _id: uid });
+      if (user && user.email) sellerEmail = String(user.email);
+    } catch (e) {
+      // don't block listing creation if user lookup fails; log and continue
+      console.error('Failed to lookup seller email:', e);
+    }
 
-    console.log('\nStep 11: Creating document...');
     const doc = {
       title: String(title),
       price: Number(price),
@@ -148,27 +99,28 @@ export async function uploadListingAction(formData) {
       condition: String(condition),
       imageUrls,
       description: description ? String(description) : '',
+      // store authoritative seller name from session
       sellerName: String(sName),
+      // store seller email fetched from users collection (if available)
+      sellerEmail: sellerEmail,
       category: String(category),
       ageRange: ageRange ? String(ageRange) : '',
       location: location ? String(location) : '',
-      status,
+      status: 'available',
       createdAt: new Date(),
       sellerId: new ObjectId(session.user.id),
     };
 
-    console.log('Document:', JSON.stringify(doc, null, 2));
+    await db.collection('Listings').insertOne(doc);
 
-    console.log('\nStep 12: Inserting into database...');
-    const result = await db.collection('Listings').insertOne(doc);
-    console.log('✅ Inserted! ID:', result.insertedId);
-
-    console.log('\nStep 13: Redirecting to home...');
+    // On success redirect to home
     redirect('/');
   } catch (error) {
-    console.error('\n❌ ERROR in uploadListingAction:');
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
+    // Let Next.js handle redirect control-flow without logging it as an error
+    if (error && String(error?.message) === 'NEXT_REDIRECT') throw error;
+
+    // Log other errors and rethrow
+    console.error('❌ ERROR in uploadListingAction:', error);
     throw error;
   }
 }
