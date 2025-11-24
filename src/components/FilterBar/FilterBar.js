@@ -8,9 +8,7 @@ export default function FilterBar({
   onFiltersChange,
   onClearFilters,
   initialFilters = {},
-  itemCount = 0,
   activeFiltersCount = 0,
-  sortLabel = 'Newest First',
 }) {
   const [filters, setFilters] = useState({
     category: initialFilters.category || '',
@@ -116,17 +114,6 @@ export default function FilterBar({
     return `Filters (${activeFiltersCount})`;
   };
 
-  //generate result description text
-  const getResultsText = () => {
-    if (itemCount <= 0) {
-      return 'No results found';
-    }
-    if (itemCount === 1) {
-      return `1 result · ${sortLabel}`;
-    }
-    return `${itemCount} results · ${sortLabel}`;
-  };
-
   return (
     <div className={styles.filterContainer}>
       {/* Search Bar */}
@@ -134,25 +121,24 @@ export default function FilterBar({
         <div className={styles.searchInputContainer}>
           <input
             type="text"
-            placeholder="Search baby items..."
+            placeholder="Search Baby Items..."
             className={styles.searchInput}
             value={filters.searchTerm}
             onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
             onKeyPress={handleKeyPress}
           />
-          <button
-            className={styles.searchButton}
-            onClick={handleSearch}
-            aria-label="Search"
-          >
-            <span className={styles.searchIcon}>🔍</span>
-          </button>
         </div>
       </div>
 
       {/* Filter Controls Row */}
       <div className={styles.controlRow}>
         <div className={styles.controlLeft}>
+          <Link href="/add-listing" className={styles.addListingBtn}>
+            ＋ Add listing
+          </Link>
+        </div>
+
+        <div className={styles.controlRight}>
           <button
             className={`${styles.filtersButton} ${
               activeFiltersCount > 0 ? styles.filtersActive : ''
@@ -169,10 +155,6 @@ export default function FilterBar({
               Clear
             </button>
           )}
-        </div>
-
-        <div className={styles.controlRight}>
-          <span className={styles.resultsText}>{getResultsText()}</span>
 
           <select
             className={styles.sortSelect}
@@ -233,13 +215,6 @@ export default function FilterBar({
           </div>
         </div>
       )}
-
-      {/* Persistent Add Listing CTA */}
-      <div className={styles.addListingRow}>
-        <Link href="/add-listing" className={styles.addListingBtn}>
-          ＋ Add listing
-        </Link>
-      </div>
     </div>
   );
 }

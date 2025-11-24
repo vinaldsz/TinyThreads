@@ -18,6 +18,9 @@ export default function AddListingPage() {
   const [priceErr, setPriceErr] = useState('');
   const [categoryErr, setCategoryErr] = useState('');
   const [conditionErr, setConditionErr] = useState('');
+  const [isDonation, setIsDonation] = useState(false);
+
+  const [formVersion, setFormVersion] = useState(0);
 
   const [fileInputs, setFileInputs] = useState([0]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -45,6 +48,21 @@ export default function AddListingPage() {
     if (!/^\d+(?:\.\d{1,2})?$/.test(v)) return 'Use up to 2 decimal places.';
     return '';
   }
+  function handleDonationToggle(e) {
+    const checked = e.target.checked;
+    setIsDonation(checked);
+
+    if (checked) {
+      // When marked as donation, lock price to 0
+      setPrice('0');
+      setPriceErr('');
+    } else {
+      // When unchecking donation, clear price so user can enter a value
+      setPrice('');
+    }
+
+    setFormVersion((v) => v + 1);
+  }
   function validateRequiredSelect(value, label) {
     if (!value) return `Please select a ${label}.`;
     return '';
@@ -60,52 +78,68 @@ export default function AddListingPage() {
   function handlePriceChange(e) {
     const value = e.target.value;
     setPrice(value);
+    setFormVersion((v) => v + 1);
     if (priceErr) setPriceErr(validatePrice(value));
   }
 
   function handleCategoryChange(e) {
     const value = e.target.value;
     setCategory(value);
+    setFormVersion((v) => v + 1);
     setCategoryErr(validateRequiredSelect(value, 'category'));
   }
 
   function handleConditionChange(e) {
     const value = e.target.value;
     setCondition(value);
+    setFormVersion((v) => v + 1);
     setConditionErr(validateRequiredSelect(value, 'condition'));
   }
 
   function handleTitleBlur(e) {
     setTitleErr(validateTitle(e.target.value));
+    setFormVersion((v) => v + 1);
   }
 
   // Seller name is provided by server-side session; client-side blur handler removed.
 
   function handlePriceBlur(e) {
     setPriceErr(validatePrice(e.target.value));
+    setFormVersion((v) => v + 1);
   }
 
   // Global form validation state — disables Submit when any required field fails validation
   function isFormInvalid() {
-    // Read current DOM values to avoid storing duplicates in state
+    // Use current state values
+    const titleVal = title.trim();
+    const priceVal = price.trim();
+    const categoryVal = category;
+    const conditionVal = condition;
+
     const hasAllFields =
       title.trim().length > 0 &&
-      //sellerName.trim().length > 0 &&
-      price.trim().length > 0 &&
       category.length > 0 &&
       condition.length > 0 &&
+      titleVal.length > 0 &&
+      priceVal.length > 0 &&
+      categoryVal.length > 0 &&
+      conditionVal.length > 0 &&
       selectedFiles.length > 0;
+
     if (!hasAllFields) {
       return true;
     }
 
+    // touch formVersion so React knows this depends on validation-triggering changes
+    void formVersion;
+
     return Boolean(
-      fileErr ||
-        validateTitle(title) ||
-        //validateSellerName(sellerName) ||
-        validatePrice(price) ||
-        validateRequiredSelect(category, 'category') ||
-        validateRequiredSelect(condition, 'condition'),
+      validateTitle(titleVal) ||
+        //validateSellerName(sellerNameVal) ||
+        validatePrice(priceVal) ||
+        validateRequiredSelect(categoryVal, 'category') ||
+        validateRequiredSelect(conditionVal, 'condition') ||
+        selectedFiles.length === 0,
     );
   }
 
@@ -118,6 +152,7 @@ export default function AddListingPage() {
       // Remove any files previously selected for this input
       setSelectedFiles((prev) => prev.filter((f) => f.inputId !== inputId));
       setFileErr('');
+      setFormVersion((v) => v + 1);
       return;
     }
 
@@ -147,13 +182,10 @@ export default function AddListingPage() {
       }));
       return [...withoutThisInput, ...newEntries];
     });
+    setFormVersion((v) => v + 1);
   }
 
-  function handleFileBlur() {
-    if (selectedFiles.length === 0) {
-      setFileErr('Please upload at least one image.');
-    }
-  }
+  function handleFileBlur() {}
 
   function handleAddMoreFiles() {
     setFileInputs((prev) => {
@@ -280,6 +312,84 @@ export default function AddListingPage() {
             </div>
 
             <div className={styles.formGroup}>
+              <label htmlFor="condition">Condition</label>
+              <select
+                id="condition"
+                name="condition"
+                required
+                onChange={handleConditionChange}
+              >
+                <option value="">Select condition</option>
+                <option value="new">New</option>
+                <option value="like-new">Like New</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+              </select>
+              {conditionErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {conditionErr}
+                </p>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="donation">
+                <input
+                  id="donation"
+                  name="donation"
+                  type="checkbox"
+                  onChange={handleDonationToggle}
+                />
+                &nbsp;Mark as Donation (Price becomes $0)
+              </label>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="price">Price ($)</label>
+              <input
+                id="price"
+                name="price"
+                disabled={isDonation}
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 20.00"
+                required
+                value={price}
+                onBlur={handlePriceBlur}
+                onChange={handlePriceChange}
+              />
+              {priceErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {priceErr}
+                </p>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="description">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                placeholder="Add a short description of the item..."
+                rows="4"
+              ></textarea>
+            </div>
+            <div className={styles.formGroup}>
               <label htmlFor="image">Upload Files</label>
 
               {fileInputs.map((id, index) => (
@@ -323,9 +433,22 @@ export default function AddListingPage() {
                 </div>
               )}
 
-              {fileErr && (
+              {selectedFiles.length === 0 && (
                 <p
                   id="imageError"
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  Please upload at least one image.
+                </p>
+              )}
+
+              {fileErr && (
+                <p
                   role="alert"
                   style={{
                     color: '#c62828',
@@ -336,71 +459,6 @@ export default function AddListingPage() {
                   {fileErr}
                 </p>
               )}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="price">Price ($)</label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 20.00"
-                required
-                onBlur={handlePriceBlur}
-                onChange={handlePriceChange}
-              />
-              {priceErr && (
-                <p
-                  role="alert"
-                  style={{
-                    color: '#c62828',
-                    marginTop: '6px',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {priceErr}
-                </p>
-              )}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="condition">Condition</label>
-              <select
-                id="condition"
-                name="condition"
-                required
-                onChange={handleConditionChange}
-              >
-                <option value="">Select condition</option>
-                <option value="new">New</option>
-                <option value="like-new">Like New</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-              </select>
-              {conditionErr && (
-                <p
-                  role="alert"
-                  style={{
-                    color: '#c62828',
-                    marginTop: '6px',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {conditionErr}
-                </p>
-              )}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="description">Description</label>
-              <textarea
-                id="description"
-                name="description"
-                placeholder="Add a short description of the item..."
-                rows="4"
-              ></textarea>
             </div>
 
             <div className={styles.actions}>

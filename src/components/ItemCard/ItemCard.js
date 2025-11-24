@@ -62,6 +62,14 @@ export default function ItemCard({ item }) {
     setImageLoaded(true);
   };
 
+  const prettifyCategory = (category) => {
+    if (!category) return '';
+    return String(category)
+      .split(' ')
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(' ');
+  };
+
   const getConditionClass = (condition) => {
     switch (condition) {
       case 'new':
@@ -98,16 +106,18 @@ export default function ItemCard({ item }) {
   };
 
   const getCategoryIcon = (category) => {
-    switch (category) {
-      case 'Clothing':
+    const value = (category || '').toLowerCase();
+
+    switch (value) {
+      case 'clothing':
         return '👕';
-      case 'Toys':
+      case 'toys':
         return '🧸';
-      case 'Books':
+      case 'books':
         return '📚';
-      case 'Gear':
+      case 'gear':
         return '🍼';
-      case 'Other':
+      case 'other':
         return '✨';
       default:
         return '🛍️';
@@ -115,8 +125,6 @@ export default function ItemCard({ item }) {
   };
 
   const handleItemClick = () => {
-    console.log('Navigating to:', `/items/${item.id}`);
-    console.log('Item ID:', item.id);
     router.push(`/Items/${item.id}`);
   };
 
@@ -193,7 +201,9 @@ export default function ItemCard({ item }) {
 
         {/* Price Badge */}
         <div className={styles.priceBadge}>
-          <span className={styles.priceText}>${item.price}</span>
+          <span className={styles.priceText}>
+            {item.price === 0 ? 'Free' : `$${item.price}`}
+          </span>
         </div>
 
         {/* Condition Badge */}
@@ -212,7 +222,7 @@ export default function ItemCard({ item }) {
             <span className={styles.categoryIconSmall}>
               {getCategoryIcon(item.category)}
             </span>
-            {item.category}
+            {prettifyCategory(item.category)}
           </span>
           <span className={styles.ageRange}>{item.ageRange}</span>
         </div>

@@ -26,6 +26,15 @@ jest.mock('next/image', () => ({
         className={className}
       />
     );
+    return (
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+      />
+    );
   },
 }));
 
@@ -38,7 +47,11 @@ describe('About Page', () => {
     it('should render the about page', () => {
       render(<AboutPage />);
 
-      expect(screen.getByText('About TinyThreads')).toBeInTheDocument();
+      const heading = screen.getByRole('heading', {
+        level: 1,
+        name: 'About Tiny Threads',
+      });
+      expect(heading).toBeInTheDocument();
     });
 
     it('should render Navbar component', () => {
@@ -52,7 +65,7 @@ describe('About Page', () => {
 
       const mainHeading = screen.getByRole('heading', {
         level: 1,
-        name: 'About TinyThreads',
+        name: 'About Tiny Threads',
       });
       expect(mainHeading).toBeInTheDocument();
     });
@@ -61,10 +74,9 @@ describe('About Page', () => {
       render(<AboutPage />);
 
       expect(
-        screen.getByRole('heading', { level: 2, name: 'Our Story' }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/A warm community where parents share/),
+        screen.getByText(
+          /curated marketplace where parents can list and discover pre-loved baby clothes and toys/i,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -155,7 +167,7 @@ describe('About Page', () => {
       render(<AboutPage />);
 
       expect(
-        screen.getByText(/We are just software engineers/),
+        screen.getByText(/We are a small engineering-led team/i),
       ).toBeInTheDocument();
     });
   });

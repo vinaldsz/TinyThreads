@@ -160,7 +160,7 @@ mockCollection = global.mockCollection;
 
 describe('Add Listing Page', () => {
   // Reset mocks before each test to ensure clean state
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
 
     // Setup default session for server actions
@@ -176,8 +176,14 @@ describe('Add Listing Page', () => {
     // next-auth/next import used directly in some modules
     getServerSession.mockResolvedValue(sessionValue);
     // ensure the getServerSession mock exported from 'next-auth' is also set
-    if (nextAuth && typeof nextAuth.getServerSession === 'function') {
-      nextAuth.getServerSession.mockResolvedValue(sessionValue);
+    // use dynamic import instead of require to satisfy lint rules
+    try {
+      const nextAuth = await import('next-auth').catch(() => null);
+      if (nextAuth && typeof nextAuth.getServerSession === 'function') {
+        nextAuth.getServerSession.mockResolvedValue(sessionValue);
+      }
+    } catch {
+      // ignore if import fails in this environment
     }
 
     // Reset mock implementations
