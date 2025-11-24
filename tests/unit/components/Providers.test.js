@@ -3,7 +3,9 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 jest.mock('next-auth/react', () => ({
-  SessionProvider: ({ children }) => <div data-testid="session-provider">{children}</div>,
+  SessionProvider: ({ children }) => (
+    <div data-testid="session-provider">{children}</div>
+  ),
   useSession: jest.fn(() => ({
     data: null,
     status: 'unauthenticated',

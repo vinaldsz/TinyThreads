@@ -239,7 +239,9 @@ describe('ItemDetail Component', () => {
       expect(screen.getByText(/Medium.*2-3 years/)).toBeInTheDocument();
       expect(screen.getByText('Clothing')).toBeInTheDocument();
       expect(screen.getByText('San Francisco')).toBeInTheDocument();
-      expect(screen.getByText('Test description for the item')).toBeInTheDocument();
+      expect(
+        screen.getByText('Test description for the item'),
+      ).toBeInTheDocument();
     });
 
     test('displays item image with correct attributes', async () => {
@@ -466,7 +468,9 @@ describe('ItemDetail Component', () => {
           'Meet in a public place like a library, coffee shop, or mall',
         ),
       ).toBeInTheDocument();
-      expect(screen.getByText('Bring a friend if possible')).toBeInTheDocument();
+      expect(
+        screen.getByText('Bring a friend if possible'),
+      ).toBeInTheDocument();
       expect(
         screen.getByText('Inspect items carefully before payment'),
       ).toBeInTheDocument();
@@ -525,12 +529,12 @@ describe('ItemDetail Component', () => {
   describe('Purchase Functionality - User Logged In', () => {
     beforeEach(() => {
       useSession.mockReturnValue({
-        data: { 
-          user: { 
-            id: 'user123', 
-            name: 'Test User', 
-            email: 'test@example.com' 
-          } 
+        data: {
+          user: {
+            id: 'user123',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
         },
         status: 'authenticated',
       });

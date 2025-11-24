@@ -30,7 +30,7 @@ function PurchaseModal({ item, onClose, onSuccess, onError }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           itemId: item._id,
-        })
+        }),
       });
 
       if (!response.ok) {
@@ -43,11 +43,10 @@ function PurchaseModal({ item, onClose, onSuccess, onError }) {
 
       //wait 2 seconds and then refresh the page
       setTimeout(() => {
-        if (onSuccess){
+        if (onSuccess) {
           onSuccess();
         }
       }, 2000);
-    
     } catch (error) {
       console.error('Purchase error:', error);
       setPurchaseError(error.message);
@@ -64,20 +63,24 @@ function PurchaseModal({ item, onClose, onSuccess, onError }) {
       <div className={styles.modal}>
         <div className={styles.header}>
           <h2>
-            {purchaseSuccess ? 'Purchase Confirmed!' : 
-             purchaseError ? 'Purchase Failed' : 
-             'Confirm Purchase'}
+            {purchaseSuccess
+              ? 'Purchase Confirmed!'
+              : purchaseError
+                ? 'Purchase Failed'
+                : 'Confirm Purchase'}
           </h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={styles.closeButton} onClick={onClose}>
+            ×
+          </button>
         </div>
-        
+
         <div className={styles.content}>
           {purchaseSuccess ? (
             // Success View
             <>
               <div className={styles.successIcon}>✅</div>
               <h3>Purchase confirmed!</h3>
-              
+
               <div className={styles.orderDetails}>
                 <div className={styles.orderRow}>
                   <span>Item:</span>
@@ -97,7 +100,13 @@ function PurchaseModal({ item, onClose, onSuccess, onError }) {
                 </div>
               </div>
 
-              <p style={{textAlign: 'center', color: '#666', marginBottom: '24px'}}>
+              <p
+                style={{
+                  textAlign: 'center',
+                  color: '#666',
+                  marginBottom: '24px',
+                }}
+              >
                 Contact the seller to arrange payment and pickup.
               </p>
 
@@ -110,16 +119,14 @@ function PurchaseModal({ item, onClose, onSuccess, onError }) {
             <>
               <div className={styles.errorIcon}>❌</div>
               <h3>Purchase Failed</h3>
-              
-              <div className={styles.errorMessage}>
-                {purchaseError}
-              </div>
+
+              <div className={styles.errorMessage}>{purchaseError}</div>
 
               <div className={styles.actions}>
                 <button onClick={onClose} className={styles.cancelButton}>
                   Close
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     setPurchaseError(null);
                     // This will show the confirmation view again
@@ -136,7 +143,11 @@ function PurchaseModal({ item, onClose, onSuccess, onError }) {
               {/* Item summary */}
               <div className={styles.itemSummary}>
                 <Image
-                  src={item.imageUrls?.[0] || item.imageUrl || '/placeholder-image.jpg'} 
+                  src={
+                    item.imageUrls?.[0] ||
+                    item.imageUrl ||
+                    '/placeholder-image.jpg'
+                  }
                   alt={item.title}
                   className={styles.itemImage}
                   width={120}
@@ -155,7 +166,7 @@ function PurchaseModal({ item, onClose, onSuccess, onError }) {
                 <button onClick={onClose} className={styles.cancelButton}>
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={handleConfirmPurchase}
                   disabled={loading}
                   className={styles.proceedButton}
