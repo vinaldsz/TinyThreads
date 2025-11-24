@@ -49,8 +49,8 @@ describe('GET /api/items/:id', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.item.title).toBe('Baby Onesie');
-    expect(data.item._id).toBe('68fbe7e1ce0dbad3aab9a0bf');
+    expect(data.title).toBe('Baby Onesie');
+    expect(data._id).toBe('68fbe7e1ce0dbad3aab9a0bf');
   });
 
   it('should return 404 if item not found', async () => {
