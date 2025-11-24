@@ -148,6 +148,12 @@ export default function ItemDetail({ itemId }) {
     }
   };
 
+  const handleContactSeller = () => {
+    if (item?.sellerEmail) {
+      window.location.href = `mailto:${item.sellerEmail}`;
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.loading}>
@@ -187,13 +193,16 @@ export default function ItemDetail({ itemId }) {
           <div className={styles.imageSection}>
             <div className={styles.mainImage}>
               {images.length > 0 ? (
-                <Image
-                  src={images[currentIndex]}
-                  alt={item.title}
-                  className={styles.productImage}
-                  width={400}
-                  height={400}
-                />
+                <div className={styles.imageFillWrapper}>
+                  <Image
+                    src={images[currentIndex]}
+                    alt={item.title}
+                    className={styles.productImage}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
               ) : (
                 <div className={styles.noImage}>No image available</div>
               )}
@@ -357,31 +366,60 @@ export default function ItemDetail({ itemId }) {
               )}
             </div>
 
-            {/* Seller Information — commented out for this sprint */}
-            {/*
+            {/* Seller Information */}
             <div className={styles.sellerSection}>
               <h3>Seller Information</h3>
               <div className={styles.sellerCard}>
                 <div className={styles.sellerHeader}>
-                  <div className={styles.sellerName}>{item.sellerName || 'Seller'}</div>
+                  <div className={styles.sellerName}>
+                    {item.sellerName || 'Seller'}
+                  </div>
                 </div>
                 <div className={styles.sellerMeta}>
-                  <span className={styles.location}>{item.location}</span>
+                  {item.sellerEmail && (
+                    <div className={styles.metaRow}>
+                      <strong>Email:</strong>
+                      <span>{item.sellerEmail}</span>
+                    </div>
+                  )}
                 </div>
 
-                {(item.status === 'available') && (item.sellerEmail || item.sellerPhone) && (
+                {item.status === 'available' && item.sellerEmail && (
                   <div className={styles.contactButtons}>
-                    {item.sellerEmail && (
-                      <button onClick={handleContactSeller} className={styles.emailButton}>📧 Email Seller</button>
-                    )}
-                    {item.sellerPhone && (
-                      <button onClick={handleCallSeller} className={styles.phoneButton}>📞 Call Seller</button>
-                    )}
+                    <button
+                      onClick={handleContactSeller}
+                      className={styles.emailButton}
+                    >
+                      <svg
+                        className={styles.emailIcon}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 7.5A2.5 2.5 0 015.5 5h13A2.5 2.5 0 0121 7.5v9A2.5 2.5 0 0118.5 19h-13A2.5 2.5 0 013 16.5v-9z"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M21 7.5l-9 6-9-6"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span className={styles.emailText}>
+                        <span className={styles.emailTitle}>Email Seller</span>
+                      </span>
+                    </button>
                   </div>
                 )}
               </div>
             </div>
-            */}
 
             <div className={styles.safetyNotice}>
               <h4>🛡️ Safety Tips</h4>

@@ -216,7 +216,7 @@ describe('Add Listing Page', () => {
       expect(screen.getByLabelText('Size')).toBeInTheDocument();
       expect(screen.getByLabelText('Age Range')).toBeInTheDocument();
       expect(screen.getByLabelText('Location')).toBeInTheDocument();
-      expect(screen.getByLabelText('Seller Name')).toBeInTheDocument();
+      expect(screen.queryByLabelText('Seller Name')).toBeNull();
       expect(screen.getByLabelText('Condition')).toBeInTheDocument();
       expect(screen.getByLabelText('Price ($)')).toBeInTheDocument();
       expect(screen.getByLabelText('Upload Files')).toBeInTheDocument();
@@ -334,9 +334,7 @@ describe('Add Listing Page', () => {
       expect(
         screen.getByPlaceholderText('City, State (e.g., Fremont, CA)'),
       ).toBeInTheDocument();
-      expect(
-        screen.getByPlaceholderText('e.g., Alice Johnson'),
-      ).toBeInTheDocument();
+      // Seller name input removed (server provides sellerName from session)
       expect(screen.getByPlaceholderText('e.g. 20.00')).toBeInTheDocument();
       expect(
         screen.getByPlaceholderText('Add a short description of the item...'),
@@ -422,7 +420,7 @@ describe('Add Listing Page', () => {
       const categorySelect = screen.getByLabelText('Category');
       const conditionSelect = screen.getByLabelText('Condition');
       const priceInput = screen.getByLabelText('Price ($)');
-      const sellerInput = screen.getByLabelText('Seller Name');
+      // Seller name input removed; server provides seller name from session
       const fileInput = screen.getByLabelText('Upload Files');
 
       // Fill out fields with valid values
@@ -436,8 +434,7 @@ describe('Add Listing Page', () => {
       fireEvent.blur(conditionSelect);
       fireEvent.change(priceInput, { target: { value: '10.00' } });
       fireEvent.blur(priceInput); // trigger any blur-based validation
-      fireEvent.change(sellerInput, { target: { value: 'Alice Seller' } });
-      fireEvent.blur(sellerInput);
+      // no-op: seller name handled server-side
 
       const okFile = new File([new ArrayBuffer(1024)], 'ok.jpg', {
         type: 'image/jpeg',
@@ -452,15 +449,7 @@ describe('Add Listing Page', () => {
     });
 
     // ==== CLIENT VALIDATION TESTS ====
-    test('shows seller name error on blur when too short', () => {
-      render(<AddListingPage />);
-      const sellerInput = screen.getByLabelText('Seller Name');
-      fireEvent.change(sellerInput, { target: { value: 'A' } });
-      fireEvent.blur(sellerInput);
-      expect(
-        screen.getByText('Seller name must be 2–100 characters.'),
-      ).toBeInTheDocument();
-    });
+    // Seller name is validated server-side from session; client-side validation test removed.
 
     test('price validation: rejects non-numeric and >2 decimals, accepts valid', () => {
       render(<AddListingPage />);
@@ -577,30 +566,47 @@ describe('Add Listing Page', () => {
         filenamePrefix: 'item',
       });
 
-      // Should insert into MongoDB
-      expect(mockCollection.insertOne).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Test Baby Onesie',
-          price: 19.99,
-          size: '6M',
-          condition: 'like-new',
-          imageUrls: ['https://bucket.s3.amazonaws.com/items/item-12345.jpg'],
-          description: 'Beautiful baby onesie',
-          sellerName: 'Test Seller',
-          category: 'clothing',
-          ageRange: '3-6 months',
-          location: 'Fremont, CA',
-          status: 'available',
-          createdAt: expect.any(Date),
-          sellerId: expect.any(Object),
-        }),
-      );
+      // Should insert into MongoDB — inspect the actual inserted document
+      expect(mockCollection.insertOne).toHaveBeenCalled();
+      const inserted = mockCollection.insertOne.mock.calls[0][0];
+      expect(inserted.title).toBe('Test Baby Onesie');
+      expect(inserted.price).toBe(19.99);
+      expect(inserted.size).toBe('6M');
+      expect(inserted.condition).toBe('like-new');
+      expect(inserted.imageUrls).toEqual([
+        'https://bucket.s3.amazonaws.com/items/item-12345.jpg',
+      ]);
+      expect(inserted.description).toBe('Beautiful baby onesie');
+      expect(inserted.sellerName).toBe('Test User');
+      expect(inserted.category).toBe('clothing');
+      expect(inserted.ageRange).toBe('3-6 months');
+      expect(inserted.location).toBe('Fremont, CA');
+      expect(inserted.status).toBe('available');
+      expect(inserted.createdAt).toBeInstanceOf(Date);
+      expect(String(inserted.sellerId)).toMatch(/^[a-f0-9]{24}$/i);
 
       // Should redirect to home
       expect(mockRedirect).toHaveBeenCalledWith('/');
     });
 
     test('redirects when sellerName is missing', async () => {
+      // Simulate a session where the user has no name set
+      const sessionMissingName = {
+        user: {
+          id: '507f1f77bcf86cd799439011',
+          name: null,
+          email: 'test@example.com',
+        },
+      };
+
+      getServerSession.mockResolvedValueOnce(sessionMissingName);
+      try {
+        const nextAuth = await import('next-auth');
+        if (nextAuth && typeof nextAuth.getServerSession === 'function') {
+          nextAuth.getServerSession.mockResolvedValueOnce(sessionMissingName);
+        }
+      } catch {}
+
       const formData = {
         get: jest.fn((key) => {
           const data = {
@@ -609,7 +615,7 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '10.00',
             image: mockFile,
-            sellerName: null,
+            sellerName: null, // client provided value should be ignored by server
           };
           return data[key] || null;
         }),
@@ -617,7 +623,7 @@ describe('Add Listing Page', () => {
       };
 
       await expect(uploadListingAction(formData)).rejects.toThrow(/Redirect/);
-      // Missing sellerName should trigger invalid_seller redirect
+      // Missing sellerName in session should trigger invalid_seller redirect
       expect(mockRedirect).toHaveBeenCalledWith(
         '/add-listing?err=invalid_seller',
       );
@@ -684,7 +690,8 @@ describe('Add Listing Page', () => {
           price: 15.5,
           size: 'Large',
           condition: 'fair',
-          sellerName: 'Seller 123',
+          // sellerName is supplied from session (server authoritative)
+          sellerName: 'Test User',
           category: 'books',
           ageRange: '2-3 years',
           location: 'San Jose, CA',
@@ -1013,10 +1020,7 @@ describe('Add Listing Page', () => {
         'name',
         'location',
       );
-      expect(screen.getByLabelText('Seller Name')).toHaveAttribute(
-        'name',
-        'sellerName',
-      );
+      // Seller name input removed from client; server uses session.user.name
       expect(screen.getByLabelText('Upload Files')).toHaveAttribute(
         'name',
         'image',
@@ -1077,7 +1081,7 @@ describe('Add Listing Page', () => {
       expect(screen.getByLabelText('Size')).toBeInTheDocument();
       expect(screen.getByLabelText('Age Range')).toBeInTheDocument();
       expect(screen.getByLabelText('Location')).toBeInTheDocument();
-      expect(screen.getByLabelText('Seller Name')).toBeInTheDocument();
+      // Seller name input removed (server provides it)
       expect(screen.getByLabelText('Condition')).toBeInTheDocument();
       expect(screen.getByLabelText('Price ($)')).toBeInTheDocument();
       expect(screen.getByLabelText('Upload Files')).toBeInTheDocument();
