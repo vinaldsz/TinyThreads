@@ -26,7 +26,9 @@ describe('ItemDetailPage', () => {
     const page = await ItemDetailPage(mockParams);
     const { container } = render(page);
 
-    expect(container.querySelector('[data-testid="item-detail"]')).toBeInTheDocument();
+    expect(
+      container.querySelector('[data-testid="item-detail"]'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Item ID: test-item-123')).toBeInTheDocument();
   });
 

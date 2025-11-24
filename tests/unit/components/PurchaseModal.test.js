@@ -2,7 +2,13 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PurchaseModal from '@/components/ItemDetail/PurchaseModal';
 
@@ -11,8 +17,15 @@ global.fetch = jest.fn();
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }) => {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} width={width} height={height} className={className} />;
+    return (
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+      />
+    );
   },
 }));
 
@@ -46,7 +59,7 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       expect(screen.getByText('Test Baby Clothes')).toBeInTheDocument();
@@ -59,7 +72,7 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       expect(screen.getByText(/Condition:/)).toBeInTheDocument();
@@ -74,12 +87,15 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       const image = screen.getByAltText('Test Baby Clothes');
       expect(image).toBeInTheDocument();
-      expect(image).toHaveAttribute('src', 'https://example.com/test-image.jpg');
+      expect(image).toHaveAttribute(
+        'src',
+        'https://example.com/test-image.jpg',
+      );
     });
 
     it('should render action buttons', () => {
@@ -88,11 +104,15 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
-      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Confirm Purchase/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Cancel' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Confirm Purchase/i }),
+      ).toBeInTheDocument();
       expect(screen.getByRole('button', { name: '×' })).toBeInTheDocument();
     });
   });
@@ -108,7 +128,7 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
@@ -121,7 +141,7 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByRole('button', { name: '×' }));
@@ -134,7 +154,7 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       fireEvent.click(container.firstChild);
@@ -155,15 +175,19 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Confirming/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /Confirming/i }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -175,10 +199,12 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
-      const confirmButton = screen.getByRole('button', { name: /Confirm Purchase/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /Confirm Purchase/i,
+      });
 
       await act(async () => {
         fireEvent.click(confirmButton);
@@ -200,11 +226,13 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -213,7 +241,7 @@ describe('PurchaseModal Component', () => {
           expect.objectContaining({
             method: 'POST',
             body: JSON.stringify({ itemId: 'test-item-123' }),
-          })
+          }),
         );
       });
     });
@@ -229,17 +257,21 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
         expect(screen.getByText('✅')).toBeInTheDocument();
       });
-      expect(screen.getAllByText(/Purchase confirmed!/i).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText(/Purchase confirmed!/i).length,
+      ).toBeGreaterThan(0);
     });
 
     it('should show Done button after success', async () => {
@@ -253,15 +285,19 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Done' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Done' }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -278,11 +314,13 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -317,11 +355,13 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -342,11 +382,13 @@ describe('PurchaseModal Component', () => {
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
           onError={mockOnError}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -365,11 +407,13 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -390,16 +434,22 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Try Again' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Try Again' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Close' }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -414,11 +464,13 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -430,7 +482,9 @@ describe('PurchaseModal Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Confirm Purchase/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        ).toBeInTheDocument();
         expect(screen.queryByText('❌')).not.toBeInTheDocument();
       });
     });
@@ -443,11 +497,13 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -473,11 +529,14 @@ describe('PurchaseModal Component', () => {
           item={itemWithoutImage}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       const image = screen.getByAltText('Test Baby Clothes');
-      expect(image).toHaveAttribute('src', expect.stringContaining('placeholder'));
+      expect(image).toHaveAttribute(
+        'src',
+        expect.stringContaining('placeholder'),
+      );
     });
 
     it('should work without onError callback', async () => {
@@ -491,11 +550,13 @@ describe('PurchaseModal Component', () => {
           item={mockItem}
           onClose={mockOnClose}
           onSuccess={mockOnSuccess}
-        />
+        />,
       );
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {
@@ -511,15 +572,12 @@ describe('PurchaseModal Component', () => {
         json: async () => ({ success: true }),
       });
 
-      render(
-        <PurchaseModal
-          item={mockItem}
-          onClose={mockOnClose}
-        />
-      );
+      render(<PurchaseModal item={mockItem} onClose={mockOnClose} />);
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /Confirm Purchase/i }));
+        fireEvent.click(
+          screen.getByRole('button', { name: /Confirm Purchase/i }),
+        );
       });
 
       await waitFor(() => {

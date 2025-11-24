@@ -60,7 +60,14 @@ export async function GET(req) {
     'price-high': { price: -1 },
   }[sortBy] || { createdAt: -1 };
 
-  const items = await collection.find(query).sort(sort).toArray();
+  const limitValue = Number(searchParams.get('limit')) || 48;
+
+  const items = await collection
+    .find(query)
+    .sort(sort)
+    .limit(limitValue)
+    .toArray();
+
   const serialized = items.map(({ _id, ...rest }) => ({
     _id: _id?.toString(),
     ...rest,

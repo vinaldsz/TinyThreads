@@ -137,7 +137,7 @@ describe('POST /api/transactions/create', () => {
 
   it('should handle database errors', async () => {
     mockCollection.findOneAndUpdate.mockRejectedValue(
-      new Error('Database error')
+      new Error('Database error'),
     );
 
     const request = {

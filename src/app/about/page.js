@@ -73,9 +73,10 @@ export default function AboutPage() {
           </p>
           <h2>Our Story</h2>
           <p>
-            TinyThreads is a curated marketplace where parents can list and discover
-            pre-loved baby clothes and toys in under 60 seconds — making parenting
-            more affordable while keeping quality items in circulation, not in landfills.
+            TinyThreads is a curated marketplace where parents can list and
+            discover pre-loved baby clothes and toys in under 60 seconds —
+            making parenting more affordable while keeping quality items in
+            circulation, not in landfills.
           </p>
         </section>
 
@@ -101,8 +102,9 @@ export default function AboutPage() {
         <section className={styles.helloSection}>
           <h2>Say Hello</h2>
           <p className={styles.helloText}>
-            We are a small engineering-led team focused on making the parenting journey
-            a little easier, a lot more affordable, and meaningfully more sustainable.
+            We are a small engineering-led team focused on making the parenting
+            journey a little easier, a lot more affordable, and meaningfully
+            more sustainable.
           </p>
         </section>
 

@@ -8,28 +8,28 @@ import { authOptions } from '../api/auth/[...nextauth]/route';
 
 export async function uploadListingAction(formData) {
   console.log('\n=== UPLOAD LISTING ACTION STARTED ===');
-  
+
   try {
     // Get the logged-in user
     console.log('Step 1: Getting session...');
     const session = await getServerSession(authOptions);
     console.log('Session:', JSON.stringify(session, null, 2));
 
-    // Check if the user is logged in 
+    // Check if the user is logged in
     if (!session?.user?.id) {
       console.log('❌ No session - redirecting to login');
       redirect('/login');
     }
     console.log('✅ User logged in:', session.user.id);
-    
+
     console.log('\nStep 2: Extracting form data...');
     const title = formData.get('title');
     const category = formData.get('category');
     const condition = formData.get('condition');
     const price = formData.get('price');
     const donationRaw = formData.get('donation');
-  const isDonation = donationRaw === 'on' || donationRaw === 'true';
-  const size = formData.get('size');
+    const isDonation = donationRaw === 'on' || donationRaw === 'true';
+    const size = formData.get('size');
     const ageRange = formData.get('ageRange');
     const location = formData.get('location');
     const sellerName = formData.get('sellerName');
@@ -45,7 +45,7 @@ export async function uploadListingAction(formData) {
       ageRange,
       location,
       sellerName,
-      description
+      description,
     });
 
     // Server-side validations
@@ -81,25 +81,25 @@ export async function uploadListingAction(formData) {
     }
     console.log('✅ Condition valid');
 
-  let finalPriceRaw = String(price ?? '').trim();
-  if (isDonation) {
-    finalPriceRaw = '0';
-  }
-
-  const finalPriceNum = Number(finalPriceRaw);
-
-  if (!isDonation) {
-    if (
-      !finalPriceRaw ||
-      !Number.isFinite(finalPriceNum) ||
-      finalPriceNum < 0
-    ) {
-      redirect('/add-listing?err=invalid_price');
+    let finalPriceRaw = String(price ?? '').trim();
+    if (isDonation) {
+      finalPriceRaw = '0';
     }
-    if (!/^\d+(?:\.\d{1,2})?$/.test(finalPriceRaw)) {
-      redirect('/add-listing?err=invalid_price_precision');
+
+    const finalPriceNum = Number(finalPriceRaw);
+
+    if (!isDonation) {
+      if (
+        !finalPriceRaw ||
+        !Number.isFinite(finalPriceNum) ||
+        finalPriceNum < 0
+      ) {
+        redirect('/add-listing?err=invalid_price');
+      }
+      if (!/^\d+(?:\.\d{1,2})?$/.test(finalPriceRaw)) {
+        redirect('/add-listing?err=invalid_price_precision');
+      }
     }
-  }
 
     console.log('\nStep 8: Processing files...');
     const rawFiles =
@@ -174,7 +174,6 @@ export async function uploadListingAction(formData) {
 
     console.log('\nStep 13: Redirecting to home...');
     redirect('/');
-    
   } catch (error) {
     console.error('\n❌ ERROR in uploadListingAction:');
     console.error('Error message:', error.message);

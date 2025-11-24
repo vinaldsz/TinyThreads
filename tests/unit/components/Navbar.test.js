@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable @next/next/no-img-element */ 
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -63,7 +63,7 @@ describe('Navbar Component', () => {
 
       const navbar = screen.getByRole('navigation');
       expect(navbar).toBeInTheDocument();
-      
+
       const logo = screen.getByAltText('TinyThreads');
       expect(logo).toBeInTheDocument();
     });
@@ -78,12 +78,14 @@ describe('Navbar Component', () => {
     test('does NOT show user menu when not logged in', () => {
       render(<Navbar />);
 
-      expect(screen.queryByRole('button', { name: /user menu/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /user menu/i }),
+      ).not.toBeInTheDocument();
     });
 
     test('has correct structure', () => {
       const { container } = render(<Navbar />);
-      
+
       expect(container.querySelector('.navbar')).toBeInTheDocument();
       expect(container.querySelector('.brandWrapper')).toBeInTheDocument();
       expect(container.querySelector('.inner')).toBeInTheDocument();
@@ -91,7 +93,7 @@ describe('Navbar Component', () => {
   });
 
   // ========================================
-  // Authenticated User Tests  
+  // Authenticated User Tests
   // ========================================
 
   describe('When User IS Logged In', () => {
@@ -126,7 +128,7 @@ describe('Navbar Component', () => {
       render(<Navbar />);
 
       const userButton = screen.getByText('Test User');
-      
+
       fireEvent.click(userButton);
 
       await waitFor(() => {

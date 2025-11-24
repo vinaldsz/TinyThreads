@@ -25,7 +25,6 @@ export default function AddListingPage() {
   const [fileInputs, setFileInputs] = useState([0]);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-
   // add state to track field values
   const [title, setTitle] = useState('');
   const [sellerName, setSellerName] = useState('');
@@ -153,11 +152,11 @@ export default function AddListingPage() {
 
     return Boolean(
       validateTitle(titleVal) ||
-      validateSellerName(sellerNameVal) ||
-      validatePrice(priceVal) ||
-      validateRequiredSelect(categoryVal, 'category') ||
-      validateRequiredSelect(conditionVal, 'condition') ||
-      selectedFiles.length === 0
+        validateSellerName(sellerNameVal) ||
+        validatePrice(priceVal) ||
+        validateRequiredSelect(categoryVal, 'category') ||
+        validateRequiredSelect(conditionVal, 'condition') ||
+        selectedFiles.length === 0,
     );
   }
 
@@ -328,8 +327,6 @@ export default function AddListingPage() {
                 placeholder="City, State (e.g., Fremont, CA)"
               />
             </div>
-
-
 
             <div className={styles.formGroup}>
               <label htmlFor="sellerName">Seller Name</label>
@@ -525,4 +522,3 @@ export default function AddListingPage() {
     </div>
   );
 }
-

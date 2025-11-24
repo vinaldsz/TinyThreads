@@ -81,9 +81,7 @@ const customJestConfig = {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
 
-  transformIgnorePatterns: [
-    'node_modules/(?!(jose|openid-client|next-auth)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(jose|openid-client|next-auth)/)'],
 };
 
 // Export Jest config
