@@ -143,9 +143,9 @@ export default function AddListingPage() {
       conditionVal.length > 0 &&
       selectedFiles.length > 0;
 
-      if (!hasAllFields) {
-        return true;
-      }
+    if (!hasAllFields) {
+      return true;
+    }
 
     // touch formVersion so React knows this depends on validation-triggering changes
     void formVersion;
