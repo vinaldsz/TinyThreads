@@ -147,6 +147,7 @@ import '@testing-library/jest-dom';
 import AddListingPage from '@/app/add-listing/page';
 import { uploadListingAction } from '@/app/add-listing/actions';
 import { getServerSession } from 'next-auth/next';
+import * as nextAuth from 'next-auth';
 
 // ✅ Get references from global
 mockRedirect = global.mockRedirect;
@@ -175,14 +176,8 @@ describe('Add Listing Page', () => {
     // next-auth/next import used directly in some modules
     getServerSession.mockResolvedValue(sessionValue);
     // ensure the getServerSession mock exported from 'next-auth' is also set
-    try {
-      // require the mocked module and set its getServerSession as well
-      const nextAuth = require('next-auth');
-      if (nextAuth && typeof nextAuth.getServerSession === 'function') {
-        nextAuth.getServerSession.mockResolvedValue(sessionValue);
-      }
-    } catch (err) {
-      // ignore if require fails in this environment
+    if (nextAuth && typeof nextAuth.getServerSession === 'function') {
+      nextAuth.getServerSession.mockResolvedValue(sessionValue);
     }
 
     // Reset mock implementations

@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import {
   render,
@@ -17,7 +18,7 @@ global.fetch = jest.fn();
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }) => {
-    // eslint-disable-next-line @next/next/no-img-element
+     
     return (
       <img
         src={src}
