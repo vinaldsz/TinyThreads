@@ -38,6 +38,16 @@
   align-items: start;
 }
 
+/* Hide small price/condition badges that come from other components
+   so ItemDetail uses the larger status pill instead */
+.mainImage .priceBadge,
+.mainImage .conditionBadge {
+  display: none !important;
+}
+
+.statusBadge {
+  z-index: 20;
+}
 /* Image Section */
 .imageSection {
   position: relative;
@@ -49,16 +59,19 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 480px;
-  margin: 0 auto;
+  width: 100%;
+  height: 520px;
+}
+
+.imageFillWrapper {
+  position: absolute;
+  inset: 0;
 }
 
 .productImage {
   width: 100%;
-  max-height: 400px;
-  object-fit: contain;
+  height: 100%;
   display: block;
-  margin: 0 auto;
 }
 
 .statusBadge {
@@ -203,15 +216,54 @@
 }
 
 .emailButton {
-  background: #f27b65;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(180deg, #ff8b6a 0%, #f27b65 100%);
   color: #ffffff;
-  border: 1px solid #000000;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(242, 123, 101, 0.14);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
 }
 
 .emailButton:hover {
-  background: #e7674d;
-  transform: translateY(-1px);
-  border-color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(242, 123, 101, 0.18);
+  background: linear-gradient(180deg, #ff7a55 0%, #e7674d 100%);
+}
+
+.emailIcon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: inline-block;
+}
+
+.emailText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.05;
+}
+
+.emailTitle {
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+
+.emailAddress {
+  font-weight: 500;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .phoneButton {
@@ -407,6 +459,10 @@
     max-height: 300px;
     width: 100%;
     object-fit: contain;
+  }
+
+  .mainImage {
+    height: 360px;
   }
 }
 /* Purchase Section */

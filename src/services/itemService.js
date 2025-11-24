@@ -44,11 +44,10 @@ function normalizeItem(i) {
     ageRange: i.ageRange ?? '',
     location: i.location ?? '',
     status: i.status ?? 'available',
-    // --- Commented out for current sprint ---
-    // sellerId: i.sellerId ?? '',
-    // sellerName: i.sellerName ?? '',
+    // expose minimal seller info to the UI
+    sellerName: i.sellerName ?? '',
+    sellerEmail: i.sellerEmail ?? '',
     // createdAt: i.createdAt ?? null,
-    // Any seller or timestamp fields are ignored for now
   };
 }
 
