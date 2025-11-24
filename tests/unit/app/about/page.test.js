@@ -25,6 +25,15 @@ jest.mock('next/image', () => ({
         className={className}
       />
     );
+    return (
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+      />
+    );
   },
 }));
 

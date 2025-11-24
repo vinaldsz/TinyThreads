@@ -3,6 +3,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable @next/next/no-img-element */
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import JourneySection from '@/app/about/components/JourneySection/JourneySection';

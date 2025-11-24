@@ -14,23 +14,29 @@ export default function ItemDetail({ itemId }) {
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session } = useSession();;
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // ADD THIS CLEANING FUNCTION HERE:
   const cleanImageUrl = (url) => {
     if (!url || url === 'undefined') return null;
 
+
     // Remove 'undefined/' prefix if it exists
     if (typeof url === 'string' && url.startsWith('undefined/')) {
       url = url.replace('undefined/', '/');
     }
 
+
     // Ensure proper URL format for local images
     if (
+      
       typeof url === 'string' &&
+     
       !url.startsWith('http') &&
+     
       !url.startsWith('/')
+    
     ) {
       return `/${url}`;
     }
