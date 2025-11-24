@@ -4,8 +4,20 @@ import nextTs from 'eslint-config-next/typescript';
 
 const eslintConfig = defineConfig([
   {
-    // ADD THIS:
-    ignores: ['coverage/**'],
+    ignores: ['coverage/**', 'scripts/**'],
+  },
+  // Tests may mock `next/image` with plain <img> elements; disable the
+  // `no-img-element` rule for test files to avoid noisy warnings.
+  {
+    files: [
+      'tests/**/*.js',
+      'tests/**/*.jsx',
+      'tests/**/*.ts',
+      'tests/**/*.tsx',
+    ],
+    rules: {
+      '@next/next/no-img-element': 'off',
+    },
   },
   ...nextVitals,
   ...nextTs,

@@ -9,13 +9,14 @@
 .icon {
   font-size: 3rem;
   margin-bottom: 1rem;
+  color: #f27b65;
 }
 
 .title {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: #f27b65;
 }
 
 .description {

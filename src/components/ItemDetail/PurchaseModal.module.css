@@ -1,0 +1,360 @@
+/* src/components/ItemDetail/PurchaseModal.module.css */
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.closeButton:hover {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.content {
+  padding: 24px;
+}
+
+/* STEP 1: CONFIRMATION MODAL */
+.itemSummary {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background-color: #fafafa;
+}
+
+.itemImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemInfo h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #10b981;
+  margin-bottom: 8px;
+}
+
+.itemInfo p {
+  margin: 4px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.sellerInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.sellerAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c084fc 0%, #7c3aed 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.sellerInfo p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.sellerInfo p:first-child {
+  color: #666;
+}
+
+/* STEP 2: PAYMENT MODAL */
+.paymentForm {
+  width: 100%;
+}
+
+.itemSummarySmall {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.itemImageSmall {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.itemInfoSmall h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.priceSmall {
+  font-size: 16px;
+  font-weight: 700;
+  color: #10b981;
+  margin: 0;
+}
+
+.cardSection {
+  margin-bottom: 32px;
+}
+
+.cardSection h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cardElementContainer {
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.cardElementContainer:focus-within {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.poweredBy {
+  text-align: right;
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+/* STEP 3: SUCCESS MODAL */
+.successIcon {
+  text-align: center;
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.content h3 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 24px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.orderDetails {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.orderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.orderRow:last-child {
+  margin-bottom: 0;
+  font-weight: 600;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.orderRow span:first-child {
+  color: #666;
+}
+
+.orderRow span:last-child {
+  color: #333;
+  font-weight: 500;
+}
+
+/* ERROR STATE */
+.errorIcon {
+  text-align: center;
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.errorMessage {
+  color: #dc2626;
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 12px;
+  background-color: #fee2e2;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+}
+
+/* BUTTONS */
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.cancelButton,
+.backButton {
+  flex: 1;
+  background: #f5f5f5;
+  color: #666;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancelButton:hover,
+.backButton:hover {
+  background-color: #e5e5e5;
+}
+
+.proceedButton,
+.purchaseButton,
+.tryAgainButton {
+  flex: 2;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.proceedButton:hover,
+.purchaseButton:hover,
+.tryAgainButton:hover {
+  opacity: 0.9;
+}
+
+.purchaseButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.doneButton {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.doneButton:hover {
+  opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .backdrop {
+    padding: 10px;
+  }
+
+  .modal {
+    max-width: 100%;
+  }
+
+  .itemSummary {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .itemImage {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+  }
+}
