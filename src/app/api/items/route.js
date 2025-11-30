@@ -60,11 +60,17 @@ export async function GET(req) {
     'price-high': { price: -1 },
   }[sortBy] || { createdAt: -1 };
 
-  const limitValue = Number(searchParams.get('limit')) || 48;
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const limitValue = Math.max(1, Number(searchParams.get('limit')) || 12);
+  const skip = (page - 1) * limitValue;
+
+  // total matching documents for pagination metadata
+  const total = await collection.countDocuments(query);
 
   const items = await collection
     .find(query)
     .sort(sort)
+    .skip(skip)
     .limit(limitValue)
     .toArray();
 
@@ -73,5 +79,13 @@ export async function GET(req) {
     ...rest,
   }));
 
-  return NextResponse.json({ items: serialized, total: serialized.length });
+  const hasMore = page * limitValue < total;
+
+  return NextResponse.json({
+    items: serialized,
+    total: Number(total),
+    page: Number(page),
+    limit: Number(limitValue),
+    hasMore,
+  });
 }

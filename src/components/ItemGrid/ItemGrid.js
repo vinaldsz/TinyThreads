@@ -89,7 +89,7 @@ export default function ItemGrid({
       </div>
 
       {/* Load More Button */}
-      {hasMore && (
+      {hasMore && onLoadMore && (
         <div className={styles.loadMore}>
           <button
             className={styles.loadMoreButton}
