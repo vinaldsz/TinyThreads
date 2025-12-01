@@ -2,31 +2,14 @@
 
 // components/ItemGrid/ItemGrid.js
 import styles from './ItemGrid.module.css';
-import { useState } from 'react';
+import React from 'react';
 import ItemCard from '../ItemCard/ItemCard';
 
 export default function ItemGrid({
   items = [],
   loading = false,
   hasMore = true,
-  onLoadMore,
 }) {
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  const handleLoadMore = async () => {
-    if (loadingMore || !hasMore || !onLoadMore) return;
-
-    setLoadingMore(true);
-    try {
-      await onLoadMore();
-    } catch (error) {
-      // Error is handled by the caller, just ensure loading state is reset
-      console.error('Load more failed:', error);
-    } finally {
-      setLoadingMore(false);
-    }
-  };
-
   // Loading skeleton component
   const LoadingSkeleton = () => (
     <div className={styles.skeletonCard}>
@@ -74,39 +57,13 @@ export default function ItemGrid({
 
       {/* Grid */}
       <div className={styles.grid}>
-        {items.map((item) => (
-          <ItemCard key={item.id} item={item} />
+        {items.map((item, idx) => (
+          <ItemCard
+            key={item?.id ?? item?._id ?? item?.slug ?? idx}
+            item={item}
+          />
         ))}
-
-        {/* Loading skeletons while loading more */}
-        {loadingMore && (
-          <>
-            {[...Array(4)].map((_, index) => (
-              <LoadingSkeleton key={`loading-${index}`} />
-            ))}
-          </>
-        )}
       </div>
-
-      {/* Load More Button */}
-      {hasMore && onLoadMore && (
-        <div className={styles.loadMore}>
-          <button
-            className={styles.loadMoreButton}
-            onClick={handleLoadMore}
-            disabled={loadingMore}
-          >
-            {loadingMore ? (
-              <span className={styles.loadingText}>
-                <span className={styles.spinner}></span>
-                Loading more...
-              </span>
-            ) : (
-              'Load More Items'
-            )}
-          </button>
-        </div>
-      )}
 
       {/* End message */}
       {!hasMore && items.length > 0 && (

@@ -10,7 +10,6 @@ import useItemsPerPage from '@/hooks/useItemsPerPage';
 import Pagination from '@/components/Pagination/Pagination';
 
 export default function BrowsePage() {
-  const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -35,9 +34,6 @@ export default function BrowsePage() {
         } else {
           setFilteredItems(data.items);
         }
-        setItems((prevAll) =>
-          append ? [...prevAll, ...data.items] : data.items,
-        );
         setPage(Number(data.page || requestedPage));
         setHasMore(Boolean(data.hasMore));
         setTotal(Number(data.total || 0));

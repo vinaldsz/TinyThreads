@@ -190,15 +190,8 @@ describe('ItemCard Component', () => {
       const card = screen.getByText('Baby Onesie 6M').closest('div');
       fireEvent.click(card);
 
-      // Ensure some debug logging occurred
-      expect(console.log).toHaveBeenCalled();
-
-      // Match the actual debug logs from ItemCard
-      expect(console.log).toHaveBeenCalledWith('=== ITEM DEBUG ===');
-      expect(console.log).toHaveBeenCalledWith(
-        'Full item object:',
-        expect.objectContaining({ id: '123' }),
-      );
+      // Verify navigation still occurs when the card is clicked
+      expect(mockPush).toHaveBeenCalledWith('/Items/123');
     });
   });
 
