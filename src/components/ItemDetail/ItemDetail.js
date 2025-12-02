@@ -135,7 +135,9 @@ export default function ItemDetail({ itemId }) {
         try {
           const body = await res.json();
           if (body?.error) message = body.error;
-        } catch (e) {}
+        } catch {
+          // ignore JSON parse errors
+        }
         throw new Error(message);
       }
 

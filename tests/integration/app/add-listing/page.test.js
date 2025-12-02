@@ -522,6 +522,19 @@ describe('Add Listing Page', () => {
 
   // ===== SERVER ACTION TESTS =====  — input validation, S3 upload, and DB persistence
   describe('uploadListingAction', () => {
+    let consoleErrorSpy;
+
+    beforeEach(() => {
+      // Many server-action tests intentionally throw/redirect — silence console.error
+      // inside this describe to avoid noisy test output. Restored in afterEach.
+      consoleErrorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
     let mockFile;
 
     beforeEach(() => {

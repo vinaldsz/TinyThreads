@@ -7,7 +7,7 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import BrowsePage from '@/app/page';
-import { getItems, filterItems } from '@/services/itemService';
+import { getItems } from '@/services/itemService';
 
 // Mock Next.js Link component
 jest.mock('next/link', () => {
@@ -25,7 +25,6 @@ jest.mock('next/link', () => {
 // Mock itemService functions
 jest.mock('@/services/itemService', () => ({
   getItems: jest.fn(),
-  filterItems: jest.fn(),
 }));
 
 // Mock FilterBar component
@@ -99,7 +98,6 @@ describe('BrowsePage', () => {
 
   beforeEach(() => {
     getItems.mockResolvedValue(mockItemsResponse);
-    filterItems.mockResolvedValue(mockItemsResponse);
   });
 
   afterEach(() => {
@@ -216,7 +214,9 @@ describe('BrowsePage', () => {
       const filteredResponse = {
         items: [mockItems[0]], // Only one item
       };
-      filterItems.mockResolvedValue(filteredResponse);
+      // Ensure initial load returns full list, then filter returns smaller set
+      getItems.mockResolvedValueOnce(mockItemsResponse);
+      getItems.mockResolvedValueOnce(filteredResponse);
 
       await act(async () => {
         render(<BrowsePage />);
@@ -233,9 +233,13 @@ describe('BrowsePage', () => {
         fireEvent.click(filterButton);
       });
 
-      // Should call filterItems
+      // Should call getItems for the filtered request (page reset to 1)
       await waitFor(() => {
-        expect(filterItems).toHaveBeenCalledWith({ category: 'clothing' });
+        expect(getItems).toHaveBeenCalledWith(
+          expect.any(Number),
+          expect.any(Number),
+          expect.objectContaining({ category: 'clothing' }),
+        );
       });
 
       // Should update filtered items
@@ -245,7 +249,7 @@ describe('BrowsePage', () => {
     });
 
     test('sets loading state during filter changes', async () => {
-      filterItems.mockImplementation(
+      getItems.mockImplementation(
         () =>
           new Promise((resolve) =>
             setTimeout(() => resolve({ items: [mockItems[0]] }), 100),
@@ -297,7 +301,7 @@ describe('BrowsePage', () => {
       });
 
       await waitFor(() => {
-        expect(filterItems).toHaveBeenCalled();
+        expect(getItems).toHaveBeenCalled();
       });
 
       // Then clear filters
@@ -410,8 +414,8 @@ describe('BrowsePage', () => {
         expect(screen.getByTestId('items-length')).toHaveTextContent('3');
       });
 
-      // Set up error for subsequent filterItems calls
-      filterItems.mockRejectedValue(new Error('Filter Error'));
+      // Set up error for subsequent filtered getItems calls
+      getItems.mockRejectedValue(new Error('Filter Error'));
       const consoleSpy = jest
         .spyOn(console, 'error')
         .mockImplementation(() => {});
@@ -423,7 +427,7 @@ describe('BrowsePage', () => {
 
         // Wait for the async operation to attempt
         await waitFor(() => {
-          expect(filterItems).toHaveBeenCalled();
+          expect(getItems).toHaveBeenCalled();
         });
       });
 
@@ -451,7 +455,8 @@ describe('BrowsePage', () => {
       });
 
       // After filtering, filteredItems changes but original items remain
-      filterItems.mockResolvedValue({ items: [mockItems[0]] });
+      // Mock getItems to return filtered set on next call
+      getItems.mockResolvedValueOnce({ items: [mockItems[0]] });
 
       await act(async () => {
         const filterButton = screen.getByTestId('trigger-filter-change');
@@ -463,6 +468,7 @@ describe('BrowsePage', () => {
       });
 
       // Clear filters should restore to original items
+      getItems.mockResolvedValueOnce({ items: mockItems });
       await act(async () => {
         const clearButton = screen.getByTestId('clear-filters');
         fireEvent.click(clearButton);

@@ -32,7 +32,8 @@
 /* Grid Layout */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* Force 3 columns for consistent rows/columns layout */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   padding: 20px 0;
 }
@@ -176,7 +177,8 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* Keep 3 columns on tablet/desktop widths */
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
   }
 
@@ -187,7 +189,8 @@
 
 @media (max-width: 768px) {
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* Keep 3 columns on most tablet sizes as requested */
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     padding: 16px 0;
   }

@@ -1,10 +1,4 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 // user-event not required; use fireEvent + waitFor to handle async updates
 import ItemGrid from '@/components/ItemGrid/ItemGrid';
 
@@ -163,194 +157,9 @@ describe('ItemGrid Component', () => {
     });
   });
 
-  // ===== LOAD MORE FUNCTIONALITY =====
-  describe('load more functionality', () => {
-    test('shows load more button when hasMore is true and onLoadMore provided', () => {
-      render(
-        <ItemGrid
-          items={mockItems}
-          hasMore={true}
-          onLoadMore={mockOnLoadMore}
-        />,
-      );
-
-      expect(screen.getByText('Load More Items')).toBeInTheDocument();
-    });
-
-    test('does not show load more button when hasMore is false', () => {
-      render(
-        <ItemGrid
-          items={mockItems}
-          hasMore={false}
-          onLoadMore={mockOnLoadMore}
-        />,
-      );
-
-      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
-    });
-
-    test('does not show load more button when onLoadMore not provided', () => {
-      render(<ItemGrid items={mockItems} hasMore={true} />);
-
-      expect(screen.getByText('Load More Items')).toBeInTheDocument();
-    });
-
-    test('calls onLoadMore when load more button clicked', async () => {
-      render(
-        <ItemGrid
-          items={mockItems}
-          hasMore={true}
-          onLoadMore={mockOnLoadMore}
-        />,
-      );
-
-      const loadMoreButton = screen.getByText('Load More Items');
-      await act(async () => {
-        fireEvent.click(loadMoreButton);
-        await Promise.resolve();
-      });
-      await waitFor(() => {
-        expect(mockOnLoadMore).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    test('shows loading state during load more operation', async () => {
-      let resolveLoadMore;
-      const slowLoadMore = jest.fn(() => {
-        return new Promise((resolve) => {
-          resolveLoadMore = resolve;
-        });
-      });
-
-      render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
-      );
-
-      const loadMoreButton = screen.getByText('Load More Items');
-      await act(async () => {
-        fireEvent.click(loadMoreButton);
-        await Promise.resolve();
-      });
-
-      // Should show loading state
-      expect(screen.getByText('Loading more...')).toBeInTheDocument();
-      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
-
-      // Should show loading skeletons
-      const loadingSkeletons = document.querySelectorAll(
-        '[class*="skeletonCard"]',
-      );
-      expect(loadingSkeletons).toHaveLength(4);
-
-      // Resolve the promise
-      resolveLoadMore();
-      await waitFor(() => {
-        expect(screen.getByText('Load More Items')).toBeInTheDocument();
-      });
-    });
-
-    test('disables button during loading', async () => {
-      let resolveLoadMore;
-      const slowLoadMore = jest.fn(() => {
-        return new Promise((resolve) => {
-          resolveLoadMore = resolve;
-        });
-      });
-
-      render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
-      );
-
-      const loadMoreButton = screen.getByText('Load More Items');
-      fireEvent.click(loadMoreButton);
-
-      // Button should be disabled
-      await waitFor(() => {
-        const disabledButton = screen.getByRole('button', {
-          name: /loading more/i,
-        });
-        expect(disabledButton).toBeDisabled();
-      });
-
-      resolveLoadMore();
-    });
-
-    test('prevents multiple simultaneous load more calls', async () => {
-      let resolveLoadMore;
-      const slowLoadMore = jest.fn(() => {
-        return new Promise((resolve) => {
-          resolveLoadMore = resolve;
-        });
-      });
-
-      render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
-      );
-
-      const loadMoreButton = screen.getByText('Load More Items');
-
-      // Click multiple times but allow each click to process so subsequent clicks
-      // won't trigger while loading. This mirrors real user behavior.
-      await act(async () => {
-        fireEvent.click(loadMoreButton);
-        await Promise.resolve();
-        fireEvent.click(loadMoreButton);
-        await Promise.resolve();
-        fireEvent.click(loadMoreButton);
-        await Promise.resolve();
-      });
-
-      // Should only call once
-      await waitFor(() => {
-        expect(slowLoadMore).toHaveBeenCalledTimes(1);
-      });
-
-      resolveLoadMore();
-    });
-
-    test('handles load more error gracefully', async () => {
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-      const failingLoadMore = jest.fn(() => {
-        throw new Error('Load failed');
-      });
-
-      render(
-        <ItemGrid
-          items={mockItems}
-          hasMore={true}
-          onLoadMore={failingLoadMore}
-        />,
-      );
-
-      const loadMoreButton = screen.getByText('Load More Items');
-      fireEvent.click(loadMoreButton);
-
-      // Should reset loading state even after error
-      await waitFor(() => {
-        expect(screen.getByText('Load More Items')).toBeInTheDocument();
-      });
-
-      // Should not be loading anymore
-      expect(screen.queryByText('Loading more...')).not.toBeInTheDocument();
-      consoleSpy.mockRestore();
-    });
-
-    test('does not call load more when hasMore is false', () => {
-      render(
-        <ItemGrid
-          items={mockItems}
-          hasMore={false}
-          onLoadMore={mockOnLoadMore}
-        />,
-      );
-
-      // Should not show button, so no way to trigger call
-      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
-      expect(mockOnLoadMore).not.toHaveBeenCalled();
-    });
-  });
+  // Load-more behavior removed from component; tests related to that feature
+  // were intentionally deleted because UI no longer includes a "Load More"
+  // button. The component now relies on pagination controls elsewhere.
 
   // ===== END MESSAGE =====
   describe('end message', () => {
@@ -403,7 +212,8 @@ describe('ItemGrid Component', () => {
       );
 
       expect(screen.getByTestId('item-card-1')).toBeInTheDocument();
-      expect(screen.getByText('Load More Items')).toBeInTheDocument();
+      // Load More button removed from UI; verify it's not present
+      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
       expect(
         screen.queryByText('You have reached the end! 🎉'),
       ).not.toBeInTheDocument();
@@ -464,69 +274,21 @@ describe('ItemGrid Component', () => {
       expect(screen.getByTestId('item-card-2')).toBeInTheDocument();
     });
 
-    test('handles onLoadMore that returns non-promise', async () => {
+    test('handles onLoadMore prop gracefully when provided (no UI)', () => {
       const syncLoadMore = jest.fn(() => 'not a promise');
 
       render(
         <ItemGrid items={mockItems} hasMore={true} onLoadMore={syncLoadMore} />,
       );
 
-      const loadMoreButton = screen.getByText('Load More Items');
-      await act(async () => {
-        fireEvent.click(loadMoreButton);
-      });
-
-      // Should handle gracefully
-      expect(syncLoadMore).toHaveBeenCalledTimes(1);
-
-      // Should reset loading state
-      await waitFor(() => {
-        expect(screen.getByText('Load More Items')).toBeInTheDocument();
-      });
+      // Component no longer exposes a Load More button — ensure nothing called
+      expect(screen.queryByText('Load More Items')).not.toBeInTheDocument();
+      expect(syncLoadMore).not.toHaveBeenCalled();
     });
   });
 
   // ===== ACCESSIBILITY =====
   describe('accessibility', () => {
-    test('load more button is accessible', () => {
-      render(
-        <ItemGrid
-          items={mockItems}
-          hasMore={true}
-          onLoadMore={mockOnLoadMore}
-        />,
-      );
-
-      const button = screen.getByRole('button', { name: /load more items/i });
-      expect(button).toBeInTheDocument();
-    });
-
-    test('disabled load more button is accessible', async () => {
-      let resolveLoadMore;
-      const slowLoadMore = jest.fn(() => {
-        return new Promise((resolve) => {
-          resolveLoadMore = resolve;
-        });
-      });
-
-      render(
-        <ItemGrid items={mockItems} hasMore={true} onLoadMore={slowLoadMore} />,
-      );
-
-      const button = screen.getByText('Load More Items');
-      await act(async () => {
-        fireEvent.click(button);
-      });
-
-      await waitFor(() => {
-        const disabledButton = screen.getByRole('button');
-        expect(disabledButton).toBeDisabled();
-        expect(disabledButton).toHaveAttribute('disabled');
-      });
-
-      resolveLoadMore();
-    });
-
     test('empty state has proper heading structure', () => {
       render(<ItemGrid items={[]} loading={false} />);
 

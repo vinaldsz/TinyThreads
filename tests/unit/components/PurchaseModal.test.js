@@ -47,6 +47,19 @@ describe('PurchaseModal Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     fetch.mockClear();
+    // Silence expected error logs from the component during negative tests
+    if (!global.consoleErrorSpy) {
+      global.consoleErrorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+    }
+  });
+
+  afterEach(() => {
+    if (global.consoleErrorSpy) {
+      global.consoleErrorSpy.mockRestore();
+      delete global.consoleErrorSpy;
+    }
   });
 
   // ========================================

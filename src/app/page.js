@@ -1,52 +1,72 @@
 // src/app/page.js
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './page.module.css';
 import Navbar from '@/components/Navbar/Navbar';
 import FilterBar from '@/components/FilterBar/FilterBar';
 import ItemGrid from '@/components/ItemGrid/ItemGrid';
-import { getItems, filterItems } from '@/services/itemService';
+import { getItems /* filterItems */ } from '@/services/itemService';
+import useItemsPerPage from '@/hooks/useItemsPerPage';
+import Pagination from '@/components/Pagination/Pagination';
 
 export default function BrowsePage() {
-  const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({});
+  // default rowsPerPage is 3 in the hook (3 rows × 3 columns = 9 items)
+  const itemsPerPage = useItemsPerPage();
 
-  useEffect(() => {
-    const loadItems = async () => {
+  // Load initial page or when filters / page / itemsPerPage change
+  const loadPage = useCallback(
+    async (requestedPage = 1, append = false, currentFilters = filters) => {
       setLoading(true);
       try {
-        const data = await getItems();
-        setItems(data.items);
-        setFilteredItems(data.items);
-        setLoading(false);
+        const data = await getItems(
+          requestedPage,
+          itemsPerPage,
+          currentFilters,
+        );
+        if (append) {
+          setFilteredItems((prev) => [...prev, ...data.items]);
+        } else {
+          setFilteredItems(data.items);
+        }
+        setPage(Number(data.page || requestedPage));
+        setHasMore(Boolean(data.hasMore));
+        setTotal(Number(data.total || 0));
       } catch (error) {
         console.error('Failed to load items:', error);
+      } finally {
         setLoading(false);
       }
-    };
-    loadItems();
-  }, []);
+    },
+    [itemsPerPage, filters],
+  );
 
-  const handleFiltersChange = async (newFilters) => {
+  useEffect(() => {
+    // reset to first page whenever filters or itemsPerPage changes
+    loadPage(1, false, filters);
+  }, [loadPage, filters, itemsPerPage]);
+
+  const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
-    setLoading(true);
-
-    try {
-      const filtered = await filterItems(newFilters);
-      setFilteredItems(filtered.items);
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to filter items:', error);
-      setLoading(false);
-    }
+    // loadPage effect will run due to filters dependency
   };
 
   const clearAllFilters = () => {
     const clearedFilters = {};
     setFilters(clearedFilters);
-    setFilteredItems(items);
+    // loadPage effect will reset filtered items
+  };
+
+  // numbered pagination handler
+  const handlePageChange = async (newPage) => {
+    if (!newPage || newPage === page) return;
+    // request the new page and replace items (not append)
+    await loadPage(newPage, false, filters);
   };
 
   // calculate active filters count
@@ -84,7 +104,16 @@ export default function BrowsePage() {
         </section>
 
         {/* Content Section */}
-        <ItemGrid items={filteredItems} loading={loading} hasMore={false} />
+        <ItemGrid items={filteredItems} loading={loading} hasMore={hasMore} />
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Pagination
+            page={page}
+            total={total}
+            limit={itemsPerPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
       </div>
     </div>
   );

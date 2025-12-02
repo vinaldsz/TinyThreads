@@ -73,6 +73,15 @@ describe('POST /api/transactions/create', () => {
     jest.clearAllMocks();
   });
 
+  // Silence expected console.error logs from the route when simulating failures
+  let consoleErrorSpy;
+  beforeAll(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+  afterAll(() => {
+    consoleErrorSpy.mockRestore();
+  });
+
   it('should create a transaction successfully', async () => {
     mockCollection.findOneAndUpdate.mockResolvedValue({
       value: {
