@@ -74,9 +74,17 @@
 }
 
 .error {
-  background: #fff2f2;
-  color: #7a1414;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ffd6d6;
+  color: #e63946;
+  font-size: 0.9rem;
+  margin: 4px 0 4px 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.errorInline {
+  color: #e63946;
+  font-size: 0.9rem;
+  margin: 4px 0 12px 0;
+  padding: 0;
 }
