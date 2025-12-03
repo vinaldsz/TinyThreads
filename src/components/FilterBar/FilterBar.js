@@ -3,6 +3,9 @@
 import styles from './FilterBar.module.css';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 
 export default function FilterBar({
   onFiltersChange,
@@ -10,6 +13,9 @@ export default function FilterBar({
   initialFilters = {},
   activeFiltersCount = 0,
 }) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   const [filters, setFilters] = useState({
     category: initialFilters.category || '',
     condition: initialFilters.condition || '',
@@ -17,6 +23,7 @@ export default function FilterBar({
     priceRange: initialFilters.priceRange || '',
     sortBy: initialFilters.sortBy || 'newest',
     searchTerm: initialFilters.searchTerm || '',
+    availability: initialFilters.availability || 'available', 
     ...initialFilters,
   });
 
@@ -40,12 +47,20 @@ export default function FilterBar({
     { value: 'Fair', label: 'Fair' },
   ];
 
+  // add status options 
+  const availabilityOptions = [
+    { value: 'available', label: 'Available' },
+    { value: 'sold', label: 'Sold' },
+  ];
+
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'oldest', label: 'Oldest First' },
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'price-high', label: 'Price: High to Low' },
   ];
+
+
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
@@ -80,6 +95,9 @@ export default function FilterBar({
     if (f.searchTerm && typeof f.searchTerm === 'string') {
       f.searchTerm = f.searchTerm.trim();
     }
+    if (f.availabilityOptions && typeof f.availabilityOptions === 'string') {
+      f.availabilityOptions = f.availabilityOptions.trim();
+    }
     return f;
   };
 
@@ -97,6 +115,7 @@ export default function FilterBar({
       priceRange: '',
       sortBy: 'newest',
       searchTerm: '',
+      availability: 'available',//default to available
     };
     setFilters(clearedFilters);
     setShowFilters(false);
@@ -112,6 +131,15 @@ export default function FilterBar({
       return 'Filter';
     }
     return `Filters (${activeFiltersCount})`;
+  };
+
+  //handle add listing click with authentication check (placeholder)
+  const handleAddListingClick = (e) => {
+    if (!session) {
+      e.preventDefault();
+      router.push('/login');
+    }
+    // If user is logged in, let the Link component handle navigation normally
   };
 
   return (
@@ -133,12 +161,25 @@ export default function FilterBar({
       {/* Filter Controls Row */}
       <div className={styles.controlRow}>
         <div className={styles.controlLeft}>
+          {session ? (
+            // User is logged in, show normal link
           <Link href="/add-listing" className={styles.addListingBtn}>
             ＋ Add listing
           </Link>
+          ) : (
+          // User is not logged in, intercept click to redirect to login
+          <button 
+            className={styles.addListingBtn} 
+            onClick={()=> router.push('/login')}
+            type = "button"
+          >
+            ＋ Add listing
+          </button>
+          )}
         </div>
 
         <div className={styles.controlRight}>
+            
           <button
             className={`${styles.filtersButton} ${
               activeFiltersCount > 0 ? styles.filtersActive : ''
@@ -212,6 +253,25 @@ export default function FilterBar({
                 ))}
               </select>
             </div>
+
+            <div className={styles.filterGroup}>
+              <label className={styles.label} htmlFor="filter-availability">
+                Availability
+              </label>
+              <select
+                id="filter-availability"
+                className={styles.select}
+                value={filters.availability}
+                onChange={(e) => handleFilterChange('availability', e.target.value)}
+              >
+                {availabilityOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
           </div>
         </div>
       )}
