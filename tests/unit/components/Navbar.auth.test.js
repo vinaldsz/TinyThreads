@@ -35,7 +35,7 @@ describe('Login Page', () => {
     expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Your password')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /sign in/i }),
+      screen.getByRole('button', { name: /^sign in$/i }),
     ).toBeInTheDocument();
   });
 
@@ -52,7 +52,7 @@ describe('Login Page', () => {
 
     const emailInput = screen.getByPlaceholderText('you@example.com');
     const passwordInput = screen.getByPlaceholderText('Your password');
-    const submit = screen.getByRole('button', { name: /sign in/i });
+    const submit = screen.getByRole('button', { name: /^sign in$/i });
 
     await act(async () => {
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -61,39 +61,42 @@ describe('Login Page', () => {
       await Promise.resolve();
     });
 
-    expect(screen.getByRole('button')).toHaveTextContent('Signing in...');
-    expect(screen.getByRole('button')).toBeDisabled();
+    const loadingButton = screen.getByRole('button', { name: /signing in/i });
+    expect(loadingButton).toHaveTextContent('Signing in...');
+    expect(loadingButton).toBeDisabled();
 
     resolveSignIn();
 
     await waitFor(() => expect(mockSignIn).toHaveBeenCalledTimes(1));
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: /sign in/i }),
+        screen.getByRole('button', { name: /^sign in$/i }),
       ).toBeInTheDocument(),
     );
   });
 
   test('shows error message when signIn rejects', async () => {
-    mockSignIn.mockRejectedValueOnce(new Error('Invalid credentials'));
+    mockSignIn.mockResolvedValueOnce({ error: 'CredentialsSignin' });
 
     render(<LoginPage />);
 
     const emailInput = screen.getByPlaceholderText('you@example.com');
     const passwordInput = screen.getByPlaceholderText('Your password');
-    const submit = screen.getByRole('button', { name: /sign in/i });
+    const submit = screen.getByRole('button', { name: /^sign in$/i });
 
     await act(async () => {
       fireEvent.change(emailInput, { target: { value: 'bad@example.com' } });
-      fireEvent.change(passwordInput, { target: { value: 'badpass' } });
+      fireEvent.change(passwordInput, { target: { value: 'Badpass1' } });
       fireEvent.click(submit);
       await Promise.resolve();
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/incorrect email or password/i),
+      ).toBeInTheDocument();
     });
 
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^sign in$/i })).toBeEnabled();
   });
 });
