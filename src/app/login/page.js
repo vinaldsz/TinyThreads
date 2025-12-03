@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import styles from './page.module.css';
 import { signIn } from 'next-auth/react';
 import Navbar from '@/components/Navbar/Navbar';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -30,29 +32,6 @@ export default function LoginPage() {
     return newErrors;
   };
 
-  const validateField = (name, value) => {
-    let message = '';
-
-    if (name === 'email') {
-      const trimmedEmail = value.trim();
-      if (!trimmedEmail) {
-        message = 'Email is required';
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-        message = 'Please enter a valid email address';
-      }
-    }
-
-    if (name === 'password') {
-      if (!value) {
-        message = 'Password is required';
-      } else if (value.length < 8) {
-        message = 'Password must be at least 8 characters';
-      }
-    }
-
-    return message;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -66,21 +45,44 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      // Use redirect:true so NextAuth sets the session cookie and redirects.
-      // This ensures `useSession` in the Navbar sees the authenticated state immediately.
-      await signIn('credentials', {
+      // Use redirect: false so we can show a friendly error on this page
+      const result = await signIn('credentials', {
         email,
         password,
-        redirect: true,
-        callbackUrl: '/',
+        redirect: false,
       });
-    } catch (err) {
-      // Show a user-friendly error message if sign-in fails.
+
+      if (result?.error) {
+        // Credentials are wrong or user doesn't exist
+        setError('Incorrect email or password. Please try again.');
+        return;
+      }
+
+      // Successful sign-in: manually redirect to home
+      if (result?.ok) {
+        window.location.href = '/';
+      }
+    } catch {
+      // Network/config issues, etc.
       setError(
-        err?.message ||
-          'Unable to sign in. Please check your email and password and try again.'
+        'Something went wrong while signing you in. Please try again in a moment.',
       );
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await signIn('google', {
+        callbackUrl: '/',
+      });
+    } catch {
+      setError(
+        'Something went wrong while signing you in with Google. Please try again in a moment.',
+      );
       setLoading(false);
     }
   };
@@ -89,11 +91,7 @@ export default function LoginPage() {
     <>
       <Navbar />
       <div className={styles.container}>
-        <form
-          className={styles.form}
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <h1 className={styles.title}>Sign in</h1>
           {error && <p className={styles.errorInline}>{error}</p>}
 
@@ -108,12 +106,7 @@ export default function LoginPage() {
                 setEmail(value);
                 setErrors((prev) => {
                   const next = { ...prev };
-                  const message = validateField('email', value);
-                  if (message) {
-                    next.email = message;
-                  } else {
-                    delete next.email;
-                  }
+                  delete next.email;
                   return next;
                 });
               }}
@@ -134,24 +127,44 @@ export default function LoginPage() {
                 setPassword(value);
                 setErrors((prev) => {
                   const next = { ...prev };
-                  const message = validateField('password', value);
-                  if (message) {
-                    next.password = message;
-                  } else {
-                    delete next.password;
-                  }
+                  delete next.password;
                   return next;
                 });
               }}
               required
               placeholder="Your password"
             />
-            {errors.password && <p className={styles.error}>{errors.password}</p>}
+            {errors.password && (
+              <p className={styles.error}>{errors.password}</p>
+            )}
           </label>
 
           <button className={styles.button} type="submit" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
+
+          <button
+            type="button"
+            className={styles.googleButton}
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+          >
+            <Image
+              src="/google-icon.png"
+              alt="Google logo"
+              width={20}
+              height={20}
+              className={styles.googleIcon}
+            />
+            <span>Sign in with Google</span>
+          </button>
+
+          <p className={styles.signupText}>
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className={styles.signupLink}>
+              Sign up here
+            </Link>
+          </p>
         </form>
       </div>
     </>

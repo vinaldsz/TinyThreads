@@ -88,3 +88,75 @@
   margin: 4px 0 12px 0;
   padding: 0;
 }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e2ea;
+}
+
+.googleButton {
+  margin-top: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 24px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.googleButton:hover:not([disabled]) {
+  background: #f5f5fb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.googleButton[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: inline-block;
+}
+
+.signupText {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #555;
+}
+
+.signupLink {
+  color: #f27b65;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.signupLink:hover {
+  text-decoration: underline;
+}
