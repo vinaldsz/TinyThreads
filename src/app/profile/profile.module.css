@@ -1,0 +1,51 @@
+.container {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+.header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #f3f3f3;
+  display: inline-block;
+  object-fit: cover;
+}
+.name {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.email {
+  color: #666;
+  font-size: 0.95rem;
+}
+.section {
+  margin-top: 18px;
+}
+.label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.value {
+  color: #333;
+}
+.empty {
+  color: #888;
+  font-style: italic;
+}
+
+.editButton {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1rem;
+}

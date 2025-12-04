@@ -2,7 +2,6 @@ import styles from './page.module.css';
 import BeliefCard from './components/BeliefCard/BeliefCard';
 import TeamCard from './components/TeamCard/TeamCard';
 import JourneySection from './components/JourneySection/JourneySection';
-import Navbar from '@/components/Navbar/Navbar';
 
 export default function AboutPage() {
   const beliefs = [
@@ -61,7 +60,6 @@ export default function AboutPage() {
 
   return (
     <>
-      <Navbar />
       <div className={styles.aboutContainer}>
         <section className={styles.heroSection}>
           <h1>

@@ -45,11 +45,18 @@ export async function POST(req) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    const now = new Date();
     const user = {
       name: nameNorm,
+      displayName: nameNorm,
       email: emailNorm,
       passwordHash,
-      createdAt: new Date(),
+      avatarUrl: '',
+      bio: '',
+      location: '',
+      createdAt: now,
+      updatedAt: now,
+      settings: {},
     };
 
     await users.insertOne(user);

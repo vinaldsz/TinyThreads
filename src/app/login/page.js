@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import styles from './page.module.css';
 import { signIn } from 'next-auth/react';
-import Navbar from '@/components/Navbar/Navbar';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -89,7 +88,6 @@ export default function LoginPage() {
 
   return (
     <>
-      <Navbar />
       <div className={styles.container}>
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <h1 className={styles.title}>Sign in</h1>

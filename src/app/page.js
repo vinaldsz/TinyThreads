@@ -2,7 +2,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import styles from './page.module.css';
-import Navbar from '@/components/Navbar/Navbar';
 import FilterBar from '@/components/FilterBar/FilterBar';
 import ItemGrid from '@/components/ItemGrid/ItemGrid';
 import { getItems /* filterItems */ } from '@/services/itemService';
@@ -89,7 +88,6 @@ export default function BrowsePage() {
 
   return (
     <div className={styles.page}>
-      <Navbar />
       <div className={styles.container}>
         {/* Control Section - search + filter + sort */}
         <section className={styles.controlSection}>

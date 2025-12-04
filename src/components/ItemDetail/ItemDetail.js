@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { getItemById } from '../../services/itemService';
 import styles from './ItemDetail.module.css';
 import Image from 'next/image';
-import Navbar from '@/components/Navbar/Navbar';
 import PurchaseModal from './PurchaseModal';
 import { useSession } from 'next-auth/react';
 
@@ -182,7 +181,6 @@ export default function ItemDetail({ itemId }) {
 
   return (
     <>
-      <Navbar />
       <div className={styles.container}>
         <div className={styles.header}>
           <button onClick={handleBack} className={styles.backButton}>
