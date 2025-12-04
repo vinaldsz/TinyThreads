@@ -89,6 +89,7 @@ jest.mock('@/app/page.module.css', () => ({
 const MockHeader = () => (
   <header className="headerSection">
     <div className="logoContainer">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/logo.png" alt="TinyThreads" className="logo" />
       <h1 className="title">TinyThreads</h1>
     </div>

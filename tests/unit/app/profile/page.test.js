@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 // Mock next-auth getServerSession only (we'll also stub the auth route below)

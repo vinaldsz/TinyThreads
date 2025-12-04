@@ -3,6 +3,7 @@
  */
 import {
   render,
+  /* eslint-disable @typescript-eslint/no-require-imports */
   screen,
   fireEvent,
   waitFor,

@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import {
   render,
   screen,

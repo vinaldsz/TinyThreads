@@ -193,7 +193,7 @@ describe('ProfileEditor components', () => {
   describe('AvatarEditor', () => {
     beforeAll(() => {
       // Mock URL.createObjectURL/revokeObjectURL for JSDOM
-      global.URL.createObjectURL = jest.fn((file) => 'blob:mock-url');
+      global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
       global.URL.revokeObjectURL = jest.fn();
     });
 
@@ -205,7 +205,9 @@ describe('ProfileEditor components', () => {
     it('uploads selected file and updates avatar on success', async () => {
       render(<AvatarEditor initialAvatar="" />);
 
-      const file = new File(['(binary)'], 'avatar.png', { type: 'image/png' });
+      const avatarFile = new File(['(binary)'], 'avatar.png', {
+        type: 'image/png',
+      });
 
       // Mock successful upload response
       global.fetch.mockResolvedValueOnce({
@@ -213,14 +215,11 @@ describe('ProfileEditor components', () => {
         json: async () => ({ publicUrl: 'https://example.com/avatar.png' }),
       });
 
-      const input = screen.getByLabelText('Change avatar')
-        ? null
-        : document.querySelector('input[type="file"]');
       // Use DOM input node directly
       const fileInput = document.querySelector('input[type="file"]');
       expect(fileInput).toBeTruthy();
 
-      fireEvent.change(fileInput, { target: { files: [file] } });
+      fireEvent.change(fileInput, { target: { files: [avatarFile] } });
 
       await waitFor(() => expect(global.fetch).toHaveBeenCalled());
       await waitFor(() =>
@@ -240,10 +239,12 @@ describe('ProfileEditor components', () => {
     it('shows error for non-image file selection', async () => {
       render(<AvatarEditor initialAvatar="" />);
 
-      const file = new File(['not-image'], 'doc.txt', { type: 'text/plain' });
+      const avatarFile = new File(['not-image'], 'doc.txt', {
+        type: 'text/plain',
+      });
       const fileInput = document.querySelector('input[type="file"]');
 
-      fireEvent.change(fileInput, { target: { files: [file] } });
+      fireEvent.change(fileInput, { target: { files: [avatarFile] } });
 
       await waitFor(() =>
         expect(
@@ -255,7 +256,9 @@ describe('ProfileEditor components', () => {
     it('shows error when upload fails', async () => {
       render(<AvatarEditor initialAvatar="" />);
 
-      const file = new File(['(binary)'], 'avatar.png', { type: 'image/png' });
+      const avatarFile = new File(['(binary)'], 'avatar.png', {
+        type: 'image/png',
+      });
       const fileInput = document.querySelector('input[type="file"]');
 
       // Mock failing upload
@@ -264,7 +267,7 @@ describe('ProfileEditor components', () => {
         json: async () => ({ message: 'upload boom' }),
       });
 
-      fireEvent.change(fileInput, { target: { files: [file] } });
+      fireEvent.change(fileInput, { target: { files: [avatarFile] } });
 
       await waitFor(() => expect(global.fetch).toHaveBeenCalled());
       await waitFor(() =>
