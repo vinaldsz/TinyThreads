@@ -9,10 +9,7 @@ jest.mock('next/server', () => ({
 }));
 
 jest.mock('next-auth', () => ({ getServerSession: jest.fn() }));
-jest.mock(
-  '/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/app/api/auth/[...nextauth]/route',
-  () => ({ authOptions: {} }),
-);
+jest.mock('@/app/api/auth/[...nextauth]/route', () => ({ authOptions: {} }));
 jest.mock('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/lib/mongodb', () => ({
   getDb: jest.fn(),
 }));
