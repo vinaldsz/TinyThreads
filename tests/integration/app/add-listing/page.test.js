@@ -421,6 +421,23 @@ describe('Add Listing Page', () => {
 
     test('keeps submit button disabled until all internal validation conditions are met', async () => {
       renderWithNavbar(<AddListingPage />);
+      // Mock browser geolocation so "Use my current location" works in tests
+      const mockGeolocation = {
+        getCurrentPosition: jest.fn((success) =>
+          success({
+            coords: {
+              latitude: 37.725,
+              longitude: -122.155,
+            },
+          }),
+        ),
+      };
+      Object.defineProperty(global.navigator, 'geolocation', {
+        value: mockGeolocation,
+        configurable: true,
+      });
+
+      render(<AddListingPage />);
 
       const submitButton = screen.getByRole('button', { name: 'Add Listing' });
       expect(submitButton).toBeDisabled();
@@ -429,7 +446,10 @@ describe('Add Listing Page', () => {
       const categorySelect = screen.getByLabelText('Category');
       const conditionSelect = screen.getByLabelText('Condition');
       const priceInput = screen.getByLabelText('Price ($)');
-      // Seller name input removed; server provides seller name from session
+      const locationInput = screen.getByLabelText('Location');
+      const useLocationButton = screen.getByRole('button', {
+        name: /Use my current location/i,
+      });
       const fileInput = screen.getByLabelText('Upload Files');
 
       // Fill out fields with valid values
@@ -437,14 +457,23 @@ describe('Add Listing Page', () => {
         target: { value: 'Bundle of baby clothes' },
       });
       fireEvent.blur(titleInput);
+
       fireEvent.change(categorySelect, { target: { value: 'clothing' } });
       fireEvent.blur(categorySelect);
+
       fireEvent.change(conditionSelect, { target: { value: 'good' } });
       fireEvent.blur(conditionSelect);
+
       fireEvent.change(priceInput, { target: { value: '10.00' } });
       fireEvent.blur(priceInput); // trigger any blur-based validation
-      // no-op: seller name handled server-side
 
+      // New: location + geolocation
+      fireEvent.change(locationInput, {
+        target: { value: 'San Leandro, CA' },
+      });
+      fireEvent.click(useLocationButton);
+
+      // File input
       const okFile = new File([new ArrayBuffer(1024)], 'ok.jpg', {
         type: 'image/jpeg',
       });
@@ -567,6 +596,8 @@ describe('Add Listing Page', () => {
             size: '6M',
             ageRange: '3-6 months',
             location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             sellerName: 'Test Seller',
             description: 'Beautiful baby onesie',
             image: mockFile,
@@ -661,11 +692,13 @@ describe('Add Listing Page', () => {
             price: '25.00',
             sellerName: 'Test Seller',
             image: mockFile,
-            // Missing optional fields
+            // Optional fields
             size: null,
             ageRange: null,
-            location: null,
+            location: 'San Leandro, CA',
             description: null,
+            lat: '37.725',
+            lng: '-122.155',
           };
           return data[key] || null;
         }),
@@ -678,8 +711,8 @@ describe('Add Listing Page', () => {
         expect.objectContaining({
           size: '',
           ageRange: '',
-          location: '',
           description: '',
+          location: 'San Leandro, CA',
         }),
       );
     });
@@ -695,6 +728,8 @@ describe('Add Listing Page', () => {
             size: 'Large',
             ageRange: '2-3 years',
             location: 'San Jose, CA',
+            lat: '37.338',
+            lng: '-121.886',
             sellerName: 'Seller 123',
             description: 'Great book!',
             image: mockFile,
@@ -732,6 +767,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '20.00',
             sellerName: 'Valid Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: null,
           };
           return data[key];
@@ -757,6 +795,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '20.00',
             sellerName: 'Valid Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: 'not-a-file',
           };
           return data[key];
@@ -789,6 +830,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '20.00',
             sellerName: 'Valid Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: invalidFile,
           };
           return data[key];
@@ -814,6 +858,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '20.00',
             sellerName: 'Test Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: mockFile,
           };
           return data[key];
@@ -842,6 +889,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '20.00',
             sellerName: 'Test Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: mockFile,
           };
           return data[key];
@@ -870,6 +920,9 @@ describe('Add Listing Page', () => {
             condition: 'new',
             price: '30.00',
             sellerName: 'Test Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: mockFile,
           };
           return data[key];
@@ -892,6 +945,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '5.00',
             sellerName: 'Test Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: mockFile,
           };
           return data[key];
@@ -938,6 +994,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '12.999',
             sellerName: 'Test Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: mockFile,
           };
           return data[key] || null;
@@ -959,6 +1018,9 @@ describe('Add Listing Page', () => {
             condition: 'like-new',
             price: '12.99',
             sellerName: 'Test Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: mockFile,
           };
           return data[key];
@@ -992,6 +1054,9 @@ describe('Add Listing Page', () => {
             condition: 'good',
             price: '8.50',
             sellerName: 'Test Seller',
+            location: 'Fremont, CA',
+            lat: '37.725',
+            lng: '-122.155',
             image: mockFile,
           };
           return data[key];

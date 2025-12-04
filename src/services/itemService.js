@@ -50,6 +50,12 @@ function normalizeItem(i) {
     sellerName: i.sellerName ?? '',
     sellerEmail: i.sellerEmail ?? '',
     createdAt: i.createdAt ?? null,
+    distanceMeters:
+      typeof i.distanceMeters === 'number'
+        ? i.distanceMeters
+        : i.distanceMeters != null
+          ? Number(i.distanceMeters)
+          : null,
   };
 }
 

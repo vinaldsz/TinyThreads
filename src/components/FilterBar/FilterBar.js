@@ -45,6 +45,7 @@ export default function FilterBar({
     { value: 'oldest', label: 'Oldest First' },
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'distance', label: 'Distance (Closest First)' },
   ];
 
   const handleFilterChange = (key, value) => {

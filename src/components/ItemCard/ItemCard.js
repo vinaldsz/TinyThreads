@@ -8,6 +8,13 @@ export default function ItemCard({ item }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const distanceMiles = useMemo(() => {
+    if (!item || item.distanceMeters == null) return null;
+    const miles = item.distanceMeters / 1609.34;
+    return Number.isFinite(miles) ? miles.toFixed(1) : null;
+  }, [item]);
+
   const cleanImageUrl = (url) => {
     if (!url || url === 'undefined') return null;
 
@@ -226,6 +233,13 @@ export default function ItemCard({ item }) {
           </span>
           <span className={styles.ageRange}>{item.ageRange}</span>
         </div>
+        {distanceMiles && (
+          <div className={styles.distanceRow}>
+            <span className={styles.distanceText}>
+              ~{distanceMiles} miles away
+            </span>
+          </div>
+        )}
 
         {/* Title */}
         <h3 className={styles.title}>{item.title}</h3>
