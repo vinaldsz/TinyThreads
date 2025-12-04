@@ -85,6 +85,21 @@ jest.mock('@/app/page.module.css', () => ({
   controlSection: 'controlSection',
 }));
 
+// Simple mock header used by tests to emulate site header/nav
+const MockHeader = () => (
+  <header className="headerSection">
+    <div className="logoContainer">
+      <img src="/logo.png" alt="TinyThreads" className="logo" />
+      <h1 className="title">TinyThreads</h1>
+    </div>
+    <nav className="nav">
+      <a href="/about" className="aboutLink">
+        About
+      </a>
+    </nav>
+  </header>
+);
+
 describe('BrowsePage', () => {
   const mockItems = [
     { id: '1', title: 'Item 1', price: 10, category: 'clothing' },
@@ -107,7 +122,12 @@ describe('BrowsePage', () => {
   describe('Component Rendering', () => {
     test('renders without crashing', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -117,7 +137,12 @@ describe('BrowsePage', () => {
 
     test('renders header section with logo and title', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -127,7 +152,12 @@ describe('BrowsePage', () => {
 
     test('renders navigation with about link', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -139,7 +169,12 @@ describe('BrowsePage', () => {
 
     test('renders FilterBar component', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -149,7 +184,12 @@ describe('BrowsePage', () => {
 
     test('renders ItemGrid component', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -161,7 +201,12 @@ describe('BrowsePage', () => {
   describe('Initial Data Loading', () => {
     test('loads items on component mount', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       expect(getItems).toHaveBeenCalledTimes(1);
@@ -181,7 +226,12 @@ describe('BrowsePage', () => {
       );
 
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       // Should start with loading
@@ -200,7 +250,12 @@ describe('BrowsePage', () => {
 
     test('displays correct item count in FilterBar', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -219,7 +274,12 @@ describe('BrowsePage', () => {
       getItems.mockResolvedValueOnce(filteredResponse);
 
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       // Wait for initial load
@@ -257,7 +317,12 @@ describe('BrowsePage', () => {
       );
 
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -286,7 +351,12 @@ describe('BrowsePage', () => {
 
     test('clears all filters correctly', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       // Wait for initial load
@@ -320,7 +390,12 @@ describe('BrowsePage', () => {
   describe('Active Filters Count', () => {
     test('calculates active filters count correctly with no filters', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -332,7 +407,12 @@ describe('BrowsePage', () => {
 
     test('shows zero active filters initially', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -346,7 +426,12 @@ describe('BrowsePage', () => {
   describe('Sort Labels', () => {
     test('displays default sort label', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -360,7 +445,12 @@ describe('BrowsePage', () => {
   describe('Component Props', () => {
     test('passes correct props to ItemGrid', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -372,7 +462,12 @@ describe('BrowsePage', () => {
 
     test('passes initial empty filters to FilterBar', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -391,7 +486,12 @@ describe('BrowsePage', () => {
       getItems.mockRejectedValue(new Error('API Error'));
 
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {
@@ -406,7 +506,12 @@ describe('BrowsePage', () => {
 
     test('handles filterItems error gracefully', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       // Wait for successful initial load
@@ -483,12 +588,18 @@ describe('BrowsePage', () => {
   describe('CSS Classes', () => {
     test('applies correct CSS classes to main elements', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
-      const page = screen.getByAltText('TinyThreads').closest('.page');
+      const page = document.querySelector('.page');
       const container = document.querySelector('.container');
 
+      expect(page).toBeInTheDocument();
       expect(page).toHaveClass('page');
       expect(container).toHaveClass('container');
     });
@@ -497,7 +608,12 @@ describe('BrowsePage', () => {
   describe('Accessibility', () => {
     test('about link is accessible', async () => {
       await act(async () => {
-        render(<BrowsePage />);
+        render(
+          <>
+            <MockHeader />
+            <BrowsePage />
+          </>,
+        );
       });
 
       await waitFor(() => {

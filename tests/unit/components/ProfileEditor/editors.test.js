@@ -125,6 +125,69 @@ describe('ProfileEditor components', () => {
         expect(screen.queryByText('Updated bio')).toBeInTheDocument(),
       );
     });
+
+    it('shows No bio when no initialBio and fetch returns no bio', async () => {
+      // mock /api/me to return no bio
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ user: {} }),
+      });
+
+      render(<AboutEditor initialBio={undefined} />);
+
+      // Wait for effect to fetch and update
+      await waitFor(() =>
+        expect(screen.getByText(/No bio/i)).toBeInTheDocument(),
+      );
+    });
+
+    it('loads bio from /api/me when initialBio not provided', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ user: { bio: 'Fetched bio' } }),
+      });
+
+      render(<AboutEditor initialBio={undefined} />);
+
+      await waitFor(() =>
+        expect(screen.getByText('Fetched bio')).toBeInTheDocument(),
+      );
+    });
+
+    it('displays error message when save fails', async () => {
+      render(<AboutEditor initialBio="Start bio" />);
+      fireEvent.click(screen.getByLabelText('Edit about'));
+
+      const textarea = screen.getByRole('textbox');
+      fireEvent.change(textarea, { target: { value: 'Will fail' } });
+
+      global.fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ message: 'boom' }),
+      });
+
+      fireEvent.click(screen.getByText('Save'));
+
+      await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+      await waitFor(() =>
+        expect(screen.getByText(/boom|Save failed/i)).toBeInTheDocument(),
+      );
+    });
+
+    it('cancels edits and restores initial bio', async () => {
+      render(<AboutEditor initialBio="Orig bio" />);
+      fireEvent.click(screen.getByLabelText('Edit about'));
+
+      const textarea = screen.getByRole('textbox');
+      fireEvent.change(textarea, { target: { value: 'Changed bio' } });
+
+      // click cancel
+      fireEvent.click(screen.getByText('Cancel'));
+
+      await waitFor(() =>
+        expect(screen.getByText('Orig bio')).toBeInTheDocument(),
+      );
+    });
   });
 
   describe('AvatarEditor', () => {
@@ -172,6 +235,43 @@ describe('ProfileEditor components', () => {
         expect(img).toBeTruthy();
         expect(img.src).toContain('https://example.com/avatar.png');
       });
+    });
+
+    it('shows error for non-image file selection', async () => {
+      render(<AvatarEditor initialAvatar="" />);
+
+      const file = new File(['not-image'], 'doc.txt', { type: 'text/plain' });
+      const fileInput = document.querySelector('input[type="file"]');
+
+      fireEvent.change(fileInput, { target: { files: [file] } });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(/Please select an image file\.|Upload failed/i),
+        ).toBeInTheDocument(),
+      );
+    });
+
+    it('shows error when upload fails', async () => {
+      render(<AvatarEditor initialAvatar="" />);
+
+      const file = new File(['(binary)'], 'avatar.png', { type: 'image/png' });
+      const fileInput = document.querySelector('input[type="file"]');
+
+      // Mock failing upload
+      global.fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ message: 'upload boom' }),
+      });
+
+      fireEvent.change(fileInput, { target: { files: [file] } });
+
+      await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+      await waitFor(() =>
+        expect(
+          screen.getByText(/upload boom|Upload failed/i),
+        ).toBeInTheDocument(),
+      );
     });
   });
 });
