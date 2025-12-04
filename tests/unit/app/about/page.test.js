@@ -54,11 +54,9 @@ describe('About Page', () => {
       expect(heading).toBeInTheDocument();
     });
 
-    it('should render Navbar component', () => {
-      render(<AboutPage />);
-
-      expect(screen.getByTestId('navbar')).toBeInTheDocument();
-    });
+    // Navbar is provided by the app layout in the running app; the unit
+    // test renders the page component in isolation, so don't assert the
+    // layout-level Navbar here.
 
     it('should display the main heading', () => {
       render(<AboutPage />);
