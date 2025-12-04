@@ -1,5 +1,3 @@
-/* components/ItemCard/ItemCard.module.css */
-
 .card {
   background: white;
   border-radius: 12px;
@@ -177,6 +175,25 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+}
+
+.distanceRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.distanceText {
+  font-size: 0.75rem;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.distanceText::before {
+  content: '📍';
+  font-size: 0.8rem;
 }
 
 .category {

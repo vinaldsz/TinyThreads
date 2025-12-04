@@ -16,6 +16,8 @@ export default function BrowsePage() {
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({});
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState('');
   // default rowsPerPage is 3 in the hook (3 rows × 3 columns = 9 items)
   const itemsPerPage = useItemsPerPage();
 
@@ -52,12 +54,69 @@ export default function BrowsePage() {
   }, [loadPage, filters, itemsPerPage]);
 
   const handleFiltersChange = (newFilters) => {
-    setFilters(newFilters);
+    const wantsDistance = newFilters.sortBy === 'distance';
+
+    if (wantsDistance) {
+      // If we already have a cached location, reuse it
+      if (userLocation) {
+        setLocationError('');
+        setFilters({
+          ...newFilters,
+          lat: userLocation.lat,
+          lng: userLocation.lng,
+        });
+        return;
+      }
+
+      // If geolocation is not supported, fall back to newest
+      if (typeof navigator === 'undefined' || !navigator.geolocation) {
+        setLocationError('Location is not supported on this device.');
+        setFilters({ ...newFilters, sortBy: 'newest' });
+        return;
+      }
+
+      // Ask for location once
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const loc = {
+            lat: Number(pos.coords.latitude.toFixed(3)),
+            lng: Number(pos.coords.longitude.toFixed(3)),
+          };
+          setUserLocation(loc);
+          setLocationError('');
+          setFilters({
+            ...newFilters,
+            lat: loc.lat,
+            lng: loc.lng,
+          });
+        },
+        (err) => {
+          console.error('Geolocation error:', err);
+          setLocationError(
+            'Could not access your location. Showing newest listings instead.',
+          );
+          setFilters({ ...newFilters, sortBy: 'newest' });
+        },
+        { timeout: 8000 },
+      );
+      return;
+    }
+
+    // Non-distance sorts: ensure we strip out any lat/lng from previous distance filters
+    const rest = Object.fromEntries(
+      Object.entries(newFilters).filter(
+        ([key]) => key !== 'lat' && key !== 'lng',
+      ),
+    );
+    setLocationError('');
+    setFilters(rest);
     // loadPage effect will run due to filters dependency
   };
 
   const clearAllFilters = () => {
     const clearedFilters = {};
+    setLocationError('');
+    setUserLocation(null);
     setFilters(clearedFilters);
     // loadPage effect will reset filtered items
   };
@@ -71,9 +130,10 @@ export default function BrowsePage() {
 
   // calculate active filters count
   const getActiveFiltersCount = () => {
-    const { sortBy, ...rest } = filters;
-    void sortBy;
-    return Object.values(rest).filter((value) => value && value !== '').length;
+    return Object.entries(filters).filter(([key, value]) => {
+      if (key === 'sortBy' || key === 'lat' || key === 'lng') return false;
+      return Boolean(value && value !== '');
+    }).length;
   };
 
   // get sort label
@@ -83,6 +143,7 @@ export default function BrowsePage() {
       oldest: 'Oldest first',
       'price-low': 'Price: Low to High',
       'price-high': 'Price: High to Low',
+      distance: 'Distance (Closest first)',
     };
     return sortLabels[filters.sortBy] || 'Newest first';
   };
@@ -101,6 +162,9 @@ export default function BrowsePage() {
             activeFiltersCount={getActiveFiltersCount()}
             sortLabel={getSortLabel()}
           />
+          {locationError && (
+            <p className={styles.locationError}>{locationError}</p>
+          )}
         </section>
 
         {/* Content Section */}
