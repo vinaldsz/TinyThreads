@@ -10,16 +10,14 @@ jest.mock('next/server', () => ({
 
 jest.mock('next-auth', () => ({ getServerSession: jest.fn() }));
 jest.mock('@/app/api/auth/[...nextauth]/route', () => ({ authOptions: {} }));
-jest.mock('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/lib/mongodb', () => ({
+jest.mock('@/lib/mongodb', () => ({
   getDb: jest.fn(),
 }));
 
 const { getServerSession } = require('next-auth');
-const {
-  getDb,
-} = require('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/lib/mongodb');
+const { getDb } = require('@/lib/mongodb');
 
-const meRoute = require('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/app/api/me/route');
+const meRoute = require('@/app/api/me/route');
 
 describe('/api/me route', () => {
   beforeEach(() => {

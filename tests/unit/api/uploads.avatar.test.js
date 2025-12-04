@@ -10,23 +10,16 @@ jest.mock('next/server', () => ({
 
 jest.mock('next-auth', () => ({ getServerSession: jest.fn() }));
 jest.mock('@/app/api/auth/[...nextauth]/route', () => ({ authOptions: {} }));
-jest.mock('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/lib/mongodb', () => ({
+jest.mock('@/lib/mongodb', () => ({
   getDb: jest.fn(),
 }));
-jest.mock(
-  '/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/lib/awss3.js',
-  () => ({ uploadImageToS3: jest.fn() }),
-);
+jest.mock('@/lib/awss3.js', () => ({ uploadImageToS3: jest.fn() }));
 
 const { getServerSession } = require('next-auth');
-const {
-  getDb,
-} = require('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/lib/mongodb');
-const {
-  uploadImageToS3,
-} = require('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/lib/awss3.js');
+const { getDb } = require('@/lib/mongodb');
+const { uploadImageToS3 } = require('@/lib/awss3.js');
 
-const uploadRoute = require('/Users/vinaldsouza/Desktop/SWE/TinyThreads/src/app/api/uploads/avatar/upload/route');
+const uploadRoute = require('@/app/api/uploads/avatar/upload/route');
 
 describe('/api/uploads/avatar/upload route', () => {
   beforeEach(() => jest.clearAllMocks());
