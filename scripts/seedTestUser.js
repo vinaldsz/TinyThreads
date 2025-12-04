@@ -61,11 +61,18 @@ function loadEnvLocal() {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+    const now = new Date();
     const user = {
       name,
+      displayName: name,
       email,
       passwordHash,
-      createdAt: new Date(),
+      avatarUrl: '',
+      bio: '',
+      location: '',
+      createdAt: now,
+      updatedAt: now,
+      settings: {},
     };
 
     const res = await users.insertOne(user);

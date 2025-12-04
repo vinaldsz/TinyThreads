@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import styles from './page.module.css';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar/Navbar';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -99,7 +98,6 @@ export default function SignUpPage() {
 
   return (
     <>
-      <Navbar />
       <div className={styles.container}>
         <form
           id="signupForm"

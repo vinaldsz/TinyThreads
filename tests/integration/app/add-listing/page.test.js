@@ -153,6 +153,15 @@ mockRedirect = global.mockRedirect;
 mockUploadImageToS3 = global.mockUploadImageToS3;
 mockCollection = global.mockCollection;
 
+// Helper to render pages with a mock navbar (layout usually provides it)
+const renderWithNavbar = (ui) =>
+  render(
+    <>
+      <div data-testid="navbar">Navbar</div>
+      {ui}
+    </>,
+  );
+
 // ========================================
 // Tests
 // ========================================
@@ -199,7 +208,7 @@ describe('Add Listing Page', () => {
   // ===== CLIENT COMPONENT TESTS =====  — render, structure, and inline validation
   describe('AddListingPage Component', () => {
     test('renders page header correctly', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       // Check that the navbar is rendered (TinyThreads logo)
       expect(screen.getByTestId('navbar')).toBeInTheDocument();
@@ -208,7 +217,7 @@ describe('Add Listing Page', () => {
     });
 
     test('renders all form fields', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       // Check all form inputs
       expect(screen.getByLabelText('Title')).toBeInTheDocument();
@@ -224,7 +233,7 @@ describe('Add Listing Page', () => {
     });
 
     test('has required attributes on required fields', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       expect(screen.getByLabelText('Title')).toHaveAttribute('required');
       expect(screen.getByLabelText('Category')).toHaveAttribute('required');
@@ -234,7 +243,7 @@ describe('Add Listing Page', () => {
     });
 
     test('has correct input types and constraints', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const priceInput = screen.getByLabelText('Price ($)');
       expect(priceInput).toHaveAttribute('type', 'number');
@@ -250,7 +259,7 @@ describe('Add Listing Page', () => {
     });
 
     test('renders all category options', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const categorySelect = screen.getByLabelText('Category');
 
@@ -272,7 +281,7 @@ describe('Add Listing Page', () => {
     });
 
     test('renders all condition options', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const conditionSelect = screen.getByLabelText('Condition');
 
@@ -292,14 +301,14 @@ describe('Add Listing Page', () => {
     });
 
     test('has correct form action', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const form = document.querySelector('form');
       expect(form).toHaveAttribute('id', 'addListingForm');
     });
 
     test('renders action buttons', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       expect(
         screen.getByRole('button', { name: 'Add Listing' }),
@@ -314,7 +323,7 @@ describe('Add Listing Page', () => {
     });
 
     test('has proper form structure', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const form = document.querySelector('form');
       expect(form).toBeInTheDocument();
@@ -324,7 +333,7 @@ describe('Add Listing Page', () => {
     });
 
     test('has proper placeholder text', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       expect(
         screen.getByPlaceholderText('e.g. Organic Cotton Onesie - Pink'),
@@ -342,7 +351,7 @@ describe('Add Listing Page', () => {
     });
 
     test('textarea has correct attributes', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const textarea = screen.getByLabelText('Description');
       expect(textarea.tagName).toBe('TEXTAREA');
@@ -350,7 +359,7 @@ describe('Add Listing Page', () => {
     });
 
     test('allows adding and removing additional file inputs', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       // Initially should have a single file input for images
       let imageInputs = document.querySelectorAll('input[name="image"]');
@@ -382,7 +391,7 @@ describe('Add Listing Page', () => {
     });
 
     test('shows correct file count summary as files are selected', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const fileInput = screen.getByLabelText('Upload Files');
       const smallFile1 = new File([new ArrayBuffer(1024)], 'a.jpg', {
@@ -411,6 +420,7 @@ describe('Add Listing Page', () => {
     });
 
     test('keeps submit button disabled until all internal validation conditions are met', async () => {
+      renderWithNavbar(<AddListingPage />);
       // Mock browser geolocation so "Use my current location" works in tests
       const mockGeolocation = {
         getCurrentPosition: jest.fn((success) =>
@@ -426,8 +436,6 @@ describe('Add Listing Page', () => {
         value: mockGeolocation,
         configurable: true,
       });
-
-      render(<AddListingPage />);
 
       const submitButton = screen.getByRole('button', { name: 'Add Listing' });
       expect(submitButton).toBeDisabled();
@@ -480,7 +488,7 @@ describe('Add Listing Page', () => {
     // Seller name is validated server-side from session; client-side validation test removed.
 
     test('price validation: rejects non-numeric and >2 decimals, accepts valid', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
       const priceInput = screen.getByLabelText('Price ($)');
 
       // Non-numeric
@@ -503,7 +511,7 @@ describe('Add Listing Page', () => {
     });
 
     test('category and condition must be selected (placeholder not allowed)', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
       const category = screen.getByLabelText('Category');
       const condition = screen.getByLabelText('Condition');
 
@@ -518,7 +526,7 @@ describe('Add Listing Page', () => {
     });
 
     test('image validation: too large and non-image show errors and keep submit disabled', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
       const fileInput = screen.getByLabelText('Upload Files');
       const submitButton = screen.getByRole('button', { name: 'Add Listing' });
 
@@ -1072,7 +1080,7 @@ describe('Add Listing Page', () => {
   // ===== INTEGRATION TESTS =====  — consistency between frontend options and backend logic
   describe('integration scenarios', () => {
     test('form and action work together with proper field mapping', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       // Verify form field names match what action expects
       expect(screen.getByLabelText('Title')).toHaveAttribute('name', 'title');
@@ -1109,7 +1117,7 @@ describe('Add Listing Page', () => {
     });
 
     test('category values match between form options and processing', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const categorySelect = screen.getByLabelText('Category');
       const options = categorySelect.querySelectorAll(
@@ -1122,7 +1130,7 @@ describe('Add Listing Page', () => {
     });
 
     test('condition values match between form options and processing', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       const conditionSelect = screen.getByLabelText('Condition');
       const options = conditionSelect.querySelectorAll(
@@ -1137,7 +1145,7 @@ describe('Add Listing Page', () => {
   // ===== ACCESSIBILITY TESTS =====  — label associations and required attributes
   describe('accessibility', () => {
     test('has proper form labels', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       // All inputs should have associated labels
       const inputs = document.querySelectorAll('input, select, textarea');
@@ -1150,7 +1158,7 @@ describe('Add Listing Page', () => {
     });
 
     test('form has accessible structure', () => {
-      render(<AddListingPage />);
+      renderWithNavbar(<AddListingPage />);
 
       // Check that all form inputs have proper labels
       expect(screen.getByLabelText('Title')).toBeInTheDocument();

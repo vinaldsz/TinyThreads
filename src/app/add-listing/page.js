@@ -2,7 +2,6 @@
 // src/app/add-listing/page.js
 import Link from 'next/link';
 import styles from './page.module.css';
-import Navbar from '@/components/Navbar/Navbar';
 import { useState } from 'react';
 import { uploadListingAction } from './actions';
 
@@ -255,7 +254,6 @@ export default function AddListingPage() {
 
   return (
     <div className={styles.page}>
-      <Navbar />
       <div className={styles.backSection}>
         <Link href="/" className={styles.backButton}>
           ← Back to Browse

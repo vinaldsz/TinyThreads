@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 
 const {
@@ -62,6 +63,27 @@ export async function uploadImageToS3(
   await s3.send(putCmd);
 
   return { key, imageUrl: getPublicUrl(key) };
+}
+
+export async function getPresignedUploadUrl(
+  key,
+  contentType,
+  { expiresIn = 60 } = {},
+) {
+  if (!key || !contentType) {
+    throw new Error('key and contentType required for presigned url');
+  }
+
+  const putCmd = new PutObjectCommand({
+    Bucket: S3_BUCKET_NAME,
+    Key: key,
+    ContentType: contentType,
+    CacheControl: 'public, max-age=31536000, immutable',
+  });
+
+  const signedUrl = await getSignedUrl(s3, putCmd, { expiresIn });
+  const publicUrl = getPublicUrl(key);
+  return { signedUrl, publicUrl, key };
 }
 
 export default s3;
