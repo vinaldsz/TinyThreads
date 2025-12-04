@@ -437,8 +437,6 @@ describe('Add Listing Page', () => {
         configurable: true,
       });
 
-      render(<AddListingPage />);
-
       const submitButton = screen.getByRole('button', { name: 'Add Listing' });
       expect(submitButton).toBeDisabled();
 
