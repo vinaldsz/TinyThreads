@@ -24,6 +24,11 @@ export async function uploadListingAction(formData) {
     const size = formData.get('size');
     const ageRange = formData.get('ageRange');
     const location = formData.get('location');
+    const latStr = formData.get('lat');
+    const lngStr = formData.get('lng');
+    const lat = latStr ? Number(latStr) : null;
+    const lng = lngStr ? Number(lngStr) : null;
+    const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
     const description = formData.get('description');
 
     // Server-side validations
@@ -42,6 +47,17 @@ export async function uploadListingAction(formData) {
     const allowedConditions = ['new', 'like-new', 'good', 'fair'];
     if (!allowedConditions.includes(String(condition || '')))
       redirect('/add-listing?err=invalid_condition');
+
+    // Require a human-readable location string
+    const loc = (location || '').trim();
+    if (!loc) {
+      redirect('/add-listing?err=invalid_location');
+    }
+
+    // Require valid coordinates so every listing is geolocated
+    if (!hasCoords) {
+      redirect('/add-listing?err=missing_coords');
+    }
 
     let finalPriceRaw = String(price ?? '').trim();
     if (isDonation) {
@@ -121,6 +137,12 @@ export async function uploadListingAction(formData) {
       category: String(category),
       ageRange: ageRange ? String(ageRange) : '',
       location: location ? String(location) : '',
+      ...(hasCoords && {
+        geoLocation: {
+          type: 'Point',
+          coordinates: [lng, lat], // IMPORTANT: [longitude, latitude]
+        },
+      }),
       status: 'available',
       createdAt: new Date(),
       sellerId: new ObjectId(session.user.id),
