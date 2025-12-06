@@ -43,15 +43,11 @@ describe('GET /api/items', () => {
     mockCollection = {
       find: jest.fn(() => ({
         sort: jest.fn(() => ({
-          skip: jest.fn(() => ({
-            limit: jest.fn(() => ({
-              toArray: jest.fn().mockResolvedValue(mockItems),
-            })),
+          limit: jest.fn(() => ({
+            toArray: jest.fn().mockResolvedValue(mockItems),
           })),
         })),
       })),
-      // New pagination behavior uses countDocuments
-      countDocuments: jest.fn().mockResolvedValue(mockItems.length),
     };
 
     mockDb = {
@@ -165,10 +161,8 @@ describe('GET /api/items', () => {
   it('should sort by newest (default)', async () => {
     const request = new Request('http://localhost:3000/api/items');
     const mockSort = jest.fn(() => ({
-      skip: jest.fn(() => ({
-        limit: jest.fn(() => ({
-          toArray: jest.fn().mockResolvedValue(mockItems),
-        })),
+      limit: jest.fn(() => ({
+        toArray: jest.fn().mockResolvedValue(mockItems),
       })),
     }));
 
@@ -184,10 +178,8 @@ describe('GET /api/items', () => {
       'http://localhost:3000/api/items?sortBy=oldest',
     );
     const mockSort = jest.fn(() => ({
-      skip: jest.fn(() => ({
-        limit: jest.fn(() => ({
-          toArray: jest.fn().mockResolvedValue(mockItems),
-        })),
+      limit: jest.fn(() => ({
+        toArray: jest.fn().mockResolvedValue(mockItems),
       })),
     }));
 
@@ -203,10 +195,8 @@ describe('GET /api/items', () => {
       'http://localhost:3000/api/items?sortBy=price-low',
     );
     const mockSort = jest.fn(() => ({
-      skip: jest.fn(() => ({
-        limit: jest.fn(() => ({
-          toArray: jest.fn().mockResolvedValue(mockItems),
-        })),
+      limit: jest.fn(() => ({
+        toArray: jest.fn().mockResolvedValue(mockItems),
       })),
     }));
 
@@ -222,10 +212,8 @@ describe('GET /api/items', () => {
       'http://localhost:3000/api/items?sortBy=price-high',
     );
     const mockSort = jest.fn(() => ({
-      skip: jest.fn(() => ({
-        limit: jest.fn(() => ({
-          toArray: jest.fn().mockResolvedValue(mockItems),
-        })),
+      limit: jest.fn(() => ({
+        toArray: jest.fn().mockResolvedValue(mockItems),
       })),
     }));
 
@@ -243,7 +231,7 @@ describe('GET /api/items', () => {
     }));
 
     mockCollection.find.mockReturnValue({
-      sort: jest.fn(() => ({ skip: jest.fn(() => ({ limit: mockLimit })) })),
+      sort: jest.fn(() => ({ limit: mockLimit })),
     });
 
     await GET(request);
@@ -258,12 +246,12 @@ describe('GET /api/items', () => {
     }));
 
     mockCollection.find.mockReturnValue({
-      sort: jest.fn(() => ({ skip: jest.fn(() => ({ limit: mockLimit })) })),
+      sort: jest.fn(() => ({ limit: mockLimit })),
     });
 
     await GET(request);
 
-    expect(mockLimit).toHaveBeenCalledWith(12);
+    expect(mockLimit).toHaveBeenCalledWith(48);
   });
 
   it('should combine multiple filters', async () => {

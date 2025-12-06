@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable @next/next/no-img-element */
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import JourneySection from '@/app/about/components/JourneySection/JourneySection';
@@ -10,6 +9,7 @@ import JourneySection from '@/app/about/components/JourneySection/JourneySection
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }) => {
+    // eslint-disable-next-line @next/next/no-img-element
     return (
       <img
         src={src}
