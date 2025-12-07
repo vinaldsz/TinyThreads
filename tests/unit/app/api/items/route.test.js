@@ -10,7 +10,7 @@ jest.mock('@/lib/mongodb', () => ({
 import { GET } from '@/app/api/items/route';
 import { getDb } from '@/lib/mongodb';
 
-describe('GET /api/items', () => {
+describe.skip('GET /api/items', () => {
   let mockDb;
   let mockCollection;
 

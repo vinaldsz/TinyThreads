@@ -97,7 +97,9 @@ describe('Favorites Page', () => {
       render(<FavoritesPage />);
 
       await waitFor(() => {
-        expect(screen.getByText('No favorites yet')).toBeInTheDocument();
+        expect(
+          screen.getByRole('heading', { name: 'No favorites yet' }),
+        ).toBeInTheDocument();
       });
 
       expect(
@@ -328,7 +330,9 @@ describe('Favorites Page', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledTimes(2);
-        expect(screen.getByText('No favorites yet')).toBeInTheDocument();
+        expect(screen.getAllByText('No favorites yet').length).toBeGreaterThan(
+          0,
+        );
       });
     });
 

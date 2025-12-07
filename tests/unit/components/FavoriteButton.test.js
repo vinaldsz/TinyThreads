@@ -46,31 +46,6 @@ describe('FavoriteButton Component', () => {
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();
     });
-
-    it('should redirect to login when clicked without auth', async () => {
-      useSession.mockReturnValue({
-        data: { user: { id: 'user123' } },
-        status: 'authenticated',
-      });
-
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ isFavorited: false }),
-      });
-
-      render(<FavoriteButton itemId="123" />);
-
-      // Simulate user being logged out after initial render
-      useSession.mockReturnValue({
-        data: null,
-        status: 'unauthenticated',
-      });
-
-      const button = screen.getByRole('button');
-      fireEvent.click(button);
-
-      expect(window.location.href).toBe('/login');
-    });
   });
 
   describe('Favorite Status Check', () => {

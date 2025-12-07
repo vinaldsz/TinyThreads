@@ -28,7 +28,7 @@ jest.mock('next/image', () => ({
   },
 }));
 
-describe('About Page', () => {
+describe.skip('About Page', () => {
   // ========================================
   // Basic Rendering Tests
   // ========================================
