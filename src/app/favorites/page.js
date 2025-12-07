@@ -7,7 +7,7 @@ import ItemCard from '../../components/ItemCard/ItemCard';
 import styles from './page.module.css';
 
 export default function FavoritesPage() {
-  const {status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export default function FavoritesPage() {
       setError(null);
 
       const response = await fetch('/api/favorites');
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch favorites');
       }
@@ -41,13 +41,13 @@ export default function FavoritesPage() {
       console.log('Favorites API response:', data);
 
       const items = data.favorites
-      .filter(fav => fav.item && fav.item._id) // Only include valid items
-      .map(fav => ({
-        ...fav.item,
-        _id: fav.item._id || fav.item.id,
-        id: fav.item._id || fav.item.id
-      }));
-    
+        .filter((fav) => fav.item && fav.item._id) // Only include valid items
+        .map((fav) => ({
+          ...fav.item,
+          _id: fav.item._id || fav.item.id,
+          id: fav.item._id || fav.item.id,
+        }));
+
       console.log('Processed items:', items);
       setFavorites(items);
     } catch (err) {

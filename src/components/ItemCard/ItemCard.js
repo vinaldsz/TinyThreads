@@ -136,7 +136,6 @@ export default function ItemCard({ item }) {
     router.push(`/Items/${item.id}`);
   };
 
-
   return (
     <div
       className={styles.card}

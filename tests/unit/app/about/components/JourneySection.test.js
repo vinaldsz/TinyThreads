@@ -9,7 +9,6 @@ import JourneySection from '@/app/about/components/JourneySection/JourneySection
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }) => {
-     
     return (
       <img
         src={src}

@@ -17,7 +17,7 @@ const kidsSizes = [
   { value: '24M', label: '24 Months' },
   { value: '2T', label: '2T (2-3 years)' },
   { value: '3T', label: '3T (3-4 years)' },
-  { value: '4T', label: '4T (4-5 years)' }
+  { value: '4T', label: '4T (4-5 years)' },
 ];
 
 // Standardized age range options
@@ -27,7 +27,7 @@ const ageRanges = [
   { value: '6-12M', label: '6-12 Months' },
   { value: '1-2Y', label: '1-2 Years' },
   { value: '2-3Y', label: '2-3 Years' },
-  { value: '3-5Y', label: '3-5 Years' }
+  { value: '3-5Y', label: '3-5 Years' },
 ];
 
 /**
@@ -375,10 +375,10 @@ export default function AddListingPage() {
                 id="size"
                 name="size"
                 required
-                value={size}                
+                value={size}
                 onChange={handleSizeChange}
               >
-                {kidsSizes.map(sizeOption => (
+                {kidsSizes.map((sizeOption) => (
                   <option key={sizeOption.value} value={sizeOption.value}>
                     {sizeOption.label}
                   </option>
@@ -394,7 +394,7 @@ export default function AddListingPage() {
                   }}
                 >
                   {sizeErr}
-              </p>
+                </p>
               )}
             </div>
 
@@ -407,7 +407,7 @@ export default function AddListingPage() {
                 value={ageRange}
                 onChange={handleAgeRangeChange}
               >
-                {ageRanges.map(ageOption => (
+                {ageRanges.map((ageOption) => (
                   <option key={ageOption.value} value={ageOption.value}>
                     {ageOption.label}
                   </option>

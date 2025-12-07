@@ -9,7 +9,6 @@ import TeamCard from '@/app/about/components/TeamCard/TeamCard';
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }) => {
-     
     return (
       <img
         src={src}

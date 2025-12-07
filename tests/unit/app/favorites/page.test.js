@@ -102,8 +102,8 @@ describe('Favorites Page', () => {
 
       expect(
         screen.getByText(
-          'Start exploring and save items you love by clicking the heart icon!'
-        )
+          'Start exploring and save items you love by clicking the heart icon!',
+        ),
       ).toBeInTheDocument();
       expect(screen.getByText('Browse Items')).toBeInTheDocument();
     });
@@ -275,7 +275,7 @@ describe('Favorites Page', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Failed to fetch favorites/i)
+          screen.getByText(/Failed to fetch favorites/i),
         ).toBeInTheDocument();
       });
     });
@@ -364,8 +364,11 @@ describe('Favorites Page', () => {
       fetch.mockImplementationOnce(
         () =>
           new Promise((resolve) =>
-            setTimeout(() => resolve({ ok: true, json: async () => ({}) }), 100)
-          )
+            setTimeout(
+              () => resolve({ ok: true, json: async () => ({}) }),
+              100,
+            ),
+          ),
       );
 
       render(<FavoritesPage />);

@@ -10,13 +10,13 @@ import styles from './page.module.css';
 export default function MyListingsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+
   // State management
   const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Filter states
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,8 +41,10 @@ export default function MyListingsPage() {
         setLoading(true);
         setError('');
 
-        const response = await fetch(`/api/items?sellerId=${session.user.id}&limit=50&sortBy=${sortBy}`);
-        
+        const response = await fetch(
+          `/api/items?sellerId=${session.user.id}&limit=50&sortBy=${sortBy}`,
+        );
+
         if (!response.ok) {
           throw new Error('Failed to fetch listings');
         }
@@ -66,16 +68,17 @@ export default function MyListingsPage() {
 
     // Status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(item => item.status === statusFilter);
+      filtered = filtered.filter((item) => item.status === statusFilter);
     }
 
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(item => 
-        item.title.toLowerCase().includes(query) ||
-        item.description?.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query) ||
+          item.description?.toLowerCase().includes(query) ||
+          item.category.toLowerCase().includes(query),
       );
     }
 
@@ -85,8 +88,8 @@ export default function MyListingsPage() {
   // Calculate stats
   const stats = {
     total: listings.length,
-    available: listings.filter(item => item.status === 'available').length,
-    sold: listings.filter(item => item.status === 'sold').length,
+    available: listings.filter((item) => item.status === 'available').length,
+    sold: listings.filter((item) => item.status === 'sold').length,
     //pending: listings.filter(item => item.status === 'pending').length
   };
 
@@ -147,9 +150,7 @@ export default function MyListingsPage() {
           </div>
           <div className={styles.titleSection}>
             <h1 className={styles.title}>My Listings</h1>
-            <p className={styles.subtitle}>
-              Manage all your posted items
-            </p>
+            <p className={styles.subtitle}>Manage all your posted items</p>
           </div>
         </div>
 
@@ -194,7 +195,7 @@ export default function MyListingsPage() {
               { key: 'available', label: 'Available', count: stats.available },
               { key: 'sold', label: 'Sold', count: stats.sold },
               //{ key: 'pending', label: 'Pending', count: stats.pending }
-            ].map(filter => (
+            ].map((filter) => (
               <button
                 key={filter.key}
                 className={`${styles.statusButton} ${statusFilter === filter.key ? styles.active : ''}`}
@@ -242,11 +243,7 @@ export default function MyListingsPage() {
         </div>
 
         {/* Error Message */}
-        {error && (
-          <div className={styles.errorMessage}>
-            {error}
-          </div>
-        )}
+        {error && <div className={styles.errorMessage}>{error}</div>}
 
         {/* Results */}
         <div className={styles.resultsInfo}>
@@ -259,18 +256,16 @@ export default function MyListingsPage() {
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>📦</div>
               <h3>
-                {statusFilter === 'all' 
+                {statusFilter === 'all'
                   ? "You haven't posted any listings yet"
-                  : `No ${statusFilter} listings found`
-                }
+                  : `No ${statusFilter} listings found`}
               </h3>
               <p>
-                {searchQuery 
+                {searchQuery
                   ? `No results found for "${searchQuery}"`
                   : statusFilter === 'all'
-                    ? "Start selling your baby items to other parents in your community!"
-                    : `You don't have any ${statusFilter} listings at the moment.`
-                }
+                    ? 'Start selling your baby items to other parents in your community!'
+                    : `You don't have any ${statusFilter} listings at the moment.`}
               </p>
               {statusFilter === 'all' && !searchQuery && (
                 <Link href="/add-listing" className={styles.emptyActionButton}>
@@ -279,20 +274,23 @@ export default function MyListingsPage() {
               )}
             </div>
           ) : (
-            <div className={`${styles.itemsContainer} ${viewMode === 'list' ? styles.listView : styles.gridView}`}>
+            <div
+              className={`${styles.itemsContainer} ${viewMode === 'list' ? styles.listView : styles.gridView}`}
+            >
               {filteredListings.map((item) => (
-        
                 <div key={item._id} className={styles.itemWrapper}>
                   <ItemCard item={item} />
                   <div className={styles.itemActions}>
-                    <span className={`${styles.statusBadge} ${styles[item.status] || styles.available}`}>
+                    <span
+                      className={`${styles.statusBadge} ${styles[item.status] || styles.available}`}
+                    >
                       {item.status === 'available' && '✓ Available'}
                       {item.status === 'sold' && '✗ Sold'}
                       {/*{item.status === 'pending' && '⏳ Pending'} */}
                     </span>
                     <div className={styles.actionButtons}>
-                      <Link 
-                        href={`/Items/${item._id}`} 
+                      <Link
+                        href={`/Items/${item._id}`}
                         className={styles.viewButton}
                       >
                         View

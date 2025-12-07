@@ -19,7 +19,7 @@ export async function GET(req) {
     if (!itemId) {
       return NextResponse.json(
         { error: 'Item ID is required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -28,22 +28,21 @@ export async function GET(req) {
 
     // Check if item is favorited by user
     const favorite = await favoritesCollection.findOne({
-      userId: ObjectId.isValid(session.user.id) 
-        ? new ObjectId(session.user.id) 
+      userId: ObjectId.isValid(session.user.id)
+        ? new ObjectId(session.user.id)
         : session.user.id,
-      itemId: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId
+      itemId: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId,
     });
 
     return NextResponse.json({
       isFavorited: !!favorite,
-      favoriteId: favorite?._id?.toString() || null
+      favoriteId: favorite?._id?.toString() || null,
     });
-
   } catch (error) {
     console.error('Error checking favorite status:', error);
     return NextResponse.json(
       { error: 'Failed to check favorite status' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -21,33 +21,32 @@ export async function GET() {
       .aggregate([
         {
           $match: {
-            userId: ObjectId.isValid(session.user.id) 
-              ? new ObjectId(session.user.id) 
-              : session.user.id
-          }
+            userId: ObjectId.isValid(session.user.id)
+              ? new ObjectId(session.user.id)
+              : session.user.id,
+          },
         },
         {
           $lookup: {
             from: 'Listings',
             localField: 'itemId',
             foreignField: '_id',
-            as: 'item'
-          }
+            as: 'item',
+          },
         },
         {
-          $unwind: '$item'
+          $unwind: '$item',
         },
         {
-          $sort: { createdAt: -1 }
-        }
+          $sort: { createdAt: -1 },
+        },
       ])
       .toArray();
 
-    const validFavorites = favorites.filter(fav => fav.item && fav.item._id);
-
+    const validFavorites = favorites.filter((fav) => fav.item && fav.item._id);
 
     // Serialize the data
-    const serializedFavorites = validFavorites.map(fav => ({
+    const serializedFavorites = validFavorites.map((fav) => ({
       _id: fav._id.toString(),
       userId: fav.userId.toString(),
       itemId: fav.itemId.toString(),
@@ -70,20 +69,19 @@ export async function GET() {
         sellerName: fav.item.sellerName,
         createdAt: fav.item.createdAt,
         buyerUsername: fav.item.buyerUsername || null,
-        distanceMeters: fav.item.distanceMeters || null
-      }
+        distanceMeters: fav.item.distanceMeters || null,
+      },
     }));
 
     return NextResponse.json({
       favorites: serializedFavorites,
-      total: serializedFavorites.length
+      total: serializedFavorites.length,
     });
-
   } catch (error) {
     console.error('Error fetching favorites:', error);
     return NextResponse.json(
       { error: 'Failed to fetch favorites' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -100,7 +98,7 @@ export async function POST(req) {
     if (!itemId) {
       return NextResponse.json(
         { error: 'Item ID is required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -110,55 +108,54 @@ export async function POST(req) {
 
     // Validate item exists
     const itemExists = await itemsCollection.findOne({
-      _id: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId
+      _id: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId,
     });
 
     if (!itemExists) {
-      return NextResponse.json(
-        { error: 'Item not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
 
     // Check if already favorited
     const existingFavorite = await favoritesCollection.findOne({
-      userId: ObjectId.isValid(session.user.id) 
-        ? new ObjectId(session.user.id) 
+      userId: ObjectId.isValid(session.user.id)
+        ? new ObjectId(session.user.id)
         : session.user.id,
-      itemId: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId
+      itemId: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId,
     });
 
     if (existingFavorite) {
       return NextResponse.json(
         { error: 'Item already in favorites' },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     // Add to favorites
     const favorite = {
-      userId: ObjectId.isValid(session.user.id) 
-        ? new ObjectId(session.user.id) 
+      userId: ObjectId.isValid(session.user.id)
+        ? new ObjectId(session.user.id)
         : session.user.id,
       itemId: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     const result = await favoritesCollection.insertOne(favorite);
 
-    return NextResponse.json({
-      _id: result.insertedId.toString(),
-      userId: favorite.userId.toString(),
-      itemId: favorite.itemId.toString(),
-      createdAt: favorite.createdAt,
-      message: 'Item added to favorites'
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        _id: result.insertedId.toString(),
+        userId: favorite.userId.toString(),
+        itemId: favorite.itemId.toString(),
+        createdAt: favorite.createdAt,
+        message: 'Item added to favorites',
+      },
+      { status: 201 },
+    );
   } catch (error) {
     console.error('Error adding to favorites:', error);
     return NextResponse.json(
       { error: 'Failed to add to favorites' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -177,7 +174,7 @@ export async function DELETE(req) {
     if (!itemId) {
       return NextResponse.json(
         { error: 'Item ID is required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -186,28 +183,27 @@ export async function DELETE(req) {
 
     // Remove from favorites
     const result = await favoritesCollection.deleteOne({
-      userId: ObjectId.isValid(session.user.id) 
-        ? new ObjectId(session.user.id) 
+      userId: ObjectId.isValid(session.user.id)
+        ? new ObjectId(session.user.id)
         : session.user.id,
-      itemId: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId
+      itemId: ObjectId.isValid(itemId) ? new ObjectId(itemId) : itemId,
     });
 
     if (result.deletedCount === 0) {
       return NextResponse.json(
         { error: 'Favorite not found' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json({
-      message: 'Item removed from favorites'
+      message: 'Item removed from favorites',
     });
-
   } catch (error) {
     console.error('Error removing from favorites:', error);
     return NextResponse.json(
       { error: 'Failed to remove from favorites' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

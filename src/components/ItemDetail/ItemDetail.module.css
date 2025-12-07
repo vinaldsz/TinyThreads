@@ -510,29 +510,28 @@
 /* CHANGE 3: Moved loginButton styles BEFORE media query 
    THIS WAS THE MAIN BUG - button wasn't styled on desktop */
 .loginButton {
-    background-color: #ffffff;
-    color: #495057;
-    padding: 12px 24px;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease,
-      transform 0.1s ease;
+  background-color: #ffffff;
+  color: #495057;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
 }
-  
+
 .loginButton:hover {
-    background-color: #f1f3f5;
-    border-color: #ced4da;
-    color: #343a40;
-    transform: translateY(-1px);
+  background-color: #f1f3f5;
+  border-color: #ced4da;
+  color: #343a40;
+  transform: translateY(-1px);
 }
-  
 
 /* CHANGE 4: Moved soldNotice styles BEFORE media query */
 .soldNotice {

@@ -59,7 +59,7 @@ describe('FavoriteButton Component', () => {
       });
 
       render(<FavoriteButton itemId="123" />);
-      
+
       // Simulate user being logged out after initial render
       useSession.mockReturnValue({
         data: null,
@@ -89,7 +89,7 @@ describe('FavoriteButton Component', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          '/api/favorites/check?itemId=item123'
+          '/api/favorites/check?itemId=item123',
         );
       });
     });
@@ -181,10 +181,9 @@ describe('FavoriteButton Component', () => {
       fireEvent.click(button);
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(
-          '/api/favorites?itemId=item123',
-          { method: 'DELETE' }
-        );
+        expect(fetch).toHaveBeenCalledWith('/api/favorites?itemId=item123', {
+          method: 'DELETE',
+        });
       });
     });
 
@@ -218,7 +217,7 @@ describe('FavoriteButton Component', () => {
 
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          'Something went wrong. Please try again.'
+          'Something went wrong. Please try again.',
         );
       });
     });
@@ -246,7 +245,7 @@ describe('FavoriteButton Component', () => {
       });
 
       const button = screen.getByRole('button');
-      
+
       // Click multiple times rapidly
       fireEvent.click(button);
       fireEvent.click(button);
@@ -272,7 +271,7 @@ describe('FavoriteButton Component', () => {
       });
 
       render(<FavoriteButton itemId="123" className="custom-class" />);
-      
+
       const button = screen.getByRole('button');
       expect(button).toHaveClass('custom-class');
     });
@@ -323,9 +322,9 @@ describe('FavoriteButton Component', () => {
                   ok: true,
                   json: async () => ({ _id: 'fav123' }),
                 }),
-              100
-            )
-          )
+              100,
+            ),
+          ),
       );
 
       const button = screen.getByRole('button');
@@ -353,7 +352,7 @@ describe('FavoriteButton Component', () => {
       const { container } = render(
         <div onClick={parentClickHandler}>
           <FavoriteButton itemId="123" />
-        </div>
+        </div>,
       );
 
       await waitFor(() => {

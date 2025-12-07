@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-
 export default function FilterBar({
   onFiltersChange,
   onClearFilters,
@@ -19,12 +18,12 @@ export default function FilterBar({
   const [filters, setFilters] = useState({
     category: initialFilters.category || '',
     condition: initialFilters.condition || '',
-    size:initialFilters.size || '',
+    size: initialFilters.size || '',
     ageRange: initialFilters.ageRange || '',
     priceRange: initialFilters.priceRange || '',
     sortBy: initialFilters.sortBy || 'newest',
     searchTerm: initialFilters.searchTerm || '',
-    availability: initialFilters.availability || 'available', 
+    availability: initialFilters.availability || 'available',
     ...initialFilters,
   });
 
@@ -59,7 +58,7 @@ export default function FilterBar({
     { value: '24M', label: '24 Months' },
     { value: '2T', label: '2T (2-3 years)' },
     { value: '3T', label: '3T (3-4 years)' },
-    { value: '4T', label: '4T (4-5 years)' }
+    { value: '4T', label: '4T (4-5 years)' },
   ];
 
   const ageRangeOptions = [
@@ -68,10 +67,10 @@ export default function FilterBar({
     { value: '6-12M', label: '6-12 Months' },
     { value: '1-2Y', label: '1-2 Years' },
     { value: '2-3Y', label: '2-3 Years' },
-    { value: '3-5Y', label: '3-5 Years' }
+    { value: '3-5Y', label: '3-5 Years' },
   ];
 
-  // add status options 
+  // add status options
   const availabilityOptions = [
     { value: 'available', label: 'Available' },
     { value: 'sold', label: 'Sold' },
@@ -84,8 +83,6 @@ export default function FilterBar({
     { value: 'price-high', label: 'Price: High to Low' },
     { value: 'distance', label: 'Distance (Closest First)' },
   ];
-
-
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
@@ -114,7 +111,7 @@ export default function FilterBar({
     if (f.condition && typeof f.condition === 'string') {
       f.condition = f.condition.trim();
     }
-    if (f.size && typeof f.size === 'string'){
+    if (f.size && typeof f.size === 'string') {
       f.size = f.size.trim();
     }
     if (f.ageRange && typeof f.ageRange === 'string') {
@@ -139,12 +136,12 @@ export default function FilterBar({
     const clearedFilters = {
       category: '',
       condition: '',
-      size:'',
+      size: '',
       ageRange: '',
       priceRange: '',
       sortBy: 'newest',
       searchTerm: '',
-      availability: 'available',//default to available
+      availability: 'available', //default to available
     };
     setFilters(clearedFilters);
     setShowFilters(false);
@@ -192,23 +189,22 @@ export default function FilterBar({
         <div className={styles.controlLeft}>
           {session ? (
             // User is logged in, show normal link
-          <Link href="/add-listing" className={styles.addListingBtn}>
-            ＋ Add listing
-          </Link>
+            <Link href="/add-listing" className={styles.addListingBtn}>
+              ＋ Add listing
+            </Link>
           ) : (
-          // User is not logged in, intercept click to redirect to login
-          <button 
-            className={styles.addListingBtn} 
-            onClick={()=> router.push('/login')}
-            type = "button"
-          >
-            ＋ Add listing
-          </button>
+            // User is not logged in, intercept click to redirect to login
+            <button
+              className={styles.addListingBtn}
+              onClick={() => router.push('/login')}
+              type="button"
+            >
+              ＋ Add listing
+            </button>
           )}
         </div>
 
         <div className={styles.controlRight}>
-            
           <button
             className={`${styles.filtersButton} ${
               activeFiltersCount > 0 ? styles.filtersActive : ''
@@ -328,7 +324,9 @@ export default function FilterBar({
                 id="filter-availability"
                 className={styles.select}
                 value={filters.availability}
-                onChange={(e) => handleFilterChange('availability', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange('availability', e.target.value)
+                }
               >
                 {availabilityOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -337,7 +335,6 @@ export default function FilterBar({
                 ))}
               </select>
             </div>
-
           </div>
         </div>
       )}

@@ -79,7 +79,7 @@ describe('My Listings Page', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/items?sellerId=user123')
+          expect.stringContaining('/api/items?sellerId=user123'),
         );
       });
     });
@@ -101,8 +101,8 @@ describe('My Listings Page', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/no listings yet/i) || 
-          screen.getByText(/haven't created any listings/i)
+          screen.getByText(/no listings yet/i) ||
+            screen.getByText(/haven't created any listings/i),
         ).toBeInTheDocument();
       });
     });
@@ -122,8 +122,8 @@ describe('My Listings Page', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/create listing/i) || 
-          screen.getByText(/add.*listing/i)
+          screen.getByText(/create listing/i) ||
+            screen.getByText(/add.*listing/i),
         ).toBeInTheDocument();
       });
     });
@@ -187,8 +187,7 @@ describe('My Listings Page', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/2.*listing/i) || 
-          screen.getByText(/2.*item/i)
+          screen.getByText(/2.*listing/i) || screen.getByText(/2.*item/i),
         ).toBeInTheDocument();
       });
     });
@@ -208,8 +207,7 @@ describe('My Listings Page', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/1.*listing/i) || 
-          screen.getByText(/1.*item/i)
+          screen.getByText(/1.*listing/i) || screen.getByText(/1.*item/i),
         ).toBeInTheDocument();
       });
     });
@@ -258,7 +256,7 @@ describe('My Listings Page', () => {
       const availableButton = screen.queryByText(/available/i);
       if (availableButton) {
         fireEvent.click(availableButton);
-        
+
         // Should show only available items
         expect(screen.getByText('Baby Hat')).toBeInTheDocument();
       }
@@ -327,7 +325,7 @@ describe('My Listings Page', () => {
       const searchInput = screen.queryByPlaceholderText(/search/i);
       if (searchInput) {
         fireEvent.change(searchInput, { target: { value: 'hat' } });
-        
+
         await waitFor(() => {
           expect(screen.getByText('Baby Hat')).toBeInTheDocument();
         });
@@ -351,8 +349,7 @@ describe('My Listings Page', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/failed/i) || 
-          screen.getByText(/error/i)
+          screen.getByText(/failed/i) || screen.getByText(/error/i),
         ).toBeInTheDocument();
       });
     });
@@ -394,9 +391,10 @@ describe('My Listings Page', () => {
       render(<MyListingsPage />);
 
       await waitFor(() => {
-        const addButton = screen.queryByText(/create listing/i) || 
-                         screen.queryByText(/add.*listing/i);
-        
+        const addButton =
+          screen.queryByText(/create listing/i) ||
+          screen.queryByText(/add.*listing/i);
+
         if (addButton) {
           fireEvent.click(addButton);
           expect(mockRouter.push).toHaveBeenCalledWith('/add-listing');
@@ -417,9 +415,9 @@ describe('My Listings Page', () => {
           new Promise((resolve) =>
             setTimeout(
               () => resolve({ ok: true, json: async () => ({ items: [] }) }),
-              100
-            )
-          )
+              100,
+            ),
+          ),
       );
 
       render(<MyListingsPage />);

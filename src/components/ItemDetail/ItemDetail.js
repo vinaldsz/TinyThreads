@@ -276,11 +276,11 @@ export default function ItemDetail({ itemId }) {
           <div className={styles.detailsSection}>
             <div className={styles.productInfo}>
               <div className={styles.titleRow}>
-              <h1 className={styles.title}>{item.title}</h1>
-              <FavoriteButton 
-                itemId={item._id || item.id} 
-                className="detailPosition"
-              />
+                <h1 className={styles.title}>{item.title}</h1>
+                <FavoriteButton
+                  itemId={item._id || item.id}
+                  className="detailPosition"
+                />
               </div>
 
               <div className={styles.metaRow}>

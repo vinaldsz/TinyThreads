@@ -16,7 +16,6 @@ jest.mock('@/components/Navbar/Navbar', () => {
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }) => {
-     
     return (
       <img
         src={src}
