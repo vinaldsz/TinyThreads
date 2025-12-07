@@ -3,6 +3,7 @@ import styles from './ItemCard.module.css';
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
 export default function ItemCard({ item }) {
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -135,6 +136,7 @@ export default function ItemCard({ item }) {
     router.push(`/Items/${item.id}`);
   };
 
+
   return (
     <div
       className={styles.card}
@@ -162,7 +164,7 @@ export default function ItemCard({ item }) {
           <div className={styles.imageContainer}>
             <Image
               src={images[currentIndex]}
-              alt={item.title}
+              alt={item.title || 'Item image'}
               className={`${styles.image} ${
                 imageLoaded ? styles.imageLoaded : styles.imageLoading
               }`}

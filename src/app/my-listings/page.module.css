@@ -1,0 +1,497 @@
+/* src/app/my-listings/page.module.css */
+
+.page {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header Section */
+  .header {
+    margin-bottom: 30px;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 15px;
+  }
+  
+  .backLink {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  
+  .backLink:hover {
+    color: #4a90e2;
+  }
+  
+  .titleSection {
+    margin-bottom: 20px;
+  }
+  
+  .title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 8px 0;
+  }
+  
+  .subtitle {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+  }
+  
+  /* Stats Grid */
+  .statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .statCard {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+  
+  .statNumber {
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .statLabel {
+    color: #666;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Controls Bar */
+  .controlsBar {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  
+  .searchContainer {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .searchInput {
+    width: 100%;
+    padding: 10px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  
+  .searchInput:focus {
+    outline: none;
+    border-color: #4a90e2;
+  }
+  
+  .statusFilters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .statusButton {
+    padding: 8px 16px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: #666;
+    white-space: nowrap;
+  }
+  
+  .statusButton:hover {
+    border-color: #f27b65;
+    color: #f27b65;
+  }
+  
+  .statusButton.active {
+    background-color: #f27b65;
+    border-color: #f27b65;
+    color: white;
+  }
+  
+  .rightControls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .sortSelect {
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .viewToggle {
+    display: flex;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .viewButton {
+    padding: 8px 12px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  
+  .viewButton:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .viewButton.active {
+    background-color: #4a90e2;
+    color: white;
+  }
+  
+  .addButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px; 
+    background: #ffc09c;
+    color: #241b0f;
+    font-size: 14px; 
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #ffc09c;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  
+  .addButton:hover {
+    background: #ffb480;
+    transform: translateY(-1px);
+  }
+  
+  .addButton:active {
+    transform: translateY(0);
+  }
+  
+  /* Results Info */
+  .resultsInfo {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  /* Error Message */
+  .errorMessage {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+  }
+  
+  /* Content Area */
+  .content {
+    margin-top: 20px;
+  }
+  
+  /* Items Container */
+  .itemsContainer.gridView {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  
+  .itemsContainer.listView {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .itemWrapper {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  
+  .itemWrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+  
+  .listView .itemWrapper {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+  }
+  
+  /* Item Actions */
+  .itemActions {
+    padding: 16px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .listView .itemActions {
+    border-top: none;
+    padding: 0;
+    margin-left: auto;
+    padding-left: 20px;
+  }
+  
+  .statusBadge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .statusBadge.available {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .statusBadge.sold {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .statusBadge.pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .actionButtons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .viewButton {
+    padding: 6px 12px;
+    background-color: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: background-color 0.2s;
+  }
+  
+  .viewButton:hover {
+    background-color: #e9ecef;
+  }
+  
+  /* Empty State */
+  .emptyState {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .emptyIcon {
+    font-size: 64px;
+    margin-bottom: 24px;
+  }
+  
+  .emptyState h3 {
+    color: #333;
+    margin: 0 0 12px 0;
+    font-size: 24px;
+  }
+  
+  .emptyState p {
+    color: #666;
+    margin: 0 0 32px 0;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .emptyActionButton {
+    background-color: #4a90e2;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .emptyActionButton:hover {
+    background-color: #357abd;
+  }
+  
+  /* Loading States */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px;
+    color: #666;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4a90e2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Auth Message */
+  .authMessage {
+    text-align: center;
+    padding: 80px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .authMessage h2 {
+    margin-bottom: 24px;
+    color: #333;
+  }
+  
+  .loginButton {
+    background-color: #4a90e2;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .loginButton:hover {
+    background-color: #357abd;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+    
+    .title {
+      font-size: 24px;
+    }
+    
+    .statsGrid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .statCard {
+      padding: 16px;
+    }
+    
+    .statNumber {
+      font-size: 28px;
+    }
+    
+    .controlsBar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .searchContainer {
+      min-width: unset;
+    }
+    
+    .statusFilters {
+      justify-content: center;
+    }
+    
+    .rightControls {
+      justify-content: space-between;
+    }
+    
+    .itemsContainer.gridView {
+      grid-template-columns: 1fr;
+    }
+    
+    .listView .itemWrapper {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .listView .itemActions {
+      margin-left: 0;
+      padding-left: 0;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .statsGrid {
+      grid-template-columns: 1fr;
+    }
+    
+    .controlsBar {
+      padding: 15px;
+    }
+    
+    .rightControls {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .viewToggle {
+      align-self: center;
+    }
+  }

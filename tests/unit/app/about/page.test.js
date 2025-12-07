@@ -16,7 +16,7 @@ jest.mock('@/components/Navbar/Navbar', () => {
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }) => {
-    // eslint-disable-next-line @next/next/no-img-element
+     
     return (
       <img
         src={src}

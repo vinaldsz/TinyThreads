@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/mongodb';
 
+
 function escapeRegex(str) {
   return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -38,6 +39,14 @@ export async function GET(req) {
   if (searchParams.get('ageRange')) {
     const v = searchParams.get('ageRange');
     query.ageRange = { $regex: `^${escapeRegex(v)}$`, $options: 'i' };
+  }
+  if (searchParams.get('sellerId')){
+    const sellerId = searchParams.get('sellerId');
+    const { ObjectId } = await import('mongodb');
+
+    // Convert string to ObjectId if valid, otherwise use as string
+    const sellerObjectId = ObjectId.isValid(sellerId) ? new ObjectId(sellerId) : sellerId;
+    query.sellerId = sellerObjectId;
   }
 
   // price range
@@ -132,6 +141,7 @@ export async function GET(req) {
 
   const serialized = items.map(({ _id, ...rest }) => ({
     _id: _id?.toString(),
+    id: _id?.toString(),  //make sure can find id 
     ...rest,
   }));
 

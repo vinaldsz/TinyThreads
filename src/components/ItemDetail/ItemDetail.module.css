@@ -48,6 +48,7 @@
 .statusBadge {
   z-index: 20;
 }
+
 /* Image Section */
 .imageSection {
   position: relative;
@@ -105,12 +106,36 @@
   gap: 30px;
 }
 
+/* Title row with favorite button */
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
 .title {
+  flex: 1;
+  margin: 0;
   font-size: 2rem;
   font-weight: 700;
   color: #212529;
-  margin: 0 0 20px 0;
   line-height: 1.2;
+}
+
+.favoriteButton {
+  flex-shrink: 0;
+  font-size: 28px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.favoriteButton:hover {
+  transform: scale(1.15);
 }
 
 .price {
@@ -441,41 +466,11 @@
   object-fit: cover;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 15px 20px;
-  }
-
-  .content {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .price {
-    font-size: 1.5rem;
-  }
-
-  .contactButtons {
-    flex-direction: column;
-  }
-
-  .productImage {
-    max-height: 300px;
-    width: 100%;
-    object-fit: contain;
-  }
-
-  .mainImage {
-    height: 360px;
-  }
-}
-/* Purchase Section */
-
+/* ========================================
+   PURCHASE SECTION - MOVED OUTSIDE MEDIA QUERY
+   ======================================== */
+/* CHANGE 1: Moved purchaseSection styles BEFORE media query 
+   so they apply to ALL screen sizes, not just mobile */
 .purchaseSection {
   margin: 20px 0;
   padding: 16px 0;
@@ -483,6 +478,7 @@
   border-bottom: 1px solid #e5e5e5;
 }
 
+/* CHANGE 2: Moved buyButton styles BEFORE media query */
 .buyButton {
   background-color: #f27b65;
   color: #ffffff;
@@ -511,30 +507,34 @@
   transform: translateY(0);
 }
 
+/* CHANGE 3: Moved loginButton styles BEFORE media query 
+   THIS WAS THE MAIN BUG - button wasn't styled on desktop */
 .loginButton {
-  background-color: #ffffff;
-  color: #495057;
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.1s ease;
+    background-color: #ffffff;
+    color: #495057;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.1s ease;
 }
-
+  
 .loginButton:hover {
-  background-color: #f1f3f5;
-  border-color: #ced4da;
-  color: #343a40;
-  transform: translateY(-1px);
+    background-color: #f1f3f5;
+    border-color: #ced4da;
+    color: #343a40;
+    transform: translateY(-1px);
 }
+  
 
+/* CHANGE 4: Moved soldNotice styles BEFORE media query */
 .soldNotice {
   background-color: #fee2e2;
   color: #dc2626;
@@ -544,6 +544,8 @@
   font-weight: 600;
   border: 1px solid #fecaca;
 }
+
+/* CHANGE 5: Moved meta styles BEFORE media query */
 .metaRow {
   display: flex;
   flex-wrap: wrap;
@@ -573,6 +575,7 @@
   margin: 5px 0 20px 0;
 }
 
+/* CHANGE 6: Moved owner action styles BEFORE media query */
 .ownerActions {
   margin-top: 10px;
   display: flex;
@@ -620,3 +623,36 @@
   color: #991b1b;
   transform: translateY(-1px);
 }
+
+/* ========================================
+   RESPONSIVE DESIGN - Mobile Only Styles
+   ======================================== */
+/* CHANGE 7: Properly closed media query - only mobile-specific overrides inside */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px 20px;
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .price {
+    font-size: 1.5rem;
+  }
+
+  .contactButtons {
+    flex-direction: column;
+  }
+
+  .productImage {
+    max-height: 300px;
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .mainImage {
+    height: 360px;
+  }
+} /* CHANGE 8: Properly closed media query HERE */
