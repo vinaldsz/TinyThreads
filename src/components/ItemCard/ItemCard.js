@@ -52,15 +52,6 @@ export default function ItemCard({ item }) {
       : ['/placeholder-image.jpg'];
   }, [item.imageUrls, item.imageUrl]);
 
-  // Add this right after the images array definition
-  console.log('=== ITEM DEBUG ===');
-  console.log('Full item object:', item);
-  console.log('item.buyerUsername:', item.buyerUsername);
-  console.log('item.imageUrl:', item.imageUrl);
-  console.log('item.imageUrls:', item.imageUrls);
-  console.log('images array:', images);
-  console.log('==================');
-
   const handleImageLoad = () => {
     setImageLoaded(true);
   };

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import FilterBar from '@/components/FilterBar/FilterBar';
 
-describe.skip('FilterBar Component', () => {
+describe('FilterBar Component', () => {
   const mockOnFiltersChange = jest.fn();
   const mockOnClearFilters = jest.fn();
 
@@ -350,6 +350,8 @@ describe.skip('FilterBar Component', () => {
         priceRange: '',
         sortBy: 'price-low',
         searchTerm: 'baby clothes',
+        size: '',
+        availability: 'available',
       });
     });
 
