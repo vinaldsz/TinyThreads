@@ -13,7 +13,7 @@ export default function FilterBar({
   initialFilters = {},
   activeFiltersCount = 0,
 }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   const [filters, setFilters] = useState({
