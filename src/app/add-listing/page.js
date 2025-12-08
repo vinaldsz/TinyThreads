@@ -174,12 +174,12 @@ export default function AddListingPage() {
 
     return Boolean(
       validateTitle(titleVal) ||
-        validatePrice(priceVal) ||
-        validateRequiredSelect(categoryVal, 'category') ||
-        validateRequiredSelect(conditionVal, 'condition') ||
-        !locationVal ||
-        !hasCoords ||
-        selectedFiles.length === 0,
+      validatePrice(priceVal) ||
+      validateRequiredSelect(categoryVal, 'category') ||
+      validateRequiredSelect(conditionVal, 'condition') ||
+      !locationVal ||
+      !hasCoords ||
+      selectedFiles.length === 0,
     );
   }
 
