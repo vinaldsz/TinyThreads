@@ -79,7 +79,7 @@ export default function Navbar() {
                     </Link>
 
                     <Link href="/my-listings" className={styles.dropdownItem}>
-                      <span className={styles.dropdownIcon}>📦</span>
+                      <span className={styles.dropdownIcon}></span>
                       My Listings
                     </Link>
 
