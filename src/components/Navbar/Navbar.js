@@ -78,6 +78,16 @@ export default function Navbar() {
                       Profile
                     </Link>
 
+                    <Link href="/my-listings" className={styles.dropdownItem}>
+                      <span className={styles.dropdownIcon}></span>
+                      My Listings
+                    </Link>
+
+                    <Link href="/favorites" className={styles.dropdownItem}>
+                      <span className={styles.dropdownIcon}></span>
+                      Favorites
+                    </Link>
+
                     <button
                       className={styles.dropdownItem}
                       role="menuitem"

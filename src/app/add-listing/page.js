@@ -5,6 +5,31 @@ import styles from './page.module.css';
 import { useState } from 'react';
 import { uploadListingAction } from './actions';
 
+// Standardized size options for kids under 5
+const kidsSizes = [
+  { value: '', label: 'Select size' },
+  { value: 'NB', label: 'Newborn (0-3M)' },
+  { value: '3M', label: '3 Months' },
+  { value: '6M', label: '6 Months' },
+  { value: '9M', label: '9 Months' },
+  { value: '12M', label: '12 Months' },
+  { value: '18M', label: '18 Months' },
+  { value: '24M', label: '24 Months' },
+  { value: '2T', label: '2T (2-3 years)' },
+  { value: '3T', label: '3T (3-4 years)' },
+  { value: '4T', label: '4T (4-5 years)' },
+];
+
+// Standardized age range options
+const ageRanges = [
+  { value: '', label: 'Select age range' },
+  { value: '0-6M', label: '0-6 Months' },
+  { value: '6-12M', label: '6-12 Months' },
+  { value: '1-2Y', label: '1-2 Years' },
+  { value: '2-3Y', label: '2-3 Years' },
+  { value: '3-5Y', label: '3-5 Years' },
+];
+
 /**
  * AddListingPage — page for submitting a new listing.
  * Handles all client-side validation and UX for instant feedback before submit.
@@ -17,6 +42,8 @@ export default function AddListingPage() {
   const [priceErr, setPriceErr] = useState('');
   const [categoryErr, setCategoryErr] = useState('');
   const [conditionErr, setConditionErr] = useState('');
+  const [sizeErr, setSizeErr] = useState('');
+  const [ageRangeErr, setAgeRangeErr] = useState('');
   const [isDonation, setIsDonation] = useState(false);
 
   const [formVersion, setFormVersion] = useState(0);
@@ -29,6 +56,8 @@ export default function AddListingPage() {
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [condition, setCondition] = useState('');
+  const [size, setSize] = useState('');
+  const [ageRange, setAgeRange] = useState('');
   const [locationCity, setLocationCity] = useState('');
   const [locationCoords, setLocationCoords] = useState(null);
   const [locError, setLocError] = useState('');
@@ -102,6 +131,20 @@ export default function AddListingPage() {
     setConditionErr(validateRequiredSelect(value, 'condition'));
   }
 
+  function handleSizeChange(e) {
+    const value = e.target.value;
+    setSize(value);
+    setFormVersion((v) => v + 1);
+    setSizeErr(validateRequiredSelect(value, 'size'));
+  }
+
+  function handleAgeRangeChange(e) {
+    const value = e.target.value;
+    setAgeRange(value);
+    setFormVersion((v) => v + 1);
+    setAgeRangeErr(validateRequiredSelect(value, 'age range'));
+  }
+
   function handleLocationChange(e) {
     const value = e.target.value;
     setLocationCity(value);
@@ -153,6 +196,8 @@ export default function AddListingPage() {
     const priceVal = price.trim();
     const categoryVal = category;
     const conditionVal = condition;
+    const sizeVal = size;
+    const ageRangeVal = ageRange;
     const locationVal = locationCity.trim();
     const hasCoords = locationCoords != null;
 
@@ -161,6 +206,8 @@ export default function AddListingPage() {
       priceVal.length > 0 &&
       categoryVal.length > 0 &&
       conditionVal.length > 0 &&
+      sizeVal.length > 0 &&
+      ageRangeVal.length > 0 &&
       locationVal.length > 0 &&
       hasCoords &&
       selectedFiles.length > 0;
@@ -177,6 +224,8 @@ export default function AddListingPage() {
         validatePrice(priceVal) ||
         validateRequiredSelect(categoryVal, 'category') ||
         validateRequiredSelect(conditionVal, 'condition') ||
+        validateRequiredSelect(sizeVal, 'size') ||
+        validateRequiredSelect(ageRangeVal, 'age range') ||
         !locationVal ||
         !hasCoords ||
         selectedFiles.length === 0,
@@ -322,22 +371,60 @@ export default function AddListingPage() {
 
             <div className={styles.formGroup}>
               <label htmlFor="size">Size</label>
-              <input
+              <select
                 id="size"
                 name="size"
-                type="text"
-                placeholder="e.g. 0-3 months"
-              />
+                required
+                value={size}
+                onChange={handleSizeChange}
+              >
+                {kidsSizes.map((sizeOption) => (
+                  <option key={sizeOption.value} value={sizeOption.value}>
+                    {sizeOption.label}
+                  </option>
+                ))}
+              </select>
+              {sizeErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {sizeErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="ageRange">Age Range</label>
-              <input
+              <select
                 id="ageRange"
                 name="ageRange"
-                type="text"
-                placeholder="e.g. 0-3 months"
-              />
+                required
+                value={ageRange}
+                onChange={handleAgeRangeChange}
+              >
+                {ageRanges.map((ageOption) => (
+                  <option key={ageOption.value} value={ageOption.value}>
+                    {ageOption.label}
+                  </option>
+                ))}
+              </select>
+              {ageRangeErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {ageRangeErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>

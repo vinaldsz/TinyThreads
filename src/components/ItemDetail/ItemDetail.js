@@ -7,6 +7,7 @@ import styles from './ItemDetail.module.css';
 import Image from 'next/image';
 import PurchaseModal from './PurchaseModal';
 import { useSession } from 'next-auth/react';
+import FavoriteButton from '../FavoriteButton/FavoriteButton';
 
 export default function ItemDetail({ itemId }) {
   const [item, setItem] = useState(null);
@@ -274,7 +275,13 @@ export default function ItemDetail({ itemId }) {
           {/* Core Details (Mongo fields only) */}
           <div className={styles.detailsSection}>
             <div className={styles.productInfo}>
-              <h1 className={styles.title}>{item.title}</h1>
+              <div className={styles.titleRow}>
+                <h1 className={styles.title}>{item.title}</h1>
+                <FavoriteButton
+                  itemId={item._id || item.id}
+                  className="detailPosition"
+                />
+              </div>
 
               <div className={styles.metaRow}>
                 {isDonation && (

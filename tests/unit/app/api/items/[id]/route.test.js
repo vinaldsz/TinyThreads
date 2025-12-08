@@ -34,15 +34,6 @@ describe('GET /api/items/:id', () => {
     getDb.mockResolvedValue(mockDb);
   });
 
-  // Silence expected console.error from handler when tests simulate DB errors
-  let consoleErrorSpy;
-  beforeAll(() => {
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-  });
-  afterAll(() => {
-    consoleErrorSpy.mockRestore();
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });

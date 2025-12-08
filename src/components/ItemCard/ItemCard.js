@@ -3,6 +3,7 @@ import styles from './ItemCard.module.css';
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
 export default function ItemCard({ item }) {
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -50,15 +51,6 @@ export default function ItemCard({ item }) {
       ? cleanedImages
       : ['/placeholder-image.jpg'];
   }, [item.imageUrls, item.imageUrl]);
-
-  // Add this right after the images array definition
-  console.log('=== ITEM DEBUG ===');
-  console.log('Full item object:', item);
-  console.log('item.buyerUsername:', item.buyerUsername);
-  console.log('item.imageUrl:', item.imageUrl);
-  console.log('item.imageUrls:', item.imageUrls);
-  console.log('images array:', images);
-  console.log('==================');
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -162,7 +154,7 @@ export default function ItemCard({ item }) {
           <div className={styles.imageContainer}>
             <Image
               src={images[currentIndex]}
-              alt={item.title}
+              alt={item.title || 'Item image'}
               className={`${styles.image} ${
                 imageLoaded ? styles.imageLoaded : styles.imageLoading
               }`}

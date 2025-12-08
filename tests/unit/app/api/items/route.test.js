@@ -50,7 +50,6 @@ describe('GET /api/items', () => {
           })),
         })),
       })),
-      // New pagination behavior uses countDocuments
       countDocuments: jest.fn().mockResolvedValue(mockItems.length),
     };
 
@@ -228,7 +227,6 @@ describe('GET /api/items', () => {
         })),
       })),
     }));
-
     mockCollection.find.mockReturnValue({ sort: mockSort });
 
     await GET(request);
@@ -241,9 +239,12 @@ describe('GET /api/items', () => {
     const mockLimit = jest.fn(() => ({
       toArray: jest.fn().mockResolvedValue(mockItems),
     }));
-
     mockCollection.find.mockReturnValue({
-      sort: jest.fn(() => ({ skip: jest.fn(() => ({ limit: mockLimit })) })),
+      sort: jest.fn(() => ({
+        skip: jest.fn(() => ({
+          limit: mockLimit,
+        })),
+      })),
     });
 
     await GET(request);
@@ -251,14 +252,18 @@ describe('GET /api/items', () => {
     expect(mockLimit).toHaveBeenCalledWith(10);
   });
 
-  it('should use default limit of 48', async () => {
+  it('should use default limit of 12', async () => {
     const request = new Request('http://localhost:3000/api/items');
     const mockLimit = jest.fn(() => ({
       toArray: jest.fn().mockResolvedValue(mockItems),
     }));
 
     mockCollection.find.mockReturnValue({
-      sort: jest.fn(() => ({ skip: jest.fn(() => ({ limit: mockLimit })) })),
+      sort: jest.fn(() => ({
+        skip: jest.fn(() => ({
+          limit: mockLimit,
+        })),
+      })),
     });
 
     await GET(request);

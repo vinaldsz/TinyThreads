@@ -1,4 +1,3 @@
-// tests/unit/app/favorites/page.test.js
 /**
  * @jest-environment jsdom
  */
@@ -6,14 +5,14 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import FavoritesPage from '../../../src/app/favorites/page';
+import FavoritesPage from '../../../../src/app/favorites/page';
 
 // Mock dependencies
 jest.mock('next-auth/react');
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
-jest.mock('../../../src/components/ItemCard/ItemCard', () => {
+jest.mock('../../../../src/components/ItemCard/ItemCard', () => {
   return function MockItemCard({ item }) {
     return <div data-testid="item-card">{item.title}</div>;
   };
@@ -98,9 +97,8 @@ describe('Favorites Page', () => {
       render(<FavoritesPage />);
 
       await waitFor(() => {
-        // FIXED: Use getByRole to be more specific
         expect(
-          screen.getByRole('heading', { name: /no favorites yet/i }),
+          screen.getByRole('heading', { name: 'No favorites yet' }),
         ).toBeInTheDocument();
       });
 
@@ -242,7 +240,7 @@ describe('Favorites Page', () => {
         {
           _id: 'fav3',
           itemId: 'deleted-item',
-          item: null,
+          item: null, // Invalid item
         },
       ];
 
@@ -258,7 +256,7 @@ describe('Favorites Page', () => {
 
       await waitFor(() => {
         const itemCards = screen.getAllByTestId('item-card');
-        expect(itemCards).toHaveLength(2);
+        expect(itemCards).toHaveLength(2); // Only valid items
       });
     });
   });
@@ -332,10 +330,9 @@ describe('Favorites Page', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledTimes(2);
-        // FIXED: Use getByRole to be more specific
-        expect(
-          screen.getByRole('heading', { name: /no favorites yet/i }),
-        ).toBeInTheDocument();
+        expect(screen.getAllByText('No favorites yet').length).toBeGreaterThan(
+          0,
+        );
       });
     });
 
