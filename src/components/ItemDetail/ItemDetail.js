@@ -423,8 +423,40 @@ export default function ItemDetail({ itemId }) {
                         <span className={styles.emailTitle}>Email Seller</span>
                       </span>
                     </button>
+                    {item.sellerId && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          router.push(
+                            `/users/${item.sellerId}?from=/Items/${itemId}`,
+                          )
+                        }
+                        className={styles.profileButton}
+                      >
+                        View Profile
+                      </button>
+                    )}
                   </div>
                 )}
+
+                {(!item.status ||
+                  item.status !== 'available' ||
+                  !item.sellerEmail) &&
+                  item.sellerId && (
+                    <div className={styles.contactButtons}>
+                      <button
+                        onClick={() =>
+                          router.push(
+                            `/users/${item.sellerId}?from=/Items/${itemId}`,
+                          )
+                        }
+                        className={styles.profileButton}
+                        type="button"
+                      >
+                        View Profile
+                      </button>
+                    </div>
+                  )}
               </div>
             </div>
 
