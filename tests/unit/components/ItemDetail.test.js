@@ -221,7 +221,8 @@ describe('ItemDetail Component', () => {
       const backButton = screen.getByText('← Go Back');
       fireEvent.click(backButton);
 
-      expect(mockBack).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledWith('/');
     });
   });
 
@@ -371,7 +372,8 @@ describe('ItemDetail Component', () => {
       const backButton = screen.getByText('← Back to Browse');
       fireEvent.click(backButton);
 
-      expect(mockBack).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledWith('/');
     });
   });
 

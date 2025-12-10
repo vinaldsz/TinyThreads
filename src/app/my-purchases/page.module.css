@@ -251,6 +251,34 @@
   border-radius: 8px;
 }
 
+.itemActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.markAvailableButton {
+  background: white;
+  color: #ef4444; /* red text for emphasis */
+  border: 1px solid #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.markAvailableButton:hover {
+  background: #fee2e2; /* light red */
+  border-color: #fca5a5;
+}
+
+.markAvailableButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {

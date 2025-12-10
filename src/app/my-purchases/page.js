@@ -11,6 +11,7 @@ export default function MyPurchasesPage() {
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [updatingId, setUpdatingId] = useState(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -54,6 +55,38 @@ export default function MyPurchasesPage() {
     router.push(`/Items/${itemId}`);
   };
 
+  const handleMarkAvailable = async (itemId) => {
+    if (!itemId) {
+      setError('Item ID is missing, unable to update status.');
+      return;
+    }
+
+    try {
+      setUpdatingId(itemId);
+      setError(null);
+
+      const response = await fetch(`/api/items/${itemId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'available' }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark item as available.');
+      }
+
+      // Refresh purchases so the UI stays in sync with the latest item status
+      await fetchPurchases();
+    } catch (err) {
+      console.error('Error marking item as available:', err);
+      setError(err.message || 'Failed to mark item as available.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -85,7 +118,7 @@ export default function MyPurchasesPage() {
         <h1>My Purchases</h1>
         <p className={styles.subtitle}>
           {purchases.length === 0
-            ? "You haven't made any purchases yet"
+            ? 'Review and manage your TinyThreads purchases in one place.'
             : `You have ${purchases.length} purchase${purchases.length !== 1 ? 's' : ''}`}
         </p>
       </div>
@@ -166,6 +199,22 @@ export default function MyPurchasesPage() {
                         )}
                       </p>
                     )}
+
+                    <div className={styles.itemActions}>
+                      <button
+                        type="button"
+                        className={styles.markAvailableButton}
+                        disabled={updatingId === purchase.item.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMarkAvailable(purchase.item.id);
+                        }}
+                      >
+                        {updatingId === purchase.item.id
+                          ? 'Updating...'
+                          : 'Mark as available again'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (

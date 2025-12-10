@@ -1,6 +1,7 @@
 // src/app/page.js
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import styles from './page.module.css';
 import FilterBar from '@/components/FilterBar/FilterBar';
 import ItemGrid from '@/components/ItemGrid/ItemGrid';
@@ -9,12 +10,18 @@ import useItemsPerPage from '@/hooks/useItemsPerPage';
 import Pagination from '@/components/Pagination/Pagination';
 
 export default function BrowsePage() {
+  const { data: session } = useSession();
+  const sessionUserId = session?.user?.id ? String(session.user.id) : null;
+
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
-  const [filters, setFilters] = useState({ availability: 'available' });
+  const [filters, setFilters] = useState({
+    availability: 'available',
+    hideMyListings: true,
+  });
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState('');
   // default rowsPerPage is 3 in the hook (3 rows × 3 columns = 9 items)
@@ -30,10 +37,20 @@ export default function BrowsePage() {
           itemsPerPage,
           currentFilters,
         );
+
+        // Optionally hide the current user's own listings
+        let items = data.items || [];
+        if (sessionUserId && currentFilters.hideMyListings) {
+          items = items.filter((item) => {
+            if (!item || !item.sellerId) return true;
+            return String(item.sellerId) !== String(sessionUserId);
+          });
+        }
+
         if (append) {
-          setFilteredItems((prev) => [...prev, ...data.items]);
+          setFilteredItems((prev) => [...prev, ...items]);
         } else {
-          setFilteredItems(data.items);
+          setFilteredItems(items);
         }
         setPage(Number(data.page || requestedPage));
         setHasMore(Boolean(data.hasMore));
@@ -44,7 +61,7 @@ export default function BrowsePage() {
         setLoading(false);
       }
     },
-    [itemsPerPage, filters],
+    [itemsPerPage, filters, sessionUserId],
   );
 
   useEffect(() => {
@@ -53,14 +70,30 @@ export default function BrowsePage() {
   }, [loadPage, filters, itemsPerPage]);
 
   const handleFiltersChange = (newFilters) => {
-    const wantsDistance = newFilters.sortBy === 'distance';
+    // Merge with existing filters so we don't drop things like availability
+    const mergedFilters = {
+      ...filters,
+      ...newFilters,
+    };
+
+    // Ensure availability is always defined; default to 'available'
+    if (!mergedFilters.availability) {
+      mergedFilters.availability = 'available';
+    }
+
+    // Ensure hideMyListings is always defined; default to true
+    if (typeof mergedFilters.hideMyListings === 'undefined') {
+      mergedFilters.hideMyListings = true;
+    }
+
+    const wantsDistance = mergedFilters.sortBy === 'distance';
 
     if (wantsDistance) {
       // If we already have a cached location, reuse it
       if (userLocation) {
         setLocationError('');
         setFilters({
-          ...newFilters,
+          ...mergedFilters,
           lat: userLocation.lat,
           lng: userLocation.lng,
         });
@@ -70,7 +103,18 @@ export default function BrowsePage() {
       // If geolocation is not supported, fall back to newest
       if (typeof navigator === 'undefined' || !navigator.geolocation) {
         setLocationError('Location is not supported on this device.');
-        setFilters({ ...newFilters, sortBy: 'newest' });
+
+        // Fall back to newest and strip any latent lat/lng
+        const fallback = {
+          ...mergedFilters,
+          sortBy: 'newest',
+        };
+        const cleanFallback = Object.fromEntries(
+          Object.entries(fallback).filter(
+            ([key]) => key !== 'lat' && key !== 'lng',
+          ),
+        );
+        setFilters(cleanFallback);
         return;
       }
 
@@ -84,7 +128,7 @@ export default function BrowsePage() {
           setUserLocation(loc);
           setLocationError('');
           setFilters({
-            ...newFilters,
+            ...mergedFilters,
             lat: loc.lat,
             lng: loc.lng,
           });
@@ -94,7 +138,17 @@ export default function BrowsePage() {
           setLocationError(
             'Could not access your location. Showing newest listings instead.',
           );
-          setFilters({ ...newFilters, sortBy: 'newest' });
+
+          const fallback = {
+            ...mergedFilters,
+            sortBy: 'newest',
+          };
+          const cleanFallback = Object.fromEntries(
+            Object.entries(fallback).filter(
+              ([key]) => key !== 'lat' && key !== 'lng',
+            ),
+          );
+          setFilters(cleanFallback);
         },
         { timeout: 8000 },
       );
@@ -103,7 +157,7 @@ export default function BrowsePage() {
 
     // Non-distance sorts: ensure we strip out any lat/lng from previous distance filters
     const rest = Object.fromEntries(
-      Object.entries(newFilters).filter(
+      Object.entries(mergedFilters).filter(
         ([key]) => key !== 'lat' && key !== 'lng',
       ),
     );
@@ -113,7 +167,10 @@ export default function BrowsePage() {
   };
 
   const clearAllFilters = () => {
-    const clearedFilters = { availability: 'available' };
+    const clearedFilters = {
+      availability: 'available',
+      hideMyListings: true,
+    };
     setLocationError('');
     setUserLocation(null);
     setFilters(clearedFilters);
@@ -134,7 +191,8 @@ export default function BrowsePage() {
         key === 'sortBy' ||
         key === 'lat' ||
         key === 'lng' ||
-        key === 'availability'
+        key === 'availability' ||
+        key === 'hideMyListings'
       )
         return false;
       return Boolean(value && value !== '');
@@ -172,7 +230,18 @@ export default function BrowsePage() {
         </section>
 
         {/* Content Section */}
-        <ItemGrid items={filteredItems} loading={loading} hasMore={hasMore} />
+        <ItemGrid
+          items={filteredItems}
+          loading={loading}
+          hasMore={hasMore}
+          hideMyListings={filters.hideMyListings ?? true}
+          onToggleHideMyListings={(checked) =>
+            setFilters((prev) => ({
+              ...prev,
+              hideMyListings: checked,
+            }))
+          }
+        />
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Pagination
