@@ -13,14 +13,14 @@ export async function GET(req) {
 
   const query = {};
 
-  // availability filter
+  // availability filter (optional - if not specified or 'all', show all items)
   const availability = searchParams.get('availability');
   if (availability === 'sold') {
     query.status = 'sold';
-  } else {
-    // Default: show only available items
+  } else if (availability === 'available') {
     query.status = 'available';
   }
+  // If availability is 'all' or not specified, don't filter by status - show all items
 
   // case-insensitive categorical filters (use anchored regex)
   if (searchParams.get('category')) {

@@ -351,7 +351,6 @@ describe('FilterBar Component', () => {
         sortBy: 'price-low',
         searchTerm: 'baby clothes',
         size: '',
-        availability: 'available',
       });
     });
 

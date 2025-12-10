@@ -14,7 +14,7 @@ export default function BrowsePage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({ availability: 'available' });
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState('');
   // default rowsPerPage is 3 in the hook (3 rows × 3 columns = 9 items)
@@ -113,7 +113,7 @@ export default function BrowsePage() {
   };
 
   const clearAllFilters = () => {
-    const clearedFilters = {};
+    const clearedFilters = { availability: 'available' };
     setLocationError('');
     setUserLocation(null);
     setFilters(clearedFilters);
@@ -130,7 +130,13 @@ export default function BrowsePage() {
   // calculate active filters count
   const getActiveFiltersCount = () => {
     return Object.entries(filters).filter(([key, value]) => {
-      if (key === 'sortBy' || key === 'lat' || key === 'lng') return false;
+      if (
+        key === 'sortBy' ||
+        key === 'lat' ||
+        key === 'lng' ||
+        key === 'availability'
+      )
+        return false;
       return Boolean(value && value !== '');
     }).length;
   };

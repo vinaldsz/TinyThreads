@@ -34,21 +34,13 @@ export default async function SellerProfilePage({ params, searchParams }) {
     null;
 
   const returnUrl = resolvedSearch?.from || null;
-  console.log('returnUrl', returnUrl);
-
-  console.log(
-    '[SellerProfilePage] params:',
-    resolvedParams,
-    'searchParams:',
-    resolvedSearch,
-    'resolved sellerId:',
-    sellerId,
-  );
 
   if (!sellerId) {
     return (
       <div className={styles.container}>
-        <BackButton returnUrl={returnUrl} />
+        <div className={styles.backButtonWrapper}>
+          <BackButton returnUrl={returnUrl} />
+        </div>
         <div className={styles.card}>
           <h1 className={styles.title}>Seller Profile</h1>
           <p className={styles.muted}>No seller id provided.</p>
@@ -77,9 +69,7 @@ export default async function SellerProfilePage({ params, searchParams }) {
           ],
         };
 
-    console.log('[SellerProfilePage] query:', query);
     seller = await users.findOne(query);
-    console.log('[SellerProfilePage] seller result:', seller);
   } catch (err) {
     console.error('Error loading seller profile', err);
     seller = null;

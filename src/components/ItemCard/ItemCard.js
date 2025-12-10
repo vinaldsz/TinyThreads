@@ -151,7 +151,7 @@ export default function ItemCard({ item }) {
             </div>
           </div>
         ) : (
-          <div className={styles.imageContainer}>
+          <>
             <Image
               src={images[currentIndex]}
               alt={item.title || 'Item image'}
@@ -195,7 +195,7 @@ export default function ItemCard({ item }) {
                 </button>
               </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Price Badge */}
@@ -204,6 +204,13 @@ export default function ItemCard({ item }) {
             {item.price === 0 ? 'Free' : `$${item.price}`}
           </span>
         </div>
+
+        {/* Sold Badge */}
+        {item.status === 'sold' && (
+          <div className={styles.soldBadge}>
+            <span className={styles.soldText}>SOLD</span>
+          </div>
+        )}
 
         {/* Condition Badge */}
         <div className={styles.conditionBadge}>
@@ -238,17 +245,6 @@ export default function ItemCard({ item }) {
 
         {/* Description */}
         <p className={styles.description}>{item.description}</p>
-        {/* Seller Info */}
-        {/* <div className={styles.sellerInfo}>
-          <div className={styles.seller}>
-            <div className={styles.sellerAvatar}>
-              {item.sellerName}
-            </div>
-            <span>by {item.sellerName}</span>
-          </div>
-        </div>
-        */}
-        {/* Action Button */}
         <button className={styles.viewButton}>View Details</button>
       </div>
     </div>

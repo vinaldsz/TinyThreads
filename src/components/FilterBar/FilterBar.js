@@ -12,7 +12,7 @@ export default function FilterBar({
   initialFilters = {},
   activeFiltersCount = 0,
 }) {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
   const [filters, setFilters] = useState({
@@ -23,7 +23,6 @@ export default function FilterBar({
     priceRange: initialFilters.priceRange || '',
     sortBy: initialFilters.sortBy || 'newest',
     searchTerm: initialFilters.searchTerm || '',
-    availability: initialFilters.availability || 'available',
     ...initialFilters,
   });
 
@@ -70,12 +69,6 @@ export default function FilterBar({
     { value: '3-5Y', label: '3-5 Years' },
   ];
 
-  // add status options
-  const availabilityOptions = [
-    { value: 'available', label: 'Available' },
-    { value: 'sold', label: 'Sold' },
-  ];
-
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'oldest', label: 'Oldest First' },
@@ -120,9 +113,6 @@ export default function FilterBar({
     if (f.searchTerm && typeof f.searchTerm === 'string') {
       f.searchTerm = f.searchTerm.trim();
     }
-    if (f.availabilityOptions && typeof f.availabilityOptions === 'string') {
-      f.availabilityOptions = f.availabilityOptions.trim();
-    }
     return f;
   };
 
@@ -141,7 +131,6 @@ export default function FilterBar({
       priceRange: '',
       sortBy: 'newest',
       searchTerm: '',
-      availability: 'available', //default to available
     };
     setFilters(clearedFilters);
     setShowFilters(false);
@@ -158,16 +147,6 @@ export default function FilterBar({
     }
     return `Filters (${activeFiltersCount})`;
   };
-
-  //handle add listing click with authentication check (placeholder)
-  const handleAddListingClick = (e) => {
-    if (!session) {
-      e.preventDefault();
-      router.push('/login');
-    }
-    // If user is logged in, let the Link component handle navigation normally
-  };
-
   return (
     <div className={styles.filterContainer}>
       {/* Search Bar */}
@@ -309,26 +288,6 @@ export default function FilterBar({
                 onChange={(e) => handleFilterChange('ageRange', e.target.value)}
               >
                 {ageRangeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.filterGroup}>
-              <label className={styles.label} htmlFor="filter-availability">
-                Availability
-              </label>
-              <select
-                id="filter-availability"
-                className={styles.select}
-                value={filters.availability}
-                onChange={(e) =>
-                  handleFilterChange('availability', e.target.value)
-                }
-              >
-                {availabilityOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>

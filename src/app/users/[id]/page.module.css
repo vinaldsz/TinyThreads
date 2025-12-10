@@ -115,3 +115,17 @@
     align-items: flex-start;
   }
 }
+
+.backButtonWrapper {
+  position: relative;
+  z-index: 10000;
+  margin-bottom: 16px;
+}
+
+.backButtonWrapper > div {
+  cursor: pointer;
+  font-weight: 700;
+  color: #f27b65;
+  padding: 8px 4px;
+  font-size: 16px;
+}

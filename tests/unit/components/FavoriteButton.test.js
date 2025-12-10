@@ -324,7 +324,7 @@ describe('FavoriteButton Component', () => {
 
       const parentClickHandler = jest.fn();
 
-      const { container } = render(
+      render(
         <div onClick={parentClickHandler}>
           <FavoriteButton itemId="123" />
         </div>,
