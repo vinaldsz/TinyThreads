@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 
@@ -84,6 +88,27 @@ export async function getPresignedUploadUrl(
   const signedUrl = await getSignedUrl(s3, putCmd, { expiresIn });
   const publicUrl = getPublicUrl(key);
   return { signedUrl, publicUrl, key };
+}
+
+export async function deleteImageFromS3(url) {
+  if (!url) return;
+
+  try {
+    // Extract S3 key from public URL
+    // Example: https://abc.s3.amazonaws.com/items/item-123.jpg → items/item-123.jpg
+    const key = url.replace(`${S3_PUBLIC_BASE}/`, '');
+
+    const deleteCmd = new DeleteObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      Key: key,
+    });
+
+    await s3.send(deleteCmd);
+    console.log('Deleted from S3:', key);
+  } catch (err) {
+    console.error('❌ Failed to delete from S3:', err);
+    throw err;
+  }
 }
 
 export default s3;

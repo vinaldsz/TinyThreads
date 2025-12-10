@@ -252,6 +252,29 @@ export async function updateListingAction(formData) {
       // they can be cleaned in a separate maintenance step if needed.
     }
 
+    // Determine which old images were removed by the user
+    const removedImages = (existing.imageUrls || []).filter(
+      (url) => !imageUrls.includes(url),
+    );
+
+    // Delete removed images from S3
+    if (removedImages.length > 0) {
+      console.log('Removing orphaned S3 images:', removedImages);
+
+      // Dynamically import delete helper
+      const { deleteImageFromS3 } = await import('@/lib/awss3.js');
+
+      for (const url of removedImages) {
+        try {
+          console.log('Deleting from S3:', url);
+          await deleteImageFromS3(url);
+          console.log('Deleted:', url);
+        } catch (err) {
+          console.error('❌ Failed to delete S3 image:', url, err);
+        }
+      }
+    }
+
     if (!imageUrls || imageUrls.length === 0) {
       console.log('❌ No images remaining after edit');
       return {

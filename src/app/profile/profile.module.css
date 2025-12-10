@@ -55,7 +55,7 @@
   color: #333;
   display: flex;
   flex-direction: column; /* stack bio text and edit button vertically */
-  gap: 8px;               /* small spacing between text and button */
+  gap: 8px; /* small spacing between text and button */
   align-items: flex-start; /* keep everything left-aligned */
 }
 .empty {
@@ -69,7 +69,6 @@
   cursor: pointer;
   padding: 4px;
   font-size: 1rem;
-  
 }
 .backButton {
   background: #ffffff;

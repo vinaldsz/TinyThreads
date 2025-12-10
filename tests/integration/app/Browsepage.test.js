@@ -124,8 +124,8 @@ describe('Main Browse Page (src/app/page.js)', () => {
   });
 
   it('hides the current user listings from the browse grid', async () => {
-    getItems.mockResolvedValueOnce({
-      items: [
+    getItems.mockImplementationOnce((_page, _limit, filtersArg = {}) => {
+      const allItems = [
         {
           _id: 'item1',
           title: 'My Own Listing',
@@ -136,10 +136,19 @@ describe('Main Browse Page (src/app/page.js)', () => {
           title: 'Other Seller Item',
           sellerId: 'other456',
         },
-      ],
-      page: 1,
-      total: 2,
-      hasMore: false,
+      ];
+
+      const excludeId = filtersArg.excludeSellerId;
+      const items = excludeId
+        ? allItems.filter((item) => String(item.sellerId) !== String(excludeId))
+        : allItems;
+
+      return Promise.resolve({
+        items,
+        page: 1,
+        total: items.length,
+        hasMore: false,
+      });
     });
 
     render(<BrowsePage />);

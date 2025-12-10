@@ -32,20 +32,27 @@ export default function BrowsePage() {
     async (requestedPage = 1, append = false, currentFilters = filters) => {
       setLoading(true);
       try {
+        // Build effective filters for the backend
+        const effectiveFilters = {
+          ...currentFilters,
+        };
+
+        // If we want to hide my listings, tell the backend who to exclude
+        if (sessionUserId && effectiveFilters.hideMyListings) {
+          effectiveFilters.excludeSellerId = String(sessionUserId);
+        } else {
+          if (effectiveFilters.excludeSellerId) {
+            delete effectiveFilters.excludeSellerId;
+          }
+        }
+
         const data = await getItems(
           requestedPage,
           itemsPerPage,
-          currentFilters,
+          effectiveFilters,
         );
 
-        // Optionally hide the current user's own listings
-        let items = data.items || [];
-        if (sessionUserId && currentFilters.hideMyListings) {
-          items = items.filter((item) => {
-            if (!item || !item.sellerId) return true;
-            return String(item.sellerId) !== String(sessionUserId);
-          });
-        }
+        const items = data.items || [];
 
         if (append) {
           setFilteredItems((prev) => [...prev, ...items]);
