@@ -31,7 +31,7 @@ export default function Navbar() {
         <div className={styles.brand}>
           <Link href="/" className={styles.brandLink}>
             <Image
-              src="/TinyThreadsScribble.png"
+              src="/TinyThreadsScribble_new.png"
               alt="TinyThreads"
               className={styles.brandLogo}
               width={1000}

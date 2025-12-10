@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { getDb } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
-import { uploadImageToS3 } from '@/lib/awss3.js';
+import { uploadImageToS3, deleteImageFromS3 } from '@/lib/awss3.js';
 
 export async function POST(req) {
   try {
@@ -17,6 +17,7 @@ export async function POST(req) {
     // Parse multipart/form-data
     const form = await req.formData();
     const file = form.get('avatar');
+    const oldAvatarUrl = form.get('oldAvatarUrl');
     if (!file || typeof file === 'string') {
       return NextResponse.json(
         { message: 'No file provided' },
@@ -46,6 +47,15 @@ export async function POST(req) {
     const { passwordHash, ...safe } = res.value;
     void passwordHash;
     if (safe._id) safe._id = safe._id.toString();
+
+    // If there was a previous avatar, attempt to clean it up from S3
+    if (oldAvatarUrl && typeof oldAvatarUrl === 'string') {
+      try {
+        await deleteImageFromS3(oldAvatarUrl);
+      } catch (cleanupErr) {
+        console.error('Failed to delete old avatar from S3', cleanupErr);
+      }
+    }
 
     return NextResponse.json(
       { user: safe, publicUrl: imageUrl, key },

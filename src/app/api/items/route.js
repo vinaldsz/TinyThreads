@@ -49,6 +49,19 @@ export async function GET(req) {
       : sellerId;
     query.sellerId = sellerObjectId;
   }
+  // Exclude a seller's listings if excludeSellerId is provided
+  const excludeSellerId = searchParams.get('excludeSellerId');
+  if (excludeSellerId) {
+    const { ObjectId } = await import('mongodb');
+    const excludeObjId = ObjectId.isValid(excludeSellerId)
+      ? new ObjectId(excludeSellerId)
+      : excludeSellerId;
+
+    // If sellerId is not already explicitly set, apply $ne filter
+    if (!query.sellerId) {
+      query.sellerId = { $ne: excludeObjId };
+    }
+  }
 
   // price range
   const min = searchParams.get('priceMin') || searchParams.get('price_min');

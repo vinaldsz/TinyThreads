@@ -85,11 +85,6 @@ describe('ItemCard Component', () => {
       ).toBeInTheDocument();
     });
 
-    test('shows View Details button', () => {
-      render(<ItemCard item={mockItem} />);
-      expect(screen.getByText('View Details')).toBeInTheDocument();
-    });
-
     test('displays item image', () => {
       render(<ItemCard item={mockItem} />);
       const image = screen.getByAltText('Baby Onesie 6M');

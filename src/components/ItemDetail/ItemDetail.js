@@ -10,6 +10,14 @@ import ReportModal from './ReportModal';
 import { useSession } from 'next-auth/react';
 import FavoriteButton from '../FavoriteButton/FavoriteButton';
 
+const prettifyCategory = (category) => {
+  if (!category) return '';
+  return String(category)
+    .split(' ')
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(' ');
+};
+
 export default function ItemDetail({ itemId }) {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -84,7 +92,9 @@ export default function ItemDetail({ itemId }) {
     }
   }, [item]);
 
-  const handleBack = () => router.back();
+  const handleBack = () => {
+    router.push('/');
+  };
 
   const formatPrice = (p) => {
     const n = typeof p === 'number' ? p : Number(p);
@@ -217,6 +227,7 @@ export default function ItemDetail({ itemId }) {
   }
 
   const isDonation = Number(item.price) === 0;
+  const categoryLabel = prettifyCategory(item.category);
   const conditionKey = (item.condition || '').toLowerCase().replace(/\s/g, '');
   const conditionClass = styles[conditionKey] || '';
 
@@ -356,7 +367,7 @@ export default function ItemDetail({ itemId }) {
                 </div>
                 <div className={styles.infoItem}>
                   <span className={styles.label}>Category:</span>
-                  <span>{item.category || '—'}</span>
+                  <span>{categoryLabel || '—'}</span>
                 </div>
                 <div className={styles.infoItem}>
                   <span className={styles.label}>Location:</span>
@@ -370,28 +381,33 @@ export default function ItemDetail({ itemId }) {
               </div>
 
               {/* Purchase Section moved below Description */}
-              <div className={styles.purchaseSection}>
-                {canPurchase && (
-                  <button onClick={handleBuyClick} className={styles.buyButton}>
-                    Buy Now
-                  </button>
-                )}
+              {!isOwner && (
+                <div className={styles.purchaseSection}>
+                  {canPurchase && (
+                    <button
+                      onClick={handleBuyClick}
+                      className={styles.buyButton}
+                    >
+                      Buy Now
+                    </button>
+                  )}
 
-                {!isLoggedIn && isAvailable && (
-                  <button
-                    onClick={handleLoginRedirect}
-                    className={styles.loginButton}
-                  >
-                    Sign in to purchase
-                  </button>
-                )}
+                  {!isLoggedIn && isAvailable && (
+                    <button
+                      onClick={handleLoginRedirect}
+                      className={styles.loginButton}
+                    >
+                      Sign in to purchase
+                    </button>
+                  )}
 
-                {!isAvailable && (
-                  <div className={styles.soldNotice}>
-                    This item has been sold
-                  </div>
-                )}
-              </div>
+                  {!isAvailable && (
+                    <div className={styles.soldNotice}>
+                      This item has been sold
+                    </div>
+                  )}
+                </div>
+              )}
 
               {isOwner && (
                 <div className={styles.ownerActions}>
@@ -413,120 +429,127 @@ export default function ItemDetail({ itemId }) {
               )}
             </div>
 
-            {/* Seller Information */}
-            <div className={styles.sellerSection}>
-              <h3>Seller Information</h3>
-              <div className={styles.sellerCard}>
-                <div className={styles.sellerHeader}>
-                  <div className={styles.sellerName}>
-                    {item.sellerName || 'Seller'}
-                  </div>
-                </div>
-                <div className={styles.sellerMeta}>
-                  {item.sellerEmail && (
-                    <div className={styles.metaRow}>
-                      <strong>Email:</strong>
-                      <span>{item.sellerEmail}</span>
+            {!isOwner && (
+              <>
+                {/* Seller Information */}
+                <div className={styles.sellerSection}>
+                  <h3>Seller Information</h3>
+                  <div className={styles.sellerCard}>
+                    <div className={styles.sellerHeader}>
+                      <div className={styles.sellerName}>
+                        {item.sellerName || 'Seller'}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    <div className={styles.sellerMeta}>
+                      {item.sellerEmail && (
+                        <div className={styles.metaRow}>
+                          <strong>Email:</strong>
+                          <span>{item.sellerEmail}</span>
+                        </div>
+                      )}
+                    </div>
 
-                {item.status === 'available' && item.sellerEmail && (
-                  <div className={styles.contactButtons}>
-                    <button
-                      onClick={handleContactSeller}
-                      className={styles.emailButton}
-                    >
-                      <svg
-                        className={styles.emailIcon}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M3 7.5A2.5 2.5 0 015.5 5h13A2.5 2.5 0 0121 7.5v9A2.5 2.5 0 0118.5 19h-13A2.5 2.5 0 013 16.5v-9z"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M21 7.5l-9 6-9-6"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span className={styles.emailText}>
-                        <span className={styles.emailTitle}>Email Seller</span>
-                      </span>
-                    </button>
-                    {item.sellerId && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          router.push(
-                            `/users/${item.sellerId}?from=/Items/${itemId}`,
-                          )
-                        }
-                        className={styles.emailButton}
-                      >
-                        View Profile
-                      </button>
+                    {item.status === 'available' && item.sellerEmail && (
+                      <div className={styles.contactButtons}>
+                        <button
+                          onClick={handleContactSeller}
+                          className={styles.emailButton}
+                        >
+                          <svg
+                            className={styles.emailIcon}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M3 7.5A2.5 2.5 0 015.5 5h13A2.5 2.5 0 0121 7.5v9A2.5 2.5 0 0118.5 19h-13A2.5 2.5 0 013 16.5v-9z"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M21 7.5l-9 6-9-6"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <span className={styles.emailText}>
+                            <span className={styles.emailTitle}>
+                              Email Seller
+                            </span>
+                          </span>
+                        </button>
+                        {item.sellerId && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              router.push(
+                                `/users/${item.sellerId}?from=/Items/${itemId}`,
+                              )
+                            }
+                            className={styles.emailButton}
+                          >
+                            View Profile
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleReport}
+                          className={styles.reportButton}
+                        >
+                          Report
+                        </button>
+                      </div>
                     )}
-                    <button
-                      type="button"
-                      onClick={handleReport}
-                      className={styles.reportButton}
-                    >
-                      Report
-                    </button>
+
+                    {(!item.status ||
+                      item.status !== 'available' ||
+                      !item.sellerEmail) &&
+                      item.sellerId && (
+                        <div className={styles.contactButtons}>
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/users/${item.sellerId}?from=/Items/${itemId}`,
+                              )
+                            }
+                            className={styles.profileButton}
+                            type="button"
+                          >
+                            View Profile
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleReport}
+                            className={styles.reportButton}
+                          >
+                            Report
+                          </button>
+                        </div>
+                      )}
                   </div>
-                )}
+                </div>
 
-                {(!item.status ||
-                  item.status !== 'available' ||
-                  !item.sellerEmail) &&
-                  item.sellerId && (
-                    <div className={styles.contactButtons}>
-                      <button
-                        onClick={() =>
-                          router.push(
-                            `/users/${item.sellerId}?from=/Items/${itemId}`,
-                          )
-                        }
-                        className={styles.profileButton}
-                        type="button"
-                      >
-                        View Profile
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleReport}
-                        className={styles.reportButton}
-                      >
-                        Report
-                      </button>
-                    </div>
-                  )}
-              </div>
-            </div>
-
-            <div className={styles.safetyNotice}>
-              <h4>🛡️ Safety Tips</h4>
-              <ul>
-                <li>
-                  Meet in a public place like a library, coffee shop, or mall
-                </li>
-                <li>Bring a friend if possible</li>
-                <li>Inspect items carefully before payment</li>
-                <li>
-                  Trust your instincts — if something feels off, walk away
-                </li>
-              </ul>
-            </div>
+                <div className={styles.safetyNotice}>
+                  <h4>🛡️ Safety Tips</h4>
+                  <ul>
+                    <li>
+                      Meet in a public place like a library, coffee shop, or
+                      mall
+                    </li>
+                    <li>Bring a friend if possible</li>
+                    <li>Inspect items carefully before payment</li>
+                    <li>
+                      Trust your instincts — if something feels off, walk away
+                    </li>
+                  </ul>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

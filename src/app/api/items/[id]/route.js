@@ -88,3 +88,49 @@ export async function DELETE(_, ctx) {
     );
   }
 }
+
+export async function PATCH(request, ctx) {
+  try {
+    const { id } = await ctx.params;
+    if (!id) {
+      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    }
+
+    const db = await getDb();
+    const listingsCollection = db.collection('Listings');
+    const transactionsCollection = db.collection('transactions');
+
+    const _id = ObjectId.isValid(id) ? new ObjectId(id) : id;
+
+    // Try to read an optional status from the request body, default to 'available'
+    let status = 'available';
+    try {
+      const body = await request.json();
+      if (body && typeof body.status === 'string') {
+        status = body.status;
+      }
+    } catch {
+      // If there's no JSON body, we simply keep the default status = 'available'
+    }
+
+    const updateResult = await listingsCollection.updateOne(
+      { _id },
+      { $set: { status } },
+    );
+
+    if (updateResult.matchedCount === 0) {
+      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+    }
+
+    // Remove the corresponding transaction(s) for this item
+    await transactionsCollection.deleteMany({ itemId: _id });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating item (PATCH):', error);
+    return NextResponse.json(
+      { error: error?.message || 'Failed to update item' },
+      { status: 500 },
+    );
+  }
+}

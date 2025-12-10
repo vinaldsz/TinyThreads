@@ -1,4 +1,6 @@
 'use client';
+
+import { useSession } from 'next-auth/react';
 import styles from './ItemCard.module.css';
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
@@ -6,6 +8,8 @@ import { useRouter } from 'next/navigation';
 
 export default function ItemCard({ item }) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const isOwner = session?.user?.id === item.sellerId;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -245,7 +249,9 @@ export default function ItemCard({ item }) {
 
         {/* Description */}
         <p className={styles.description}>{item.description}</p>
-        <button className={styles.viewButton}>View Details</button>
+        {!isOwner && (
+          <button className={styles.viewButton}>View Details</button>
+        )}
       </div>
     </div>
   );

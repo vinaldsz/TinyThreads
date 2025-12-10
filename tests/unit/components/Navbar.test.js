@@ -204,7 +204,7 @@ describe('Navbar Component', () => {
       render(<Navbar />);
 
       const logo = screen.getByTestId('navbar-image');
-      expect(logo).toHaveAttribute('src', '/TinyThreadsScribble.png');
+      expect(logo).toHaveAttribute('src', '/TinyThreadsScribble_new.png');
       expect(logo).toHaveAttribute('alt', 'TinyThreads');
       expect(logo).toHaveAttribute('width', '1000');
       expect(logo).toHaveAttribute('height', '1000');

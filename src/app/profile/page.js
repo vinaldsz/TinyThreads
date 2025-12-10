@@ -6,15 +6,24 @@ import ProfileEditor from '../../components/ProfileEditor/AboutEditor.js';
 import NameEditor from '../../components/ProfileEditor/NameEditor';
 import AvatarEditor from '../../components/ProfileEditor/AvatarEditor';
 import LocationEditor from '../../components/ProfileEditor/LocationEditor';
+import Link from 'next/link';
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
     return (
-      <div className={styles.container}>
-        <h2 className={styles.name}>Not signed in</h2>
-        <p className={styles.empty}>Please sign in to view your profile.</p>
+      <div className={styles.wrapper}>
+        <Link href="/" className={styles.backButton}>
+          ← Back
+        </Link>
+        <div className={styles.container}>
+          <h1 className={styles.title}>Profile</h1>
+          <p className={styles.subtitle}>Manage your personal information</p>
+
+          <h2 className={styles.name}>Not signed in</h2>
+          <p className={styles.empty}>Please sign in to view your profile.</p>
+        </div>
       </div>
     );
   }
@@ -25,9 +34,17 @@ export default async function ProfilePage() {
 
   if (!user) {
     return (
-      <div className={styles.container}>
-        <h2 className={styles.name}>Profile</h2>
-        <p className={styles.empty}>No profile found for your account.</p>
+      <div className={styles.wrapper}>
+        <Link href="/" className={styles.backButton}>
+          ← Back
+        </Link>
+        <div className={styles.container}>
+          <h1 className={styles.title}>Profile</h1>
+          <p className={styles.subtitle}>Manage your personal information</p>
+
+          <h2 className={styles.name}>Profile</h2>
+          <p className={styles.empty}>No profile found for your account.</p>
+        </div>
       </div>
     );
   }
@@ -35,33 +52,41 @@ export default async function ProfilePage() {
   const avatar = user.avatarUrl || '';
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <AvatarEditor initialAvatar={avatar} />
-        <div>
-          <NameEditor initialName={user.displayName || user.name} />
-          <div className={styles.email}>{user.email}</div>
-        </div>
-      </div>
+    <div className={styles.wrapper}>
+      <Link href="/" className={styles.backButton}>
+        ← Back
+      </Link>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Profile</h1>
+        <p className={styles.subtitle}>Manage your personal information</p>
 
-      <div className={styles.section}>
-        <div className={styles.label}>About</div>
-        <div className={styles.value}>
-          <ProfileEditor initialBio={user.bio || ''} />
+        <div className={styles.header}>
+          <AvatarEditor initialAvatar={avatar} />
+          <div>
+            <NameEditor initialName={user.displayName || user.name} />
+            <div className={styles.email}>{user.email}</div>
+          </div>
         </div>
-      </div>
 
-      <div className={styles.section}>
-        <div className={styles.label}>Location</div>
-        <div className={styles.value}>
-          <LocationEditor initialLocation={user.location || ''} />
+        <div className={styles.section}>
+          <div className={styles.label}>About</div>
+          <div className={styles.value}>
+            <ProfileEditor initialBio={user.bio || ''} />
+          </div>
         </div>
-      </div>
 
-      <div className={styles.section}>
-        <div className={styles.label}>Member since</div>
-        <div className={styles.value}>
-          {new Date(user.createdAt).toLocaleString()}
+        <div className={styles.section}>
+          <div className={styles.label}>Location</div>
+          <div className={styles.value}>
+            <LocationEditor initialLocation={user.location || ''} />
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.label}>Member since</div>
+          <div className={styles.value}>
+            {new Date(user.createdAt).toLocaleString()}
+          </div>
         </div>
       </div>
     </div>
