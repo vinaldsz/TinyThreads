@@ -29,6 +29,10 @@ export default function AvatarEditor({ initialAvatar }) {
     try {
       const form = new FormData();
       form.append('avatar', file, file.name);
+      // Send the previous avatar so the server can clean it up from S3
+      if (avatar) {
+        form.append('oldAvatarUrl', avatar);
+      }
 
       const res = await fetch('/api/uploads/avatar/upload', {
         method: 'POST',
