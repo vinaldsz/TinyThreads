@@ -6,6 +6,7 @@ import { getItemById } from '../../services/itemService';
 import styles from './ItemDetail.module.css';
 import Image from 'next/image';
 import PurchaseModal from './PurchaseModal';
+import ReportModal from './ReportModal';
 import { useSession } from 'next-auth/react';
 import FavoriteButton from '../FavoriteButton/FavoriteButton';
 
@@ -16,6 +17,7 @@ export default function ItemDetail({ itemId }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // ADD THIS CLEANING FUNCTION HERE:
   const cleanImageUrl = (url) => {
@@ -153,6 +155,44 @@ export default function ItemDetail({ itemId }) {
   const handleContactSeller = () => {
     if (item?.sellerEmail) {
       window.location.href = `mailto:${item.sellerEmail}`;
+    }
+  };
+
+  const handleReport = () => {
+    setShowReportModal(true);
+  };
+
+  const handleReportSubmit = async (reportData) => {
+    try {
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemId,
+          itemTitle: item.title,
+          sellerId: item.sellerId,
+          sellerName: item.sellerName,
+          sellerEmail: item.sellerEmail,
+          reporterId: session?.user?.id,
+          reporterName: session?.user?.name,
+          reporterEmail: session?.user?.email,
+          reason: reportData.reason,
+          details: reportData.details,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to submit report');
+      }
+
+      setShowReportModal(false);
+      alert(
+        'Thank you for reporting. We have received your report and will review it shortly.',
+      );
+    } catch (err) {
+      console.error('Error submitting report:', err);
+      alert(err.message || 'Failed to submit report. Please try again.');
     }
   };
 
@@ -423,8 +463,54 @@ export default function ItemDetail({ itemId }) {
                         <span className={styles.emailTitle}>Email Seller</span>
                       </span>
                     </button>
+                    {item.sellerId && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          router.push(
+                            `/users/${item.sellerId}?from=/Items/${itemId}`,
+                          )
+                        }
+                        className={styles.emailButton}
+                      >
+                        View Profile
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleReport}
+                      className={styles.reportButton}
+                    >
+                      Report
+                    </button>
                   </div>
                 )}
+
+                {(!item.status ||
+                  item.status !== 'available' ||
+                  !item.sellerEmail) &&
+                  item.sellerId && (
+                    <div className={styles.contactButtons}>
+                      <button
+                        onClick={() =>
+                          router.push(
+                            `/users/${item.sellerId}?from=/Items/${itemId}`,
+                          )
+                        }
+                        className={styles.profileButton}
+                        type="button"
+                      >
+                        View Profile
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleReport}
+                        className={styles.reportButton}
+                      >
+                        Report
+                      </button>
+                    </div>
+                  )}
               </div>
             </div>
 
@@ -452,6 +538,17 @@ export default function ItemDetail({ itemId }) {
           user={session?.user}
           onClose={() => setShowPurchaseModal(false)}
           onSuccess={handlePurchaseSuccess}
+        />
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <ReportModal
+          itemId={itemId}
+          itemTitle={item?.title}
+          sellerName={item?.sellerName}
+          onClose={() => setShowReportModal(false)}
+          onSubmit={handleReportSubmit}
         />
       )}
     </>

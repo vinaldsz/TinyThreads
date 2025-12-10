@@ -3,7 +3,7 @@
  * Additional FilterBar tests focused on branch coverage
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import FilterBar from '../../../src/components/FilterBar/FilterBar';
@@ -479,22 +479,9 @@ describe('FilterBar - Branch Coverage Tests', () => {
       });
     });
 
-    it('should handle all availability options', () => {
-      render(<FilterBar onFiltersChange={mockOnFiltersChange} />);
-
-      fireEvent.click(screen.getByText('Filter'));
-      const availabilitySelect = screen.getByLabelText('Availability');
-
-      const availabilities = ['available', 'sold'];
-
-      availabilities.forEach((availability) => {
-        fireEvent.change(availabilitySelect, {
-          target: { value: availability },
-        });
-        expect(mockOnFiltersChange).toHaveBeenCalledWith(
-          expect.objectContaining({ availability }),
-        );
-      });
+    it.skip('should handle all availability options (filter removed)', () => {
+      // Availability filter was removed from UI
+      // This test is kept but skipped for historical reference
     });
 
     it('should handle all sortBy options', () => {

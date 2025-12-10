@@ -83,6 +83,11 @@ export default function Navbar() {
                       My Listings
                     </Link>
 
+                    <Link href="/my-purchases" className={styles.dropdownItem}>
+                      <span className={styles.dropdownIcon}></span>
+                      My Purchases
+                    </Link>
+
                     <Link href="/favorites" className={styles.dropdownItem}>
                       <span className={styles.dropdownIcon}></span>
                       Favorites

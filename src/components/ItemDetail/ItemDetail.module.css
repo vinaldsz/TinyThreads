@@ -244,24 +244,34 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: linear-gradient(180deg, #ff8b6a 0%, #f27b65 100%);
-  color: #ffffff;
-  border: none;
+
+  background: transparent; /* remove fill color */
+  color: #ff8b6a; /* text color */
+  border: 2px solid #ff8b6a; /* border color */
+
   padding: 12px 18px;
   border-radius: 10px;
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
+
   transition:
     transform 0.12s ease,
     box-shadow 0.12s ease,
-    background 0.12s ease;
+    background 0.12s ease,
+    color 0.12s ease;
 }
 
 .emailButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(242, 123, 101, 0.18);
   background: linear-gradient(180deg, #ff7a55 0%, #e7674d 100%);
+  color: #ffffff;
+}
+
+.emailButton:hover .emailText,
+.emailButton:hover .emailTitle {
+  color: #ffffff !important;
 }
 
 .emailIcon {
@@ -273,6 +283,7 @@
 
 .emailText {
   display: flex;
+  color: #ff8b6a;
   flex-direction: column;
   align-items: flex-start;
   line-height: 1.05;
@@ -281,13 +292,77 @@
 .emailTitle {
   font-weight: 700;
   font-size: 15px;
-  color: #fff;
+  color: #ff8b6a;
 }
 
 .emailAddress {
   font-weight: 500;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.95);
+}
+
+.profileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #ff8b6a 0%, #f27b65 100%) !important;
+  color: #ffffff !important;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none !important;
+  appearance: none;
+  box-shadow: none;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.profileButton:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(242, 123, 101, 0.18);
+  background: linear-gradient(180deg, #ff7a55 0%, #e7674d 100%) !important;
+  color: #ffffff !important;
+}
+
+.profileButton:visited {
+  text-decoration: none;
+}
+
+.reportButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #dc3545;
+  border: 2px solid #dc3545;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  appearance: none;
+  box-shadow: none;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.reportButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(220, 53, 69, 0.18);
+  background: linear-gradient(180deg, #dc3545 0%, #c82333 100%);
+  color: #ffffff;
 }
 
 .phoneButton {
