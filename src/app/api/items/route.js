@@ -13,6 +13,15 @@ export async function GET(req) {
 
   const query = {};
 
+  // availability filter (optional - if not specified or 'all', show all items)
+  const availability = searchParams.get('availability');
+  if (availability === 'sold') {
+    query.status = 'sold';
+  } else if (availability === 'available') {
+    query.status = 'available';
+  }
+  // If availability is 'all' or not specified, don't filter by status - show all items
+
   // case-insensitive categorical filters (use anchored regex)
   if (searchParams.get('category')) {
     const v = searchParams.get('category');
@@ -30,15 +39,39 @@ export async function GET(req) {
     const v = searchParams.get('ageRange');
     query.ageRange = { $regex: `^${escapeRegex(v)}$`, $options: 'i' };
   }
+  if (searchParams.get('sellerId')) {
+    const sellerId = searchParams.get('sellerId');
+    const { ObjectId } = await import('mongodb');
+
+    // Convert string to ObjectId if valid, otherwise use as string
+    const sellerObjectId = ObjectId.isValid(sellerId)
+      ? new ObjectId(sellerId)
+      : sellerId;
+    query.sellerId = sellerObjectId;
+  }
+  // Exclude a seller's listings if excludeSellerId is provided
+  const excludeSellerId = searchParams.get('excludeSellerId');
+  if (excludeSellerId) {
+    const { ObjectId } = await import('mongodb');
+    const excludeObjId = ObjectId.isValid(excludeSellerId)
+      ? new ObjectId(excludeSellerId)
+      : excludeSellerId;
+
+    // If sellerId is not already explicitly set, apply $ne filter
+    if (!query.sellerId) {
+      query.sellerId = { $ne: excludeObjId };
+    }
+  }
 
   // price range
   const min = searchParams.get('priceMin') || searchParams.get('price_min');
   const max = searchParams.get('priceMax') || searchParams.get('price_max');
-  if (min || max)
+  if (min || max) {
     query.price = {
       ...(min && { $gte: Number(min) }),
       ...(max && { $lte: Number(max) }),
     };
+  }
 
   // searchTerm -> partial, case-insensitive search across title & description
   const searchTerm =
@@ -53,25 +86,86 @@ export async function GET(req) {
 
   // sorting
   const sortBy = searchParams.get('sortBy') || 'newest';
-  const sort = {
+  const sortMap = {
     newest: { createdAt: -1 },
     oldest: { createdAt: 1 },
     'price-low': { price: 1 },
     'price-high': { price: -1 },
-  }[sortBy] || { createdAt: -1 };
+  };
+  const sort = sortMap[sortBy] || { createdAt: -1 };
 
-  const limitValue = Number(searchParams.get('limit')) || 48;
+  // pagination
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const limitValue = Math.max(1, Number(searchParams.get('limit')) || 12);
+  const skip = (page - 1) * limitValue;
 
-  const items = await collection
-    .find(query)
-    .sort(sort)
-    .limit(limitValue)
-    .toArray();
+  // NEW: distance-based sorting parameters
+  const latParam = searchParams.get('lat');
+  const lngParam = searchParams.get('lng');
+  const lat = latParam != null ? Number(latParam) : NaN;
+  const lng = lngParam != null ? Number(lngParam) : NaN;
+  const hasCoords = !Number.isNaN(lat) && !Number.isNaN(lng);
+
+  let items;
+  let total;
+
+  // If sortBy === 'distance' and we have valid coordinates, use $geoNear on geoLocation
+  if (sortBy === 'distance' && hasCoords) {
+    const pipeline = [
+      {
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: [lng, lat], // [longitude, latitude]
+          },
+          key: 'geoLocation', // field with 2dsphere index
+          distanceField: 'distanceMeters',
+          spherical: true,
+          // Only apply query if there are any filters
+          ...(Object.keys(query).length > 0 ? { query } : {}),
+          // Optional: limit radius in meters (uncomment if desired)
+          // maxDistance: 30000, // 30km
+        },
+      },
+      { $skip: skip },
+      { $limit: limitValue },
+    ];
+
+    const [results, countResult] = await Promise.all([
+      collection.aggregate(pipeline).toArray(),
+      collection.countDocuments({
+        ...query,
+        geoLocation: { $exists: true },
+      }),
+    ]);
+
+    items = results;
+    total = countResult;
+  } else {
+    // Default behaviour: sort by time/price using normal find()
+    total = await collection.countDocuments(query);
+
+    items = await collection
+      .find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limitValue)
+      .toArray();
+  }
 
   const serialized = items.map(({ _id, ...rest }) => ({
     _id: _id?.toString(),
+    id: _id?.toString(), //make sure can find id
     ...rest,
   }));
 
-  return NextResponse.json({ items: serialized, total: serialized.length });
+  const hasMore = page * limitValue < total;
+
+  return NextResponse.json({
+    items: serialized,
+    total: Number(total),
+    page: Number(page),
+    limit: Number(limitValue),
+    hasMore,
+  });
 }

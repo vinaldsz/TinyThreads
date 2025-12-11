@@ -5,9 +5,18 @@ import { useRouter } from 'next/navigation';
 import { getItemById } from '../../services/itemService';
 import styles from './ItemDetail.module.css';
 import Image from 'next/image';
-import Navbar from '@/components/Navbar/Navbar';
 import PurchaseModal from './PurchaseModal';
+import ReportModal from './ReportModal';
 import { useSession } from 'next-auth/react';
+import FavoriteButton from '../FavoriteButton/FavoriteButton';
+
+const prettifyCategory = (category) => {
+  if (!category) return '';
+  return String(category)
+    .split(' ')
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(' ');
+};
 
 export default function ItemDetail({ itemId }) {
   const [item, setItem] = useState(null);
@@ -16,6 +25,7 @@ export default function ItemDetail({ itemId }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // ADD THIS CLEANING FUNCTION HERE:
   const cleanImageUrl = (url) => {
@@ -82,7 +92,9 @@ export default function ItemDetail({ itemId }) {
     }
   }, [item]);
 
-  const handleBack = () => router.back();
+  const handleBack = () => {
+    router.push('/');
+  };
 
   const formatPrice = (p) => {
     const n = typeof p === 'number' ? p : Number(p);
@@ -135,7 +147,9 @@ export default function ItemDetail({ itemId }) {
         try {
           const body = await res.json();
           if (body?.error) message = body.error;
-        } catch (e) {}
+        } catch {
+          // ignore JSON parse errors
+        }
         throw new Error(message);
       }
 
@@ -151,6 +165,44 @@ export default function ItemDetail({ itemId }) {
   const handleContactSeller = () => {
     if (item?.sellerEmail) {
       window.location.href = `mailto:${item.sellerEmail}`;
+    }
+  };
+
+  const handleReport = () => {
+    setShowReportModal(true);
+  };
+
+  const handleReportSubmit = async (reportData) => {
+    try {
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemId,
+          itemTitle: item.title,
+          sellerId: item.sellerId,
+          sellerName: item.sellerName,
+          sellerEmail: item.sellerEmail,
+          reporterId: session?.user?.id,
+          reporterName: session?.user?.name,
+          reporterEmail: session?.user?.email,
+          reason: reportData.reason,
+          details: reportData.details,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to submit report');
+      }
+
+      setShowReportModal(false);
+      alert(
+        'Thank you for reporting. We have received your report and will review it shortly.',
+      );
+    } catch (err) {
+      console.error('Error submitting report:', err);
+      alert(err.message || 'Failed to submit report. Please try again.');
     }
   };
 
@@ -175,12 +227,12 @@ export default function ItemDetail({ itemId }) {
   }
 
   const isDonation = Number(item.price) === 0;
+  const categoryLabel = prettifyCategory(item.category);
   const conditionKey = (item.condition || '').toLowerCase().replace(/\s/g, '');
   const conditionClass = styles[conditionKey] || '';
 
   return (
     <>
-      <Navbar />
       <div className={styles.container}>
         <div className={styles.header}>
           <button onClick={handleBack} className={styles.backButton}>
@@ -274,7 +326,13 @@ export default function ItemDetail({ itemId }) {
           {/* Core Details (Mongo fields only) */}
           <div className={styles.detailsSection}>
             <div className={styles.productInfo}>
-              <h1 className={styles.title}>{item.title}</h1>
+              <div className={styles.titleRow}>
+                <h1 className={styles.title}>{item.title}</h1>
+                <FavoriteButton
+                  itemId={item._id || item.id}
+                  className="detailPosition"
+                />
+              </div>
 
               <div className={styles.metaRow}>
                 {isDonation && (
@@ -309,7 +367,7 @@ export default function ItemDetail({ itemId }) {
                 </div>
                 <div className={styles.infoItem}>
                   <span className={styles.label}>Category:</span>
-                  <span>{item.category || '—'}</span>
+                  <span>{categoryLabel || '—'}</span>
                 </div>
                 <div className={styles.infoItem}>
                   <span className={styles.label}>Location:</span>
@@ -323,28 +381,33 @@ export default function ItemDetail({ itemId }) {
               </div>
 
               {/* Purchase Section moved below Description */}
-              <div className={styles.purchaseSection}>
-                {canPurchase && (
-                  <button onClick={handleBuyClick} className={styles.buyButton}>
-                    Buy Now
-                  </button>
-                )}
+              {!isOwner && (
+                <div className={styles.purchaseSection}>
+                  {canPurchase && (
+                    <button
+                      onClick={handleBuyClick}
+                      className={styles.buyButton}
+                    >
+                      Buy Now
+                    </button>
+                  )}
 
-                {!isLoggedIn && isAvailable && (
-                  <button
-                    onClick={handleLoginRedirect}
-                    className={styles.loginButton}
-                  >
-                    Sign in to purchase
-                  </button>
-                )}
+                  {!isLoggedIn && isAvailable && (
+                    <button
+                      onClick={handleLoginRedirect}
+                      className={styles.loginButton}
+                    >
+                      Sign in to purchase
+                    </button>
+                  )}
 
-                {!isAvailable && (
-                  <div className={styles.soldNotice}>
-                    This item has been sold
-                  </div>
-                )}
-              </div>
+                  {!isAvailable && (
+                    <div className={styles.soldNotice}>
+                      This item has been sold
+                    </div>
+                  )}
+                </div>
+              )}
 
               {isOwner && (
                 <div className={styles.ownerActions}>
@@ -366,74 +429,127 @@ export default function ItemDetail({ itemId }) {
               )}
             </div>
 
-            {/* Seller Information */}
-            <div className={styles.sellerSection}>
-              <h3>Seller Information</h3>
-              <div className={styles.sellerCard}>
-                <div className={styles.sellerHeader}>
-                  <div className={styles.sellerName}>
-                    {item.sellerName || 'Seller'}
-                  </div>
-                </div>
-                <div className={styles.sellerMeta}>
-                  {item.sellerEmail && (
-                    <div className={styles.metaRow}>
-                      <strong>Email:</strong>
-                      <span>{item.sellerEmail}</span>
+            {!isOwner && (
+              <>
+                {/* Seller Information */}
+                <div className={styles.sellerSection}>
+                  <h3>Seller Information</h3>
+                  <div className={styles.sellerCard}>
+                    <div className={styles.sellerHeader}>
+                      <div className={styles.sellerName}>
+                        {item.sellerName || 'Seller'}
+                      </div>
                     </div>
-                  )}
+                    <div className={styles.sellerMeta}>
+                      {item.sellerEmail && (
+                        <div className={styles.metaRow}>
+                          <strong>Email:</strong>
+                          <span>{item.sellerEmail}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {item.status === 'available' && item.sellerEmail && (
+                      <div className={styles.contactButtons}>
+                        <button
+                          onClick={handleContactSeller}
+                          className={styles.emailButton}
+                        >
+                          <svg
+                            className={styles.emailIcon}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M3 7.5A2.5 2.5 0 015.5 5h13A2.5 2.5 0 0121 7.5v9A2.5 2.5 0 0118.5 19h-13A2.5 2.5 0 013 16.5v-9z"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M21 7.5l-9 6-9-6"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <span className={styles.emailText}>
+                            <span className={styles.emailTitle}>
+                              Email Seller
+                            </span>
+                          </span>
+                        </button>
+                        {item.sellerId && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              router.push(
+                                `/users/${item.sellerId}?from=/Items/${itemId}`,
+                              )
+                            }
+                            className={styles.emailButton}
+                          >
+                            View Profile
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleReport}
+                          className={styles.reportButton}
+                        >
+                          Report
+                        </button>
+                      </div>
+                    )}
+
+                    {(!item.status ||
+                      item.status !== 'available' ||
+                      !item.sellerEmail) &&
+                      item.sellerId && (
+                        <div className={styles.contactButtons}>
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/users/${item.sellerId}?from=/Items/${itemId}`,
+                              )
+                            }
+                            className={styles.profileButton}
+                            type="button"
+                          >
+                            View Profile
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleReport}
+                            className={styles.reportButton}
+                          >
+                            Report
+                          </button>
+                        </div>
+                      )}
+                  </div>
                 </div>
 
-                {item.status === 'available' && item.sellerEmail && (
-                  <div className={styles.contactButtons}>
-                    <button
-                      onClick={handleContactSeller}
-                      className={styles.emailButton}
-                    >
-                      <svg
-                        className={styles.emailIcon}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M3 7.5A2.5 2.5 0 015.5 5h13A2.5 2.5 0 0121 7.5v9A2.5 2.5 0 0118.5 19h-13A2.5 2.5 0 013 16.5v-9z"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M21 7.5l-9 6-9-6"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span className={styles.emailText}>
-                        <span className={styles.emailTitle}>Email Seller</span>
-                      </span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.safetyNotice}>
-              <h4>🛡️ Safety Tips</h4>
-              <ul>
-                <li>
-                  Meet in a public place like a library, coffee shop, or mall
-                </li>
-                <li>Bring a friend if possible</li>
-                <li>Inspect items carefully before payment</li>
-                <li>
-                  Trust your instincts — if something feels off, walk away
-                </li>
-              </ul>
-            </div>
+                <div className={styles.safetyNotice}>
+                  <h4>🛡️ Safety Tips</h4>
+                  <ul>
+                    <li>
+                      Meet in a public place like a library, coffee shop, or
+                      mall
+                    </li>
+                    <li>Bring a friend if possible</li>
+                    <li>Inspect items carefully before payment</li>
+                    <li>
+                      Trust your instincts — if something feels off, walk away
+                    </li>
+                  </ul>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -445,6 +561,17 @@ export default function ItemDetail({ itemId }) {
           user={session?.user}
           onClose={() => setShowPurchaseModal(false)}
           onSuccess={handlePurchaseSuccess}
+        />
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <ReportModal
+          itemId={itemId}
+          itemTitle={item?.title}
+          sellerName={item?.sellerName}
+          onClose={() => setShowReportModal(false)}
+          onSubmit={handleReportSubmit}
         />
       )}
     </>

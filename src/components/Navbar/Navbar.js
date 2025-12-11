@@ -31,7 +31,7 @@ export default function Navbar() {
         <div className={styles.brand}>
           <Link href="/" className={styles.brandLink}>
             <Image
-              src="/TinyThreadsScribble.png"
+              src="/TinyThreadsScribble_new.png"
               alt="TinyThreads"
               className={styles.brandLogo}
               width={1000}
@@ -69,6 +69,30 @@ export default function Navbar() {
 
                 {open && (
                   <div className={styles.profileDropdown} role="menu">
+                    <Link
+                      href="/profile"
+                      className={styles.dropdownItem}
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                    >
+                      Profile
+                    </Link>
+
+                    <Link href="/my-listings" className={styles.dropdownItem}>
+                      <span className={styles.dropdownIcon}></span>
+                      My Listings
+                    </Link>
+
+                    <Link href="/my-purchases" className={styles.dropdownItem}>
+                      <span className={styles.dropdownIcon}></span>
+                      My Purchases
+                    </Link>
+
+                    <Link href="/favorites" className={styles.dropdownItem}>
+                      <span className={styles.dropdownIcon}></span>
+                      Favorites
+                    </Link>
+
                     <button
                       className={styles.dropdownItem}
                       role="menuitem"

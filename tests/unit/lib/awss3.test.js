@@ -8,6 +8,12 @@ const mockS3Client = jest.fn(() => ({
 }));
 const mockPutObjectCommand = jest.fn();
 
+// Mock s3-request-presigner
+const mockGetSignedUrl = jest.fn();
+jest.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: mockGetSignedUrl,
+}));
+
 jest.mock('@aws-sdk/client-s3', () => ({
   S3Client: mockS3Client,
   PutObjectCommand: mockPutObjectCommand,
@@ -432,6 +438,35 @@ describe('awss3', () => {
       expect(awsModule.default).toBeDefined();
       // The default export should be the result of new S3Client()
       expect(mockS3Client).toHaveBeenCalled();
+    });
+  });
+
+  // ===== PRESIGN TESTS =====
+  describe('getPresignedUploadUrl', () => {
+    test('throws when missing key or contentType', async () => {
+      const awsModule = await import('@/lib/awss3.js');
+      await expect(awsModule.getPresignedUploadUrl('', '')).rejects.toThrow(
+        'key and contentType required for presigned url',
+      );
+    });
+
+    test('returns signedUrl and publicUrl on success', async () => {
+      // Make getSignedUrl return a fixed url
+      mockGetSignedUrl.mockResolvedValueOnce('https://signed.example/upload');
+
+      const awsModule = await import('@/lib/awss3.js');
+
+      const result = await awsModule.getPresignedUploadUrl(
+        'items/test.jpg',
+        'image/jpeg',
+        { expiresIn: 120 },
+      );
+
+      expect(result.signedUrl).toBe('https://signed.example/upload');
+      expect(result.publicUrl).toBe(
+        `${process.env.S3_PUBLIC_BASE}/items/test.jpg`,
+      );
+      expect(result.key).toBe('items/test.jpg');
     });
   });
 });

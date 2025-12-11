@@ -3,6 +3,8 @@
 import styles from './FilterBar.module.css';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function FilterBar({
   onFiltersChange,
@@ -10,9 +12,13 @@ export default function FilterBar({
   initialFilters = {},
   activeFiltersCount = 0,
 }) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [filters, setFilters] = useState({
     category: initialFilters.category || '',
     condition: initialFilters.condition || '',
+    size: initialFilters.size || '',
     ageRange: initialFilters.ageRange || '',
     priceRange: initialFilters.priceRange || '',
     sortBy: initialFilters.sortBy || 'newest',
@@ -40,11 +46,35 @@ export default function FilterBar({
     { value: 'Fair', label: 'Fair' },
   ];
 
+  const sizeOptions = [
+    { value: '', label: 'All Sizes' },
+    { value: 'NB', label: 'Newborn (0-3M)' },
+    { value: '3M', label: '3 Months' },
+    { value: '6M', label: '6 Months' },
+    { value: '9M', label: '9 Months' },
+    { value: '12M', label: '12 Months' },
+    { value: '18M', label: '18 Months' },
+    { value: '24M', label: '24 Months' },
+    { value: '2T', label: '2T (2-3 years)' },
+    { value: '3T', label: '3T (3-4 years)' },
+    { value: '4T', label: '4T (4-5 years)' },
+  ];
+
+  const ageRangeOptions = [
+    { value: '', label: 'All Ages' },
+    { value: '0-6M', label: '0-6 Months' },
+    { value: '6-12M', label: '6-12 Months' },
+    { value: '1-2Y', label: '1-2 Years' },
+    { value: '2-3Y', label: '2-3 Years' },
+    { value: '3-5Y', label: '3-5 Years' },
+  ];
+
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'oldest', label: 'Oldest First' },
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'distance', label: 'Distance (Closest First)' },
   ];
 
   const handleFilterChange = (key, value) => {
@@ -74,6 +104,9 @@ export default function FilterBar({
     if (f.condition && typeof f.condition === 'string') {
       f.condition = f.condition.trim();
     }
+    if (f.size && typeof f.size === 'string') {
+      f.size = f.size.trim();
+    }
     if (f.ageRange && typeof f.ageRange === 'string') {
       f.ageRange = f.ageRange.trim();
     }
@@ -93,6 +126,7 @@ export default function FilterBar({
     const clearedFilters = {
       category: '',
       condition: '',
+      size: '',
       ageRange: '',
       priceRange: '',
       sortBy: 'newest',
@@ -113,7 +147,6 @@ export default function FilterBar({
     }
     return `Filters (${activeFiltersCount})`;
   };
-
   return (
     <div className={styles.filterContainer}>
       {/* Search Bar */}
@@ -133,9 +166,21 @@ export default function FilterBar({
       {/* Filter Controls Row */}
       <div className={styles.controlRow}>
         <div className={styles.controlLeft}>
-          <Link href="/add-listing" className={styles.addListingBtn}>
-            ＋ Add listing
-          </Link>
+          {session ? (
+            // User is logged in, show normal link
+            <Link href="/add-listing" className={styles.addListingBtn}>
+              ＋ Add listing
+            </Link>
+          ) : (
+            // User is not logged in, intercept click to redirect to login
+            <button
+              className={styles.addListingBtn}
+              onClick={() => router.push('/login')}
+              type="button"
+            >
+              ＋ Add listing
+            </button>
+          )}
         </div>
 
         <div className={styles.controlRight}>
@@ -206,6 +251,43 @@ export default function FilterBar({
                 }
               >
                 {conditions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <label className={styles.label} htmlFor="filter-size">
+                Size
+              </label>
+              <select
+                id="filter-size"
+                className={styles.select}
+                value={filters.size}
+                onChange={(e) => handleFilterChange('size', e.target.value)}
+              >
+                {sizeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Age Range Filter */}
+            <div className={styles.filterGroup}>
+              <label className={styles.label} htmlFor="filter-ageRange">
+                Age Range
+              </label>
+              <select
+                id="filter-ageRange"
+                className={styles.select}
+                value={filters.ageRange}
+                onChange={(e) => handleFilterChange('ageRange', e.target.value)}
+              >
+                {ageRangeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>

@@ -1,13 +1,25 @@
 'use client';
+
+import { useSession } from 'next-auth/react';
 import styles from './ItemCard.module.css';
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
 export default function ItemCard({ item }) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const isOwner = session?.user?.id === item.sellerId;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const distanceMiles = useMemo(() => {
+    if (!item || item.distanceMeters == null) return null;
+    const miles = item.distanceMeters / 1609.34;
+    return Number.isFinite(miles) ? miles.toFixed(1) : null;
+  }, [item]);
+
   const cleanImageUrl = (url) => {
     if (!url || url === 'undefined') return null;
 
@@ -43,15 +55,6 @@ export default function ItemCard({ item }) {
       ? cleanedImages
       : ['/placeholder-image.jpg'];
   }, [item.imageUrls, item.imageUrl]);
-
-  // Add this right after the images array definition
-  console.log('=== ITEM DEBUG ===');
-  console.log('Full item object:', item);
-  console.log('item.buyerUsername:', item.buyerUsername);
-  console.log('item.imageUrl:', item.imageUrl);
-  console.log('item.imageUrls:', item.imageUrls);
-  console.log('images array:', images);
-  console.log('==================');
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -152,10 +155,10 @@ export default function ItemCard({ item }) {
             </div>
           </div>
         ) : (
-          <div className={styles.imageContainer}>
+          <>
             <Image
               src={images[currentIndex]}
-              alt={item.title}
+              alt={item.title || 'Item image'}
               className={`${styles.image} ${
                 imageLoaded ? styles.imageLoaded : styles.imageLoading
               }`}
@@ -196,7 +199,7 @@ export default function ItemCard({ item }) {
                 </button>
               </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Price Badge */}
@@ -205,6 +208,13 @@ export default function ItemCard({ item }) {
             {item.price === 0 ? 'Free' : `$${item.price}`}
           </span>
         </div>
+
+        {/* Sold Badge */}
+        {item.status === 'sold' && (
+          <div className={styles.soldBadge}>
+            <span className={styles.soldText}>SOLD</span>
+          </div>
+        )}
 
         {/* Condition Badge */}
         <div className={styles.conditionBadge}>
@@ -226,24 +236,22 @@ export default function ItemCard({ item }) {
           </span>
           <span className={styles.ageRange}>{item.ageRange}</span>
         </div>
+        {distanceMiles && (
+          <div className={styles.distanceRow}>
+            <span className={styles.distanceText}>
+              ~{distanceMiles} miles away
+            </span>
+          </div>
+        )}
 
         {/* Title */}
         <h3 className={styles.title}>{item.title}</h3>
 
         {/* Description */}
         <p className={styles.description}>{item.description}</p>
-        {/* Seller Info */}
-        {/* <div className={styles.sellerInfo}>
-          <div className={styles.seller}>
-            <div className={styles.sellerAvatar}>
-              {item.sellerName}
-            </div>
-            <span>by {item.sellerName}</span>
-          </div>
-        </div>
-        */}
-        {/* Action Button */}
-        <button className={styles.viewButton}>View Details</button>
+        {!isOwner && (
+          <button className={styles.viewButton}>View Details</button>
+        )}
       </div>
     </div>
   );

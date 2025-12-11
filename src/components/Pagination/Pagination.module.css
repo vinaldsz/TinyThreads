@@ -1,0 +1,39 @@
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+.control {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.page {
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 6px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.active {
+  background: #111;
+  color: #fff;
+  border: 1px solid #111;
+  padding: 6px 9px;
+  border-radius: 6px;
+}
+.ellipsis {
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+  color: #666;
+}
+.control[disabled],
+.page[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

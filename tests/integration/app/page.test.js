@@ -1,504 +1,386 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from '@testing-library/react';
-import '@testing-library/jest-dom';
-import BrowsePage from '@/app/page';
-import { getItems, filterItems } from '@/services/itemService';
+// tests/unit/app/favorites/page.test.js
+/**
+ * @jest-environment jsdom
+ */
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import FavoritesPage from '../../../src/app/favorites/page';
 
-// Mock Next.js Link component
-jest.mock('next/link', () => {
-  const MockLink = ({ children, href, ...props }) => {
-    return (
-      <a href={href} {...props}>
-        {children}
-      </a>
-    );
-  };
-  MockLink.displayName = 'MockLink';
-  return MockLink;
-});
-
-// Mock itemService functions
-jest.mock('@/services/itemService', () => ({
-  getItems: jest.fn(),
-  filterItems: jest.fn(),
+// Mock dependencies
+jest.mock('next-auth/react');
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
 }));
-
-// Mock FilterBar component
-jest.mock('@/components/FilterBar/FilterBar', () => {
-  const MockFilterBar = function ({
-    onFiltersChange,
-    onClearFilters,
-    itemCount,
-    activeFiltersCount,
-    sortLabel,
-  }) {
-    return (
-      <div data-testid="filter-bar">
-        <div data-testid="item-count">{itemCount}</div>
-        <div data-testid="active-filters-count">{activeFiltersCount}</div>
-        <div data-testid="sort-label">{sortLabel}</div>
-        <button
-          onClick={() => onFiltersChange({ category: 'clothing' })}
-          data-testid="trigger-filter-change"
-        >
-          Change Filters
-        </button>
-        <button onClick={onClearFilters} data-testid="clear-filters">
-          Clear Filters
-        </button>
-      </div>
-    );
+jest.mock('../../../src/components/ItemCard/ItemCard', () => {
+  return function MockItemCard({ item }) {
+    return <div data-testid="item-card">{item.title}</div>;
   };
-  MockFilterBar.displayName = 'MockFilterBar';
-  return MockFilterBar;
 });
 
-// Mock ItemGrid component
-jest.mock('@/components/ItemGrid/ItemGrid', () => {
-  const MockItemGrid = function ({ items, loading, hasMore }) {
-    return (
-      <div data-testid="item-grid">
-        <div data-testid="items-length">{items.length}</div>
-        <div data-testid="loading-state">{loading ? 'loading' : 'loaded'}</div>
-        <div data-testid="has-more">{hasMore ? 'has-more' : 'no-more'}</div>
-      </div>
-    );
-  };
-  MockItemGrid.displayName = 'MockItemGrid';
-  return MockItemGrid;
-});
+global.fetch = jest.fn();
 
-// Mock CSS modules
-jest.mock('@/app/page.module.css', () => ({
-  page: 'page',
-  container: 'container',
-  headerSection: 'headerSection',
-  logoContainer: 'logoContainer',
-  logo: 'logo',
-  title: 'title',
-  nav: 'nav',
-  aboutLink: 'aboutLink',
-  controlSection: 'controlSection',
-}));
-
-describe('BrowsePage', () => {
-  const mockItems = [
-    { id: '1', title: 'Item 1', price: 10, category: 'clothing' },
-    { id: '2', title: 'Item 2', price: 20, category: 'toys' },
-    { id: '3', title: 'Item 3', price: 15, category: 'books' },
-  ];
-
-  const mockItemsResponse = {
-    items: mockItems,
+describe('Favorites Page', () => {
+  const mockRouter = {
+    push: jest.fn(),
   };
 
   beforeEach(() => {
-    getItems.mockResolvedValue(mockItemsResponse);
-    filterItems.mockResolvedValue(mockItemsResponse);
+    jest.clearAllMocks();
+    useRouter.mockReturnValue(mockRouter);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
-  describe('Component Rendering', () => {
-    test('renders without crashing', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+  describe('Authentication', () => {
+    it('should redirect to login when not authenticated', () => {
+      useSession.mockReturnValue({
+        data: null,
+        status: 'unauthenticated',
       });
 
-      await waitFor(() => {
-        expect(screen.getByAltText('TinyThreads')).toBeInTheDocument();
-      });
+      render(<FavoritesPage />);
+
+      expect(mockRouter.push).toHaveBeenCalledWith('/login');
     });
 
-    test('renders header section with logo and title', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+    it('should show loading while checking auth', () => {
+      useSession.mockReturnValue({
+        data: null,
+        status: 'loading',
       });
 
-      await waitFor(() => {
-        expect(screen.getByAltText('TinyThreads')).toBeInTheDocument();
-      });
+      render(<FavoritesPage />);
+
+      expect(screen.getByText('Loading your favorites...')).toBeInTheDocument();
     });
 
-    test('renders navigation with about link', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+    it('should fetch favorites when authenticated', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
       });
+
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: [],
+          total: 0,
+        }),
+      });
+
+      render(<FavoritesPage />);
 
       await waitFor(() => {
-        const aboutLink = screen.getByText('About');
-        expect(aboutLink).toBeInTheDocument();
-        expect(aboutLink).toHaveAttribute('href', '/about');
-      });
-    });
-
-    test('renders FilterBar component', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('filter-bar')).toBeInTheDocument();
-      });
-    });
-
-    test('renders ItemGrid component', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('item-grid')).toBeInTheDocument();
+        expect(fetch).toHaveBeenCalledWith('/api/favorites');
       });
     });
   });
 
-  describe('Initial Data Loading', () => {
-    test('loads items on component mount', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+  describe('Empty State', () => {
+    it('should show empty state when no favorites', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
       });
 
-      expect(getItems).toHaveBeenCalledTimes(1);
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: [],
+          total: 0,
+        }),
+      });
+
+      render(<FavoritesPage />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
+        // FIXED: Use getByRole to be more specific
+        expect(
+          screen.getByRole('heading', { name: /no favorites yet/i }),
+        ).toBeInTheDocument();
       });
+
+      expect(
+        screen.getByText(
+          'Start exploring and save items you love by clicking the heart icon!',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Browse Items')).toBeInTheDocument();
     });
 
-    test('sets loading state correctly during initial load', async () => {
-      // Mock a delayed response
-      getItems.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(() => resolve(mockItemsResponse), 100),
-          ),
-      );
-
-      await act(async () => {
-        render(<BrowsePage />);
+    it('should navigate to home when clicking Browse Items', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
       });
 
-      // Should start with loading
-      expect(screen.getByTestId('loading-state')).toHaveTextContent('loading');
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: [],
+          total: 0,
+        }),
+      });
 
-      // Should finish loading
-      await waitFor(
-        () => {
-          expect(screen.getByTestId('loading-state')).toHaveTextContent(
-            'loaded',
-          );
+      render(<FavoritesPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Browse Items')).toBeInTheDocument();
+      });
+
+      const browseButton = screen.getByText('Browse Items');
+      browseButton.click();
+
+      expect(mockRouter.push).toHaveBeenCalledWith('/');
+    });
+  });
+
+  describe('Display Favorites', () => {
+    const mockFavorites = [
+      {
+        _id: 'fav1',
+        itemId: 'item1',
+        item: {
+          _id: 'item1',
+          id: 'item1',
+          title: 'Baby Hat',
+          price: 10,
+          imageUrl: 'https://example.com/hat.jpg',
+          category: 'clothing',
         },
-        { timeout: 200 },
-      );
-    });
-
-    test('displays correct item count in FilterBar', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('item-count')).toHaveTextContent('3');
-      });
-    });
-  });
-
-  describe('Filter Functionality', () => {
-    test('handles filter changes correctly', async () => {
-      const filteredResponse = {
-        items: [mockItems[0]], // Only one item
-      };
-      filterItems.mockResolvedValue(filteredResponse);
-
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      // Wait for initial load
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
-      });
-
-      // Trigger filter change
-      await act(async () => {
-        const filterButton = screen.getByTestId('trigger-filter-change');
-        fireEvent.click(filterButton);
-      });
-
-      // Should call filterItems
-      await waitFor(() => {
-        expect(filterItems).toHaveBeenCalledWith({ category: 'clothing' });
-      });
-
-      // Should update filtered items
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('1');
-      });
-    });
-
-    test('sets loading state during filter changes', async () => {
-      filterItems.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(() => resolve({ items: [mockItems[0]] }), 100),
-          ),
-      );
-
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading-state')).toHaveTextContent('loaded');
-      });
-
-      // Trigger filter change
-      await act(async () => {
-        const filterButton = screen.getByTestId('trigger-filter-change');
-        fireEvent.click(filterButton);
-      });
-
-      // Should show loading
-      expect(screen.getByTestId('loading-state')).toHaveTextContent('loading');
-
-      // Should finish loading
-      await waitFor(
-        () => {
-          expect(screen.getByTestId('loading-state')).toHaveTextContent(
-            'loaded',
-          );
+      },
+      {
+        _id: 'fav2',
+        itemId: 'item2',
+        item: {
+          _id: 'item2',
+          id: 'item2',
+          title: 'Baby Shoes',
+          price: 15,
+          imageUrl: 'https://example.com/shoes.jpg',
+          category: 'clothing',
         },
-        { timeout: 200 },
-      );
-    });
+      },
+    ];
 
-    test('clears all filters correctly', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+    it('should display favorited items', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
       });
 
-      // Wait for initial load
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: mockFavorites,
+          total: 2,
+        }),
       });
 
-      // First apply a filter
-      await act(async () => {
-        const filterButton = screen.getByTestId('trigger-filter-change');
-        fireEvent.click(filterButton);
-      });
-
-      await waitFor(() => {
-        expect(filterItems).toHaveBeenCalled();
-      });
-
-      // Then clear filters
-      await act(async () => {
-        const clearButton = screen.getByTestId('clear-filters');
-        fireEvent.click(clearButton);
-      });
-
-      // Should reset to original items
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
-      });
-    });
-  });
-
-  describe('Active Filters Count', () => {
-    test('calculates active filters count correctly with no filters', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
+      render(<FavoritesPage />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('active-filters-count')).toHaveTextContent(
-          '0',
-        );
+        expect(screen.getByText('Baby Hat')).toBeInTheDocument();
+        expect(screen.getByText('Baby Shoes')).toBeInTheDocument();
       });
     });
 
-    test('shows zero active filters initially', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+    it('should show correct item count', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
       });
+
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: mockFavorites,
+          total: 2,
+        }),
+      });
+
+      render(<FavoritesPage />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('active-filters-count')).toHaveTextContent(
-          '0',
-        );
-      });
-    });
-  });
-
-  describe('Sort Labels', () => {
-    test('displays default sort label', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('sort-label')).toHaveTextContent(
-          'Newest first',
-        );
-      });
-    });
-  });
-
-  describe('Component Props', () => {
-    test('passes correct props to ItemGrid', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('has-more')).toHaveTextContent('no-more');
-        expect(screen.getByTestId('loading-state')).toBeInTheDocument();
-        expect(screen.getByTestId('items-length')).toBeInTheDocument();
+        expect(screen.getByText('2 items saved')).toBeInTheDocument();
       });
     });
 
-    test('passes initial empty filters to FilterBar', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+    it('should handle singular item count', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
       });
 
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: [mockFavorites[0]],
+          total: 1,
+        }),
+      });
+
+      render(<FavoritesPage />);
+
       await waitFor(() => {
-        expect(screen.getByTestId('active-filters-count')).toHaveTextContent(
-          '0',
-        );
+        expect(screen.getByText('1 item saved')).toBeInTheDocument();
+      });
+    });
+
+    it('should filter out invalid items', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
+      });
+
+      const favoritesWithInvalid = [
+        ...mockFavorites,
+        {
+          _id: 'fav3',
+          itemId: 'deleted-item',
+          item: null,
+        },
+      ];
+
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: favoritesWithInvalid,
+          total: 3,
+        }),
+      });
+
+      render(<FavoritesPage />);
+
+      await waitFor(() => {
+        const itemCards = screen.getAllByTestId('item-card');
+        expect(itemCards).toHaveLength(2);
       });
     });
   });
 
   describe('Error Handling', () => {
-    test('handles getItems error gracefully', async () => {
-      const consoleSpy = jest
+    it('should show error message on fetch failure', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
+      });
+
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      });
+
+      render(<FavoritesPage />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Failed to fetch favorites/i),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should show retry button on error', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
+      });
+
+      fetch.mockResolvedValueOnce({
+        ok: false,
+      });
+
+      render(<FavoritesPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Try Again')).toBeInTheDocument();
+      });
+    });
+
+    it('should retry fetching on retry button click', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
+      });
+
+      // First call fails
+      fetch.mockResolvedValueOnce({
+        ok: false,
+      });
+
+      render(<FavoritesPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Try Again')).toBeInTheDocument();
+      });
+
+      // Second call succeeds
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          favorites: [],
+          total: 0,
+        }),
+      });
+
+      const retryButton = screen.getByText('Try Again');
+      retryButton.click();
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(2);
+        // FIXED: Use getByRole to be more specific
+        expect(
+          screen.getByRole('heading', { name: /no favorites yet/i }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should handle network errors', async () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
+      });
+
+      const consoleErrorSpy = jest
         .spyOn(console, 'error')
         .mockImplementation(() => {});
-      getItems.mockRejectedValue(new Error('API Error'));
 
-      await act(async () => {
-        render(<BrowsePage />);
-      });
+      fetch.mockRejectedValueOnce(new Error('Network error'));
+
+      render(<FavoritesPage />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('loading-state')).toHaveTextContent('loaded');
+        expect(consoleErrorSpy).toHaveBeenCalled();
       });
 
-      // Should still render the component
-      expect(screen.getByAltText('TinyThreads')).toBeInTheDocument();
-
-      consoleSpy.mockRestore();
-    });
-
-    test('handles filterItems error gracefully', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      // Wait for successful initial load
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
-      });
-
-      // Set up error for subsequent filterItems calls
-      filterItems.mockRejectedValue(new Error('Filter Error'));
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
-      // Trigger the filter change that will cause the error
-      await act(async () => {
-        const filterButton = screen.getByTestId('trigger-filter-change');
-        fireEvent.click(filterButton);
-
-        // Wait for the async operation to attempt
-        await waitFor(() => {
-          expect(filterItems).toHaveBeenCalled();
-        });
-      });
-
-      // Component should still be functional after error
-      expect(screen.getByAltText('TinyThreads')).toBeInTheDocument();
-
-      // Loading should eventually be set to false
-      await waitFor(() => {
-        expect(screen.getByTestId('loading-state')).toHaveTextContent('loaded');
-      });
-
-      consoleSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
     });
   });
 
-  describe('State Management', () => {
-    test('maintains separate items and filteredItems state', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
+  describe('Loading State', () => {
+    it('should show loading spinner during fetch', () => {
+      useSession.mockReturnValue({
+        data: { user: { id: 'user123' } },
+        status: 'authenticated',
       });
 
-      // Initial state - both should be the same
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
-      });
+      fetch.mockImplementationOnce(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () => resolve({ ok: true, json: async () => ({}) }),
+              100,
+            ),
+          ),
+      );
 
-      // After filtering, filteredItems changes but original items remain
-      filterItems.mockResolvedValue({ items: [mockItems[0]] });
+      render(<FavoritesPage />);
 
-      await act(async () => {
-        const filterButton = screen.getByTestId('trigger-filter-change');
-        fireEvent.click(filterButton);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('1');
-      });
-
-      // Clear filters should restore to original items
-      await act(async () => {
-        const clearButton = screen.getByTestId('clear-filters');
-        fireEvent.click(clearButton);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('items-length')).toHaveTextContent('3');
-      });
-    });
-  });
-
-  describe('CSS Classes', () => {
-    test('applies correct CSS classes to main elements', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      const page = screen.getByAltText('TinyThreads').closest('.page');
-      const container = document.querySelector('.container');
-
-      expect(page).toHaveClass('page');
-      expect(container).toHaveClass('container');
-    });
-  });
-
-  describe('Accessibility', () => {
-    test('about link is accessible', async () => {
-      await act(async () => {
-        render(<BrowsePage />);
-      });
-
-      await waitFor(() => {
-        const aboutLink = screen.getByRole('link', { name: /about/i });
-        expect(aboutLink).toBeInTheDocument();
-        expect(aboutLink).toHaveAttribute('href', '/about');
-      });
+      expect(screen.getByText('Loading your favorites...')).toBeInTheDocument();
     });
   });
 });

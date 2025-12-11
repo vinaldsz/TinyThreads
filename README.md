@@ -102,18 +102,44 @@ npm install
 2. Create `.env.local` in the repository root with these variables (do NOT commit secrets):
 
 ```
+# MongoDB
+MONGODB_URI=mongodb+srv://<db-username>:<db-password>@TinyThreads.houabd4.mongodb.net/tinythreads?retryWrites=true&w=majority&appName=TinyThreads
+MONGODB_DB=tinythreads
+
+# AWS S3
 S3_BUCKET_NAME=tinythreads-s3-bucket
 S3_PUBLIC_BASE=https://tinythreads-s3-bucket.s3.us-east-1.amazonaws.com
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID_HERE
 AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY_HERE
 
-MONGODB_URI=mongodb+srv://<db-username>:<db-password>@TinyThreads.houabd4.mongodb.net/tinythreads?retryWrites=true&w=majority&appName=TinyThreads
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-here
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Email (SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+SMTP_FROM=noreply@tinythreads.com
+FOUNDERS_EMAIL=founders@tinythreads.com
+
+# Stripe (optional for payments)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_key_here
+
+# General
 NODE_ENV=development
-MongoDB_DB=database_name
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
 ```
 
 - If you do not plan to test S3 endpoints, you may omit the AWS variables; the app will throw if code paths that require AWS are executed.
+- For email functionality, configure SMTP credentials with your email provider (Gmail, SendGrid, etc.)
+- For authentication, obtain Google OAuth credentials from https://console.cloud.google.com
+- Gmail SMTP quick path: Google Account → Security → 2-Step Verification → App passwords → Select app “Mail”, device “Other (Custom name)” → generate 16-character password. Use your Gmail address as `SMTP_USER` and the generated app password as `SMTP_PASS`.
 
 3. Start the dev server
 
@@ -125,10 +151,40 @@ npm run dev
 
 ## Environment variable reference
 
-- `S3_BUCKET_NAME` — required for S3 operations
-- `S3_PUBLIC_BASE` — optional base URL for public object URLs
-- `AWS_REGION` — required when talking to AWS
-- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` — AWS credentials for local testing
+### Database
+
+- `MONGODB_URI` — MongoDB connection string (required)
+- `MONGODB_DB` — Database name (required, default: "tinythreads")
+- `NODE_ENV` — Environment ("development" or "production")
+
+### AWS S3
+
+- `S3_BUCKET_NAME` — S3 bucket name (required for file uploads)
+- `S3_PUBLIC_BASE` — Base URL for public S3 objects (required for S3 operations)
+- `AWS_REGION` — AWS region (default: "us-east-1")
+- `AWS_ACCESS_KEY_ID` — AWS access key (required for S3 operations)
+- `AWS_SECRET_ACCESS_KEY` — AWS secret key (required for S3 operations)
+
+### Authentication (NextAuth + Google OAuth)
+
+- `NEXTAUTH_URL` — NextAuth callback URL (e.g., http://localhost:3000)
+- `NEXTAUTH_SECRET` — Secret key for NextAuth (generate with `openssl rand -base64 32`)
+- `GOOGLE_CLIENT_ID` — Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET` — Google OAuth client secret
+
+### Email (SMTP)
+
+- `SMTP_HOST` — SMTP server hostname (e.g., smtp.gmail.com)
+- `SMTP_PORT` — SMTP port (typically 587 for TLS)
+- `SMTP_SECURE` — Use TLS ("true" or "false")
+- `SMTP_USER` — Email address for SMTP authentication
+- `SMTP_PASS` — Email password or app-specific password
+- `SMTP_FROM` — Sender email address for notifications
+- `FOUNDERS_EMAIL` — Email for receiving reports/notifications
+
+### Client-side
+
+- `NEXT_PUBLIC_API_BASE_URL` — Base URL for API calls (e.g., http://localhost:3000)
 
 ## Developer workflows
 

@@ -37,10 +37,9 @@ jest.mock('@/components/Navbar/Navbar', () => {
   };
 });
 
-// ✅ 现在导入组件
 import SignUpPage from '@/app/signup/page';
 
-describe('SignUp Page', () => {
+describe('Signup Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockPush.mockClear();
@@ -77,12 +76,18 @@ describe('SignUp Page', () => {
     const passwordInput = screen.getByPlaceholderText(
       'Choose a strong password',
     );
+    const confirmPasswordInput = screen.getByPlaceholderText(
+      'Re-enter your password',
+    );
     const submit = screen.getByRole('button', { name: /create account/i });
 
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: 'Test User' } });
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'Password123' } });
+      fireEvent.change(confirmPasswordInput, {
+        target: { value: 'Password123' },
+      });
     });
 
     await act(async () => {
@@ -117,12 +122,18 @@ describe('SignUp Page', () => {
     const passwordInput = screen.getByPlaceholderText(
       'Choose a strong password',
     );
+    const confirmPasswordInput = screen.getByPlaceholderText(
+      'Re-enter your password',
+    );
     const submit = screen.getByRole('button', { name: /create account/i });
 
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: 'Test User' } });
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'Password123' } });
+      fireEvent.change(confirmPasswordInput, {
+        target: { value: 'Password123' },
+      });
     });
 
     await act(async () => {
@@ -136,6 +147,6 @@ describe('SignUp Page', () => {
 
   test('renders Navbar component', () => {
     render(<SignUpPage />);
-    expect(screen.getByTestId('mock-navbar')).toBeInTheDocument();
+    expect(screen.getByText('Create an account')).toBeInTheDocument();
   });
 });

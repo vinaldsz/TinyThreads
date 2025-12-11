@@ -2,9 +2,33 @@
 // src/app/add-listing/page.js
 import Link from 'next/link';
 import styles from './page.module.css';
-import Navbar from '@/components/Navbar/Navbar';
 import { useState } from 'react';
 import { uploadListingAction } from './actions';
+
+// Standardized size options for kids under 5
+const kidsSizes = [
+  { value: '', label: 'Select size' },
+  { value: 'NB', label: 'Newborn (0-3M)' },
+  { value: '3M', label: '3 Months' },
+  { value: '6M', label: '6 Months' },
+  { value: '9M', label: '9 Months' },
+  { value: '12M', label: '12 Months' },
+  { value: '18M', label: '18 Months' },
+  { value: '24M', label: '24 Months' },
+  { value: '2T', label: '2T (2-3 years)' },
+  { value: '3T', label: '3T (3-4 years)' },
+  { value: '4T', label: '4T (4-5 years)' },
+];
+
+// Standardized age range options
+const ageRanges = [
+  { value: '', label: 'Select age range' },
+  { value: '0-6M', label: '0-6 Months' },
+  { value: '6-12M', label: '6-12 Months' },
+  { value: '1-2Y', label: '1-2 Years' },
+  { value: '2-3Y', label: '2-3 Years' },
+  { value: '3-5Y', label: '3-5 Years' },
+];
 
 /**
  * AddListingPage — page for submitting a new listing.
@@ -18,6 +42,8 @@ export default function AddListingPage() {
   const [priceErr, setPriceErr] = useState('');
   const [categoryErr, setCategoryErr] = useState('');
   const [conditionErr, setConditionErr] = useState('');
+  const [sizeErr, setSizeErr] = useState('');
+  const [ageRangeErr, setAgeRangeErr] = useState('');
   const [isDonation, setIsDonation] = useState(false);
 
   const [formVersion, setFormVersion] = useState(0);
@@ -30,6 +56,12 @@ export default function AddListingPage() {
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [condition, setCondition] = useState('');
+  const [size, setSize] = useState('');
+  const [ageRange, setAgeRange] = useState('');
+  const [locationCity, setLocationCity] = useState('');
+  const [locationCoords, setLocationCoords] = useState(null);
+  const [locError, setLocError] = useState('');
+  const [locLoading, setLocLoading] = useState(false);
 
   // Client-side validation logic (mirrors server rules for instant feedback)
   function validateTitle(value) {
@@ -38,6 +70,7 @@ export default function AddListingPage() {
       return 'Title must be 3–150 characters.';
     return '';
   }
+
   function validatePrice(value) {
     const v = String(value ?? '').trim();
     if (!v) return 'Enter a valid price (e.g., 12.99).';
@@ -48,6 +81,7 @@ export default function AddListingPage() {
     if (!/^\d+(?:\.\d{1,2})?$/.test(v)) return 'Use up to 2 decimal places.';
     return '';
   }
+
   function handleDonationToggle(e) {
     const checked = e.target.checked;
     setIsDonation(checked);
@@ -63,6 +97,7 @@ export default function AddListingPage() {
 
     setFormVersion((v) => v + 1);
   }
+
   function validateRequiredSelect(value, label) {
     if (!value) return `Please select a ${label}.`;
     return '';
@@ -96,6 +131,52 @@ export default function AddListingPage() {
     setConditionErr(validateRequiredSelect(value, 'condition'));
   }
 
+  function handleSizeChange(e) {
+    const value = e.target.value;
+    setSize(value);
+    setFormVersion((v) => v + 1);
+    setSizeErr(validateRequiredSelect(value, 'size'));
+  }
+
+  function handleAgeRangeChange(e) {
+    const value = e.target.value;
+    setAgeRange(value);
+    setFormVersion((v) => v + 1);
+    setAgeRangeErr(validateRequiredSelect(value, 'age range'));
+  }
+
+  function handleLocationChange(e) {
+    const value = e.target.value;
+    setLocationCity(value);
+    setFormVersion((v) => v + 1);
+  }
+
+  function handleUseMyLocation() {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocError('Location is not supported on this device.');
+      return;
+    }
+
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = Number(pos.coords.latitude.toFixed(3));
+        const lng = Number(pos.coords.longitude.toFixed(3));
+
+        setLocationCoords({ lat, lng });
+        setLocError('');
+        setLocLoading(false);
+        setFormVersion((v) => v + 1);
+      },
+      (err) => {
+        console.error('Geolocation error:', err);
+        setLocError('Could not get your location.');
+        setLocLoading(false);
+      },
+      { timeout: 8000 },
+    );
+  }
+
   function handleTitleBlur(e) {
     setTitleErr(validateTitle(e.target.value));
     setFormVersion((v) => v + 1);
@@ -115,15 +196,20 @@ export default function AddListingPage() {
     const priceVal = price.trim();
     const categoryVal = category;
     const conditionVal = condition;
+    const sizeVal = size;
+    const ageRangeVal = ageRange;
+    const locationVal = locationCity.trim();
+    const hasCoords = locationCoords != null;
 
     const hasAllFields =
-      title.trim().length > 0 &&
-      category.length > 0 &&
-      condition.length > 0 &&
       titleVal.length > 0 &&
       priceVal.length > 0 &&
       categoryVal.length > 0 &&
       conditionVal.length > 0 &&
+      sizeVal.length > 0 &&
+      ageRangeVal.length > 0 &&
+      locationVal.length > 0 &&
+      hasCoords &&
       selectedFiles.length > 0;
 
     if (!hasAllFields) {
@@ -135,10 +221,13 @@ export default function AddListingPage() {
 
     return Boolean(
       validateTitle(titleVal) ||
-        //validateSellerName(sellerNameVal) ||
         validatePrice(priceVal) ||
         validateRequiredSelect(categoryVal, 'category') ||
         validateRequiredSelect(conditionVal, 'condition') ||
+        validateRequiredSelect(sizeVal, 'size') ||
+        validateRequiredSelect(ageRangeVal, 'age range') ||
+        !locationVal ||
+        !hasCoords ||
         selectedFiles.length === 0,
     );
   }
@@ -214,7 +303,6 @@ export default function AddListingPage() {
 
   return (
     <div className={styles.page}>
-      <Navbar />
       <div className={styles.backSection}>
         <Link href="/" className={styles.backButton}>
           ← Back to Browse
@@ -283,32 +371,116 @@ export default function AddListingPage() {
 
             <div className={styles.formGroup}>
               <label htmlFor="size">Size</label>
-              <input
+              <select
                 id="size"
                 name="size"
-                type="text"
-                placeholder="e.g. 0-3 months"
-              />
+                required
+                value={size}
+                onChange={handleSizeChange}
+              >
+                {kidsSizes.map((sizeOption) => (
+                  <option key={sizeOption.value} value={sizeOption.value}>
+                    {sizeOption.label}
+                  </option>
+                ))}
+              </select>
+              {sizeErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {sizeErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="ageRange">Age Range</label>
-              <input
+              <select
                 id="ageRange"
                 name="ageRange"
-                type="text"
-                placeholder="e.g. 0-3 months"
-              />
+                required
+                value={ageRange}
+                onChange={handleAgeRangeChange}
+              >
+                {ageRanges.map((ageOption) => (
+                  <option key={ageOption.value} value={ageOption.value}>
+                    {ageOption.label}
+                  </option>
+                ))}
+              </select>
+              {ageRangeErr && (
+                <p
+                  role="alert"
+                  style={{
+                    color: '#c62828',
+                    marginTop: '6px',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {ageRangeErr}
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
               <label htmlFor="location">Location</label>
+              <p className={styles.fieldHint}>
+                Enter your city/area for the listing, then tap “Use my current
+                location” so we can sort by distance. Both are required.
+              </p>
               <input
                 id="location"
                 name="location"
                 type="text"
                 placeholder="City, State (e.g., Fremont, CA)"
+                value={locationCity}
+                onChange={handleLocationChange}
               />
+              <button
+                type="button"
+                onClick={handleUseMyLocation}
+                className={`${styles.locationButton} ${
+                  locationCoords && !locError
+                    ? styles.locationButtonSuccess
+                    : ''
+                }`}
+                disabled={locLoading}
+              >
+                {locLoading ? 'Detecting location…' : 'Use my current location'}
+              </button>
+              {/* Hidden fields for coordinates, used by uploadListingAction */}
+              <input
+                type="hidden"
+                name="lat"
+                value={locationCoords?.lat ?? ''}
+              />
+              <input
+                type="hidden"
+                name="lng"
+                value={locationCoords?.lng ?? ''}
+              />
+              {locError && (
+                <p role="alert" className={styles.locationError}>
+                  {locError}
+                </p>
+              )}
+              {locationCoords && !locError && (
+                <p className={styles.locationDetected}>
+                  Location access enabled. Your city and current location are
+                  now used together to help nearby parents find this listing.
+                </p>
+              )}
+              {(!locationCity.trim() || !locationCoords) && (
+                <p className={styles.locationRequired}>
+                  To add a listing, please enter your city and tap “Use my
+                  current location”.
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -389,6 +561,7 @@ export default function AddListingPage() {
                 rows="4"
               ></textarea>
             </div>
+
             <div className={styles.formGroup}>
               <label htmlFor="image">Upload Files</label>
 

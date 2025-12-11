@@ -79,3 +79,64 @@
   border-radius: 6px;
   border: 1px solid #ffd6d6;
 }
+
+.errorInline {
+  margin-top: 0.25rem;
+  color: #d93025;
+  font-size: 0.8rem;
+}
+
+.googleButton {
+  margin-top: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 24px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.googleButton:hover:not([disabled]) {
+  background: #f5f5fb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.googleButton[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: inline-block;
+}
+
+.loginText {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #555;
+}
+
+.loginLink {
+  color: #f27b65;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.loginLink:hover {
+  text-decoration: underline;
+}

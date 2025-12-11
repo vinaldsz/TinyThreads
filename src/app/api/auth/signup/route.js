@@ -7,9 +7,9 @@ export async function POST(req) {
     const body = await req.json();
     const { name, email, password } = body || {};
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { message: 'Missing email or password' },
+        { message: 'Missing name, email, or password' },
         { status: 400 },
       );
     }
@@ -18,9 +18,16 @@ export async function POST(req) {
     if (!/^\S+@\S+\.\S+$/.test(emailNorm)) {
       return NextResponse.json({ message: 'Invalid email' }, { status: 400 });
     }
-    if (String(password).length < 6) {
+    const nameNorm = String(name).trim();
+    if (!nameNorm) {
       return NextResponse.json(
-        { message: 'Password must be at least 6 characters' },
+        { message: 'Full name is required' },
+        { status: 400 },
+      );
+    }
+    if (String(password).length < 8) {
+      return NextResponse.json(
+        { message: 'Password must be at least 8 characters' },
         { status: 400 },
       );
     }
@@ -38,11 +45,18 @@ export async function POST(req) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    const now = new Date();
     const user = {
-      name: name ? String(name).trim() : '',
+      name: nameNorm,
+      displayName: nameNorm,
       email: emailNorm,
       passwordHash,
-      createdAt: new Date(),
+      avatarUrl: '',
+      bio: '',
+      location: '',
+      createdAt: now,
+      updatedAt: now,
+      settings: {},
     };
 
     await users.insertOne(user);
