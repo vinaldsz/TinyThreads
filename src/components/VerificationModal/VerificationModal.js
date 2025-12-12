@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from './VerificationModal.module.css';
 
-export default function VerificationModal({ onClose }) {
+export default function VerificationModal({ onClose, onVerified }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isVerified, setIsVerified] = useState(false);

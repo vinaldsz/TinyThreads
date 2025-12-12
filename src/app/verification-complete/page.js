@@ -28,10 +28,13 @@ export default function VerificationComplete() {
 
         if (syncData.isVerified) {
           setStatus('verified');
-          // Redirect back to home after 3 seconds
+          // Trigger a custom event to notify other components
+          window.dispatchEvent(new CustomEvent('verification-complete'));
+          // Redirect to profile page after 2 seconds to show updated verification
           setTimeout(() => {
-            router.push('/');
-          }, 3000);
+            router.push('/profile');
+            router.refresh(); // Force refresh to get latest server data
+          }, 2000);
         } else {
           setStatus('pending');
           // Check again after 2 seconds if not yet verified

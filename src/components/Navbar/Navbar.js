@@ -16,12 +16,35 @@ export default function Navbar() {
   useEffect(() => {
     // Check verification status
     if (session?.user?.id) {
-      fetch('/api/stripe/verification-status', { cache: 'no-store' })
-        .then((res) => res.json())
-        .then((data) => setUserVerified(data.isVerified))
-        .catch((err) =>
-          console.error('Failed to check verification status:', err),
+      const checkStatus = () => {
+        fetch('/api/stripe/verification-status', { cache: 'no-store' })
+          .then((res) => res.json())
+          .then((data) => setUserVerified(data.isVerified))
+          .catch((err) =>
+            console.error('Failed to check verification status:', err),
+          );
+      };
+
+      checkStatus();
+
+      // Re-check when window gains focus (after returning from Stripe)
+      const handleFocus = () => checkStatus();
+      // Listen for custom event from verification-complete page
+      const handleVerificationComplete = () => checkStatus();
+
+      window.addEventListener('focus', handleFocus);
+      window.addEventListener(
+        'verification-complete',
+        handleVerificationComplete,
+      );
+
+      return () => {
+        window.removeEventListener('focus', handleFocus);
+        window.removeEventListener(
+          'verification-complete',
+          handleVerificationComplete,
         );
+      };
     }
   }, [session]);
 
