@@ -153,11 +153,34 @@ export async function GET(req) {
       .toArray();
   }
 
-  const serialized = items.map(({ _id, ...rest }) => ({
-    _id: _id?.toString(),
-    id: _id?.toString(), //make sure can find id
-    ...rest,
-  }));
+  const { ObjectId } = await import('mongodb');
+
+  // Enrich items with seller verification status
+  const usersCollection = db.collection('users');
+  const serialized = await Promise.all(
+    items.map(async ({ _id, ...rest }) => {
+      const sellerVerified = rest.sellerId
+        ? await usersCollection
+            .findOne(
+              {
+                _id: ObjectId.isValid(rest.sellerId)
+                  ? new ObjectId(rest.sellerId)
+                  : rest.sellerId,
+              },
+              { projection: { isVerified: 1 } },
+            )
+            .then((user) => user?.isVerified || false)
+            .catch(() => false)
+        : false;
+
+      return {
+        _id: _id?.toString(),
+        id: _id?.toString(),
+        ...rest,
+        sellerVerified,
+      };
+    }),
+  );
 
   const hasMore = page * limitValue < total;
 

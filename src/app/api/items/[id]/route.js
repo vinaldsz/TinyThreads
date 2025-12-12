@@ -14,8 +14,27 @@ export async function GET(_, ctx) {
     if (!item)
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
 
+    // Look up seller verification status
+    let sellerVerified = false;
+    if (item.sellerId) {
+      const usersCollection = db.collection('users');
+      const seller = await usersCollection.findOne(
+        {
+          _id: ObjectId.isValid(item.sellerId)
+            ? new ObjectId(item.sellerId)
+            : item.sellerId,
+        },
+        { projection: { isVerified: 1 } },
+      );
+      sellerVerified = seller?.isVerified || false;
+    }
+
     const { _id: oid, ...rest } = item;
-    return NextResponse.json({ _id: oid?.toString(), ...rest });
+    return NextResponse.json({
+      _id: oid?.toString(),
+      ...rest,
+      sellerVerified,
+    });
   } catch (error) {
     console.error('Error fetching item:', error);
     return NextResponse.json(

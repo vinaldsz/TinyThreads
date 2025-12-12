@@ -83,6 +83,31 @@ export default async function ProfilePage() {
         </div>
 
         <div className={styles.section}>
+          <div className={styles.label}>Verification Status</div>
+          <div className={styles.value}>
+            {user.isVerified ? (
+              <div className={styles.verifiedStatus}>
+                <span className={styles.verifiedBadge}>✓</span>
+                <span className={styles.verifiedText}>Verified Seller</span>
+                {user.verifiedAt && (
+                  <span className={styles.verifiedDate}>
+                    Since {new Date(user.verifiedAt).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className={styles.unverifiedStatus}>
+                <span className={styles.unverifiedBadge}>○</span>
+                <span className={styles.unverifiedText}>Not Verified</span>
+                <Link href="/verify-account" className={styles.verifyLink}>
+                  Verify now
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.section}>
           <div className={styles.label}>Member since</div>
           <div className={styles.value}>
             {new Date(user.createdAt).toLocaleString()}

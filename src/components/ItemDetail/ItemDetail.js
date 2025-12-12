@@ -438,6 +438,14 @@ export default function ItemDetail({ itemId }) {
                     <div className={styles.sellerHeader}>
                       <div className={styles.sellerName}>
                         {item.sellerName || 'Seller'}
+                        {item.sellerVerified && (
+                          <span
+                            className={styles.verifiedBadge}
+                            title="Verified seller"
+                          >
+                            ✓
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className={styles.sellerMeta}>

@@ -4,11 +4,26 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import React, { useEffect, useRef, useState } from 'react';
+import VerificationModal from '@/components/VerificationModal/VerificationModal';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [userVerified, setUserVerified] = useState(false);
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    // Check verification status
+    if (session?.user?.id) {
+      fetch('/api/stripe/verification-status', { cache: 'no-store' })
+        .then((res) => res.json())
+        .then((data) => setUserVerified(data.isVerified))
+        .catch((err) =>
+          console.error('Failed to check verification status:', err),
+        );
+    }
+  }, [session]);
 
   useEffect(() => {
     function handleDoc(e) {
@@ -54,6 +69,15 @@ export default function Navbar() {
 
             {status === 'loading' ? null : session ? (
               <div className={styles.profileWrap}>
+                {!userVerified && (
+                  <button
+                    onClick={() => setShowVerificationModal(true)}
+                    className={styles.verifyButton}
+                    type="button"
+                  >
+                    ✓ Verify Account
+                  </button>
+                )}
                 <button
                   className={styles.profileButton}
                   aria-haspopup="true"
@@ -117,6 +141,13 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {showVerificationModal && (
+        <VerificationModal
+          onClose={() => setShowVerificationModal(false)}
+          onVerified={() => setUserVerified(true)}
+        />
+      )}
     </nav>
   );
 }

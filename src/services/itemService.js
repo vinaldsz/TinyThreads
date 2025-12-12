@@ -49,6 +49,7 @@ function normalizeItem(i) {
     sellerId: i.sellerId ?? '',
     sellerName: i.sellerName ?? '',
     sellerEmail: i.sellerEmail ?? '',
+    sellerVerified: i.sellerVerified ?? false,
     createdAt: i.createdAt ?? null,
     distanceMeters:
       typeof i.distanceMeters === 'number'

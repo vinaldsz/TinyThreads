@@ -1,0 +1,17 @@
+.container {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.container h1 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.container p {
+  font-size: 1rem;
+  color: #666;
+}

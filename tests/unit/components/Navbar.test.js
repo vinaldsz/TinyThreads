@@ -97,7 +97,17 @@ describe('Navbar Component', () => {
   // ========================================
 
   describe('When User IS Logged In', () => {
+    let originalFetch;
+
+    beforeAll(() => {
+      originalFetch = global.fetch;
+    });
+
     beforeEach(() => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({ json: () => Promise.resolve({ isVerified: false }) }),
+      );
+
       useSession.mockReturnValue({
         data: {
           user: {
@@ -108,6 +118,14 @@ describe('Navbar Component', () => {
         },
         status: 'authenticated',
       });
+    });
+
+    afterEach(() => {
+      if (originalFetch) {
+        global.fetch = originalFetch;
+      } else {
+        delete global.fetch;
+      }
     });
 
     test('displays user name', () => {

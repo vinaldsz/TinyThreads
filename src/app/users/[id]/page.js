@@ -97,7 +97,14 @@ export default async function SellerProfilePage({ params, searchParams }) {
             )}
           </div>
           <div>
-            <h1 className={styles.title}>{name}</h1>
+            <div className={styles.titleRow}>
+              <h1 className={styles.title}>{name}</h1>
+              {seller?.isVerified && (
+                <span className={styles.verifiedBadge}>
+                  <span className={styles.verifiedText}>Verified</span>
+                </span>
+              )}
+            </div>
             {seller.email && (
               <div className={styles.subtle}>{seller.email}</div>
             )}

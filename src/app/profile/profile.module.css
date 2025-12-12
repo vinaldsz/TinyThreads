@@ -89,3 +89,86 @@
 .backButton:hover {
   background-color: #ffe4db;
 }
+
+.verifiedStatus {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  color: #155724;
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #28a745;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.verifiedText {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.verifiedDate {
+  font-size: 13px;
+  color: #155724;
+  opacity: 0.8;
+  margin-left: auto;
+}
+
+.unverifiedStatus {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.unverifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #e9ecef;
+  color: #6c757d;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.unverifiedText {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.verifyLink {
+  margin-left: auto;
+  background: #f27b65;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.verifyLink:hover {
+  background: #e7674d;
+}

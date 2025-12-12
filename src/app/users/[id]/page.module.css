@@ -71,11 +71,39 @@
   transform: translateX(-2px);
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .title {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 700;
   color: #212529;
+}
+
+.verifiedBadge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 10px !important;
+  background: transparent !important;
+  color: #10b981 !important;
+  border-radius: 14px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  border: 1.5px solid #10b981 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.verifiedText {
+  line-height: 1 !important;
+  font-size: 0.75rem !important;
+  color: #10b981 !important;
+  font-weight: 600 !important;
 }
 
 .subtle {
